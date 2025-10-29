@@ -1,0 +1,8 @@
+<main>
+  <router-outlet />
+  <z-toaster
+    [visibleToasts]="toastConfig().maxVisibleToasts"
+    [richColors]="toastConfig().useRichColors"
+    [expand]="toastConfig().expand"
+  />
+</main>

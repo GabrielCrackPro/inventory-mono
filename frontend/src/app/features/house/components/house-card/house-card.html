@@ -1,0 +1,117 @@
+@if (house()) {
+<button
+  type="button"
+  class="group relative w-full p-5 rounded-xl border transition-all duration-200 text-left focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+  [class.border-primary]="isSelected()"
+  [class.bg-primary/5]="isSelected()"
+  [class.border-border]="!isSelected()"
+  [class.bg-card]="!isSelected()"
+  [class.hover:bg-accent/50]="!isSelected()"
+  [class.hover:border-border/80]="!isSelected()"
+  (click)="switchHouse(house()?.id)"
+  [attr.aria-pressed]="isSelected()"
+  [attr.aria-label]="'Select house: ' + house()?.name"
+>
+  <!-- Selection Indicator -->
+  @if (isSelected()) {
+  <div class="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+    <hia-icon name="CircleCheck" [size]="16" class="text-primary-foreground" />
+  </div>
+  }
+
+  <div class="flex items-start gap-4">
+    <!-- House Icon -->
+    <div class="relative">
+      <div 
+        class="w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-200"
+        [class.bg-primary/20]="isSelected()"
+        [class.bg-accent/50]="!isSelected()"
+        [class.group-hover:bg-accent]="!isSelected()"
+      >
+        <hia-icon 
+          name="House" 
+          [size]="24" 
+          [class.text-primary]="isSelected()"
+          [class.text-muted-foreground]="!isSelected()"
+          [class.group-hover:text-foreground]="!isSelected()"
+          class="transition-colors duration-200"
+        />
+      </div>
+    </div>
+
+    <!-- House Information -->
+    <div class="flex-1 min-w-0 space-y-2">
+      <!-- House Name -->
+      <div class="flex items-center gap-2">
+        <h3 
+          class="font-semibold text-lg truncate transition-colors duration-200"
+          [class.text-primary]="isSelected()"
+          [class.text-foreground]="!isSelected()"
+        >
+          {{ house()?.name }}
+        </h3>
+      </div>
+
+      <!-- Address -->
+      @if (house()?.address) {
+      <p class="text-sm text-muted-foreground truncate">
+        {{ house()?.address }}
+      </p>
+      }
+
+      <!-- Stats -->
+      <div class="flex items-center gap-6 pt-2">
+        <div class="flex items-center gap-2">
+          <div 
+            class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200"
+            [class.bg-primary/10]="isSelected()"
+            [class.bg-accent/30]="!isSelected()"
+          >
+            <hia-icon 
+              name="Warehouse" 
+              [size]="16" 
+              [class.text-primary]="isSelected()"
+              [class.text-muted-foreground]="!isSelected()"
+              class="transition-colors duration-200"
+            />
+          </div>
+          <div>
+            <p class="text-sm font-medium text-foreground">{{ roomCount() }}</p>
+            <p class="text-xs text-muted-foreground">Rooms</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <div 
+            class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200"
+            [class.bg-primary/10]="isSelected()"
+            [class.bg-accent/30]="!isSelected()"
+          >
+            <hia-icon 
+              name="Box" 
+              [size]="16" 
+              [class.text-primary]="isSelected()"
+              [class.text-muted-foreground]="!isSelected()"
+              class="transition-colors duration-200"
+            />
+          </div>
+          <div>
+            <p class="text-sm font-medium text-foreground">{{ itemCount() }}</p>
+            <p class="text-xs text-muted-foreground">Items</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Indicator -->
+    @if (!isSelected()) {
+    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-accent/30 group-hover:bg-accent transition-colors duration-200 mt-2">
+      <hia-icon name="ChevronRight" [size]="16" class="text-muted-foreground group-hover:text-foreground transition-colors duration-200" />
+    </div>
+    }
+  </div>
+
+  <!-- Hover Effect -->
+  <div class="absolute inset-0 rounded-xl bg-linear-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
+</button>
+}

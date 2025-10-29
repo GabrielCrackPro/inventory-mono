@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+enum RoomType {
+  PUBLIC
+  PRIVATE
+}
+
+enum PermissionLevel {
+  VIEW
+  EDIT
+  ADMIN
+}
+
+enum ActivityType {
+  ITEM_CREATED
+  ITEM_UPDATED
+  ITEM_DELETED
+  ROOM_CREATED
+  ROOM_UPDATED
+  ROOM_DELETED
+  ROOM_SHARED
+  HOUSE_CREATED
+  HOUSE_UPDATED
+  HOUSE_DELETED
+  HOUSE_SHARED
+  USER_LOGIN
+  USER_LOGOUT
+  USER_REGISTERED
+  CATEGORY_CREATED
+  CATEGORY_UPDATED
+  CATEGORY_DELETED
+  LOW_STOCK
+  STOCK_UPDATED
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  name          String
+  email         String         @unique
+  password      String
+  role          Role           @default(MEMBER)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  activities    Activity[]
+  ownedHouses   House[]        @relation("HouseOwner")
+  sharedHouses  HouseAccess[]
+  items         Item[]
+  refreshTokens RefreshToken[]
+  ownedRooms    Room[]         @relation("RoomOwner")
+  sharedRooms   RoomAccess[]
+}
+
+model Room {
+  id          Int          @id @default(autoincrement())
+  name        String
+  type        RoomType?
+  isShared    Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  ownerId     Int
+  description String?
+  houseId     Int?
+  items       Item[]
+  house       House?       @relation(fields: [houseId], references: [id])
+  owner       User         @relation("RoomOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  sharedWith  RoomAccess[]
+}
+
+model RoomAccess {
+  id         Int             @id @default(autoincrement())
+  roomId     Int
+  userId     Int
+  permission PermissionLevel @default(VIEW)
+  room       Room            @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, userId])
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  items     Item[]
+}
+
+model Item {
+  id           Int       @id @default(autoincrement())
+  name         String
+  description  String?
+  brand        String?
+  model        String?
+  serialNumber String?
+  condition    String?
+  location     String?
+  quantity     Int       @default(1)
+  unit         String?   @default("pieces")
+  minStock     Int?      @default(1)
+  tags         String[]  @default([])
+  isShared     Boolean   @default(false)
+  sharedWith   String[]  @default([])
+  visibility   String?   @default("private")
+  purchaseDate DateTime?
+  expiration   DateTime?
+  value        Decimal?  @default(0.00)
+  price        Decimal?  @default(0.00)
+  supplier     String?
+  warranty     String?
+  notes        String?
+  imageUrl     String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  userId       Int
+  categoryId   Int?
+  roomId       Int
+  houseId      Int?
+  category     Category? @relation(fields: [categoryId], references: [id])
+  house        House?    @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  room         Room      @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model House {
+  id         Int           @id @default(autoincrement())
+  name       String
+  address    String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  ownerId    Int
+  owner      User          @relation("HouseOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  sharedWith HouseAccess[]
+  items      Item[]
+  rooms      Room[]
+}
+
+model HouseAccess {
+  id         Int             @id @default(autoincrement())
+  houseId    Int
+  userId     Int
+  permission PermissionLevel @default(VIEW)
+  house      House           @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([houseId, userId])
+}
+
+model RevokedToken {
+  id        Int       @id @default(autoincrement())
+  jti       String    @unique
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model RefreshToken {
+  id        Int       @id @default(autoincrement())
+  tokenHash String
+  userId    Int
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Activity {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String?
+  type        ActivityType
+  metadata    Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime     @default(now())
+  userId      Int
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+}

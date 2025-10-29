@@ -1,0 +1,72 @@
+<div class="min-h-screen flex flex-col">
+  <!-- Sticky Header -->
+  <hia-header />
+
+  <!-- Main Layout -->
+  <div class="flex-1 flex overflow-hidden">
+    <z-sidebar
+      [zWidth]="240"
+      [zCollapsible]="true"
+      [zCollapsed]="sidebarCollapsed()"
+      [zCollapsedWidth]="64"
+      (zCollapsedChange)="onCollapsedChangeAndReposition($event)"
+      class="h-[calc(100vh-64px)]"
+    >
+      <!-- Sidebar Header -->
+      <div slot="header" class="px-4 py-4 border-b border-border/50">
+        @if (!sidebarCollapsed()) {
+        <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Menu</div>
+        }
+      </div>
+
+      <!-- Navigation -->
+      <nav
+        #sidebarNav
+        role="navigation"
+        aria-label="Main navigation"
+        class="flex-1 px-2 py-4 space-y-1"
+        (mouseleave)="leaveHover()"
+      >
+        <!-- Navigation Items -->
+        <z-sidebar-group>
+          <z-sidebar-group-label [collapsed]="sidebarCollapsed()">
+            Navigation
+          </z-sidebar-group-label>
+
+          @for (item of items; track item.label) {
+          <hia-nav-item
+            #itemContainer
+            [label]="item.label"
+            [icon]="item.icon"
+            [route]="item.to"
+            [collapsed]="sidebarCollapsed()"
+            [exact]="item.to === ''"
+            [attr.data-to]="item.to"
+            (onHover)="moveHover($event, itemContainer.nativeElement)"
+          />
+          }
+        </z-sidebar-group>
+
+        <!-- Quick Actions -->
+        @if (!sidebarCollapsed()) {
+        <z-sidebar-group>
+          <z-sidebar-group-label>Quick Actions</z-sidebar-group-label>
+
+          <hia-nav-item
+            label="Add Item"
+            icon="Plus"
+            [collapsed]="sidebarCollapsed()"
+            routerLink="items/new"
+            class="text-primary hover:text-primary"
+          />
+        </z-sidebar-group>
+        }
+      </nav>
+    </z-sidebar>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-auto bg-background">
+      <router-outlet />
+    </main>
+  </div>
+</div>

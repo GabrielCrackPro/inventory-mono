@@ -1,0 +1,127 @@
+<div class="min-h-screen bg-linear-to-br from-background via-background to-muted/20 flex">
+  <!-- Left Side - Branding (Hidden on mobile) -->
+  <div class="hidden lg:flex lg:flex-1 lg:flex-col lg:justify-center lg:px-8 xl:px-12">
+    <div class="mx-auto max-w-md">
+      <!-- Brand Logo -->
+      <div class="flex items-center space-x-3 mb-8">
+        <div class="flex items-center justify-center w-12 h-12 bg-primary rounded-xl shadow-lg">
+          <hia-icon name="House" [size]="24" class="text-primary-foreground" />
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold text-foreground">InventoryApp</h2>
+          <p class="text-sm text-muted-foreground">Smart Inventory Management</p>
+        </div>
+      </div>
+
+      <!-- Features List -->
+      <div class="space-y-6">
+        <div class="flex items-start space-x-4">
+          <div class="flex items-center justify-center w-8 h-8 bg-primary/10 rounded-lg shrink-0">
+            <hia-icon name="Box" [size]="16" class="text-primary" />
+          </div>
+          <div>
+            <h3 class="font-semibold text-foreground">Smart Organization</h3>
+            <p class="text-sm text-muted-foreground">
+              Organize your items by rooms and categories for easy tracking
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-start space-x-4">
+          <div class="flex items-center justify-center w-8 h-8 bg-primary/10 rounded-lg shrink-0">
+            <hia-icon name="Bell" [size]="16" class="text-primary" />
+          </div>
+          <div>
+            <h3 class="font-semibold text-foreground">Smart Notifications</h3>
+            <p class="text-sm text-muted-foreground">
+              Get notified when items are running low or need attention
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-start space-x-4">
+          <div class="flex items-center justify-center w-8 h-8 bg-primary/10 rounded-lg shrink-0">
+            <hia-icon name="TrendingUp" [size]="16" class="text-primary" />
+          </div>
+          <div>
+            <h3 class="font-semibold text-foreground">Analytics & Insights</h3>
+            <p class="text-sm text-muted-foreground">
+              Track usage patterns and optimize your inventory
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side - Auth Form -->
+  <div class="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:px-8 xl:px-12">
+    <div class="mx-auto w-full max-w-md">
+      <!-- Mobile Brand Header -->
+      <div class="text-center mb-8 lg:hidden">
+        <div
+          class="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mb-4"
+        >
+          <hia-icon [name]="config().icon" [size]="32" class="text-primary" />
+        </div>
+        <div class="flex items-center justify-center space-x-2 mb-2">
+          <hia-icon name="House" [size]="20" class="text-primary" />
+          <span class="text-lg font-bold text-foreground">InventoryApp</span>
+        </div>
+      </div>
+
+      <!-- Page Header -->
+      <div class="text-center mb-8">
+        <!-- Desktop Icon -->
+        <div
+          class="hidden lg:inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mb-6"
+        >
+          <hia-icon [name]="config().icon" [size]="32" class="text-primary" />
+        </div>
+
+        <h1 class="text-3xl font-bold text-foreground mb-2">{{ config().title }}</h1>
+        <p class="text-muted-foreground">{{ config().subtitle }}</p>
+      </div>
+
+      <!-- Auth Card -->
+      <z-card class="shadow-xl border-0 bg-card/80 backdrop-blur-sm">
+        <div class="p-8">
+          <!-- Form Content -->
+          <div class="space-y-6">
+            <ng-content />
+
+            <!-- Divider -->
+            <div class="relative">
+              <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-border/50"></div>
+              </div>
+              <div class="relative flex justify-center text-sm">
+                <span class="px-4 bg-card text-muted-foreground">{{
+                  config().alternateAction.text
+                }}</span>
+              </div>
+            </div>
+
+            <!-- Alternate Action -->
+            <z-button
+              type="button"
+              zType="outline"
+              [label]="config().alternateAction.linkText"
+              iconName="ArrowRight"
+              iconPosition="right"
+              [routerLink]="config().alternateAction.route"
+              class="w-full"
+            />
+          </div>
+        </div>
+      </z-card>
+
+      <!-- Footer -->
+      @if (config().footer) {
+      <div class="text-center text-sm text-muted-foreground mt-8">
+        <p [innerHTML]="config().footer!.text"></p>
+      </div>
+      }
+    </div>
+  </div>
+</div>

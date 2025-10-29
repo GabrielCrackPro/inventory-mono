@@ -1,0 +1,80 @@
+<div [formGroup]="form">
+  <z-card class="space-y-6" [@slideInUp]>
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+        <hia-icon name="ShoppingCart" class="h-5 w-5 text-primary" />
+      </div>
+      <div>
+        <h3 class="font-semibold">Purchase Details</h3>
+        <p class="text-sm text-muted-foreground">Track purchase information and warranty details</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Purchase Date -->
+      <z-form-field>
+        <z-form-label>Purchase Date</z-form-label>
+        <z-form-control
+          [errorMessage]="getFieldError('purchaseDate') || ''"
+          [helpText]="!getFieldError('purchaseDate') ? 'Select when you purchased this item' : ''"
+        >
+          <z-date-picker
+            formControlName="purchaseDate"
+            placeholder="Select purchase date..."
+            [minDate]="minDate"
+            [maxDate]="maxDate"
+            dateFormat="MM/dd/yyyy"
+          />
+        </z-form-control>
+      </z-form-field>
+
+      <!-- Purchase Price -->
+      <z-form-field>
+        <z-form-label>Purchase Price</z-form-label>
+        <z-form-control>
+          <div class="relative">
+            <span
+              class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground z-10"
+              >$</span
+            >
+            <input
+              z-input
+              type="number"
+              formControlName="price"
+              min="0"
+              step="0.01"
+              placeholder="0.00"
+              class="pl-8"
+            />
+          </div>
+        </z-form-control>
+      </z-form-field>
+
+      <!-- Supplier -->
+      <z-form-field>
+        <z-form-label>Supplier/Store</z-form-label>
+        <z-form-control>
+          <input
+            z-input
+            type="text"
+            formControlName="supplier"
+            placeholder="e.g., Amazon, Best Buy, Local Store"
+          />
+        </z-form-control>
+      </z-form-field>
+
+      <!-- Warranty -->
+      <z-form-field>
+        <z-form-label>Warranty Period</z-form-label>
+        <z-form-control>
+          <input
+            z-input
+            type="text"
+            formControlName="warranty"
+            placeholder="e.g., 2 years, 6 months, Lifetime"
+          />
+        </z-form-control>
+      </z-form-field>
+    </div>
+  </z-card>
+</div>

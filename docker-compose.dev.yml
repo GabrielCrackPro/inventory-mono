@@ -1,0 +1,81 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16
+    container_name: home_inventory_db_dev
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: home_inventory
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API (Development mode with hot reload)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: inventory_backend_dev
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://postgres:password@db:5432/home_inventory?schema=public"
+      NODE_ENV: development
+      PORT: 3000
+    ports:
+      - "3000:3000"
+      - "9229:9229" # Debug port
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/prisma:/app/prisma
+      - ./shared:/shared
+      - /app/node_modules
+    command: >
+      sh -c "
+      cd /shared && npm install && npm run build &&
+      cd /app &&
+      npx prisma migrate deploy &&
+      npm run start:dev
+      "
+
+  # Frontend (Development mode with hot reload)
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile.dev
+    container_name: inventory_frontend_dev
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+      - ./shared:/shared
+      - /app/node_modules
+      - /app/.angular
+    environment:
+      - API_URL=http://localhost:3000
+    command: >
+      sh -c "
+      cd /shared && npm install && npm run build &&
+      cd /app &&
+      npm run start -- --host 0.0.0.0 --port 4200 --poll 2000
+      "
+
+volumes:
+  postgres_data_dev:
+
+networks:
+  default:
+    name: inventory_network_dev

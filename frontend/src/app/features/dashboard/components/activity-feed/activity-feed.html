@@ -1,0 +1,182 @@
+<z-card zTitle="Activity Feed" zDescription="Recent changes and updates">
+  <!-- Header with refresh button -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-2">
+      <hia-icon name="History" [size]="16" class="text-muted-foreground" />
+      <span class="text-sm font-medium text-muted-foreground">
+        @if (hasMoreActivities() && !isExpanded()) { Showing {{ defaultVisibleActivities }} of
+        {{ totalActivitiesCount() }} activities } @else { {{ totalActivitiesCount() }} activities }
+      </span>
+    </div>
+    <z-button
+      zType="ghost"
+      zSize="sm"
+      iconName="RefreshCcw"
+      [disabled]="isLoading()"
+      [class]="'h-8 ' + (isRefreshing() ? 'animate-spin' : '')"
+      (click)="refreshActivities()"
+      title="Refresh activities"
+    />
+  </div>
+
+  <!-- Loading skeleton -->
+  @if (isLoading() && !hasActivities()) {
+  <div class="space-y-6">
+    @for (group of [1, 2]; track group) {
+    <div class="space-y-4">
+      <!-- Date header skeleton -->
+      <div class="flex items-center gap-2">
+        <div class="h-4 bg-muted/40 rounded w-16 animate-pulse"></div>
+        <div class="flex-1 h-px bg-muted/20"></div>
+        <div class="h-3 bg-muted/30 rounded w-4 animate-pulse"></div>
+      </div>
+
+      <!-- Activity items skeleton -->
+      @for (item of [1, 2, 3]; track item) {
+      <div class="flex gap-3 p-3 rounded-lg border border-muted/20">
+        <div class="relative shrink-0">
+          <div class="w-10 h-10 rounded-full bg-muted/50 animate-pulse"></div>
+          @if (item < 3) {
+          <div class="absolute top-10 left-1/2 w-px h-6 bg-muted/20 -translate-x-1/2"></div>
+          }
+        </div>
+        <div class="flex-1 space-y-2">
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex-1 space-y-2">
+              <div
+                class="h-4 bg-muted/50 rounded animate-pulse"
+                [style.width]="60 + item * 10 + '%'"
+              ></div>
+              <div
+                class="h-3 bg-muted/30 rounded animate-pulse"
+                [style.width]="40 + item * 15 + '%'"
+              ></div>
+              <div class="h-3 bg-muted/20 rounded w-20 animate-pulse"></div>
+            </div>
+            <div class="flex flex-col items-end gap-1 shrink-0">
+              <div class="h-3 bg-muted/30 rounded w-12 animate-pulse"></div>
+              <div class="h-4 bg-muted/20 rounded w-16 animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    }
+  </div>
+  } @else if (hasActivities()) {
+  <!-- Activity groups -->
+  <div class="relative space-y-6">
+    <!-- Refresh overlay -->
+    @if (isRefreshing()) {
+    <div
+      class="absolute inset-0 bg-background/50 backdrop-blur-sm rounded-lg z-10 flex items-center justify-center"
+    >
+      <div class="flex items-center gap-2 text-sm text-muted-foreground">
+        <hia-icon name="RefreshCcw" [size]="16" class="animate-spin" />
+        Refreshing activities...
+      </div>
+    </div>
+    }
+
+    <!-- Activities container with smooth transition -->
+    <div class="space-y-6 transition-all duration-300 ease-in-out">
+      @for (group of groupedActivities(); track group.date) {
+      <div class="space-y-4" [class.opacity-50]="isRefreshing()">
+        <!-- Date header -->
+        <div class="flex items-center gap-2">
+          <h3 class="text-sm font-semibold text-foreground">{{ group.date }}</h3>
+          <div class="flex-1 h-px bg-border"></div>
+          <span class="text-xs text-muted-foreground">{{ group.activities.length }}</span>
+        </div>
+
+        <!-- Activity items -->
+        <div class="space-y-3">
+          @for (activity of group.activities; track activity.id) {
+          <div
+            class="group flex gap-3 p-3 rounded-lg border border-transparent hover:border-border/50 hover:bg-accent/30 transition-all duration-200 cursor-pointer"
+            [class.pointer-events-none]="isRefreshing()"
+            (click)="onActivityClick(activity)"
+          >
+            <!-- Activity icon -->
+            <div class="relative shrink-0">
+              <div
+                [class]="
+                  'w-10 h-10 rounded-full flex items-center justify-center ' + activity.bgColor
+                "
+              >
+                <hia-icon [name]="activity.icon" [size]="18" [class]="activity.color" />
+              </div>
+              <!-- Connection line for non-last items -->
+              @if (!$last) {
+              <div class="absolute top-10 left-1/2 w-px h-6 bg-border/30 -translate-x-1/2"></div>
+              }
+            </div>
+
+            <!-- Activity content -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex-1 min-w-0">
+                  <p
+                    class="text-sm font-medium text-foreground group-hover:text-primary transition-colors duration-200"
+                  >
+                    {{ activity.title }}
+                  </p>
+                  <p class="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                    {{ activity.description }}
+                  </p>
+                  @if (activity.user) {
+                  <p class="text-xs text-muted-foreground/80 mt-1">by {{ activity.user }}</p>
+                  }
+                </div>
+                <div class="flex flex-col items-end gap-1 shrink-0">
+                  <span class="text-xs text-muted-foreground font-medium">
+                    {{ activity.time }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Expand/Collapse Button -->
+    @if (hasMoreActivities() && !isRefreshing()) {
+    <div class="mt-6 pt-4 border-t border-border">
+      <button
+        type="button"
+        (click)="toggleExpanded()"
+        class="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-lg transition-all duration-200"
+      >
+        <hia-icon
+          name="ChevronRight"
+          [size]="16"
+          class="transition-transform duration-200"
+          [class.rotate-90]="isExpanded()"
+        />
+        <span>
+          @if (isExpanded()) { Show less } @else { Show {{ hiddenActivitiesCount() }} more
+          activities }
+        </span>
+      </button>
+    </div>
+    }
+  </div>
+  } @else {
+  <!-- Enhanced empty state -->
+  <div class="text-center py-12">
+    <div class="w-16 h-16 rounded-full bg-muted/20 flex items-center justify-center mx-auto mb-4">
+      <hia-icon name="History" [size]="32" class="text-muted-foreground/50" />
+    </div>
+    <h3 class="text-lg font-semibold text-foreground mb-2">No Activity Yet</h3>
+    <p class="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
+      Your activity feed will show recent changes to items, rooms, and houses. Start by adding some
+      items to see activity here.
+    </p>
+    <z-button zType="default" zSize="sm" iconName="Plus" label="Add First Item" class="mx-auto" />
+  </div>
+  }
+</z-card>

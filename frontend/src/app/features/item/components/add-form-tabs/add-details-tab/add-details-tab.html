@@ -1,0 +1,42 @@
+<div [formGroup]="form">
+  <z-card class="space-y-6" [@slideInUp]>
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+        <hia-icon name="Tag" class="h-5 w-5 text-primary" />
+      </div>
+      <div>
+        <h3 class="font-semibold">Extra Information</h3>
+        <p class="text-sm text-muted-foreground">Add tags, notes, and other details</p>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <!-- Tags -->
+      <z-form-field>
+        <z-form-label>Tags</z-form-label>
+        <z-form-control [helpText]="'Separate multiple tags with commas'">
+          <input
+            z-input
+            type="text"
+            formControlName="tags"
+            placeholder="e.g., electronics, gift, important (separate with commas)"
+          />
+        </z-form-control>
+      </z-form-field>
+
+      <!-- Notes -->
+      <z-form-field>
+        <z-form-label>Notes</z-form-label>
+        <z-form-control>
+          <textarea
+            z-input
+            formControlName="notes"
+            rows="4"
+            placeholder="Any additional notes, instructions, or important information..."
+            class="resize-none"
+          ></textarea>
+        </z-form-control>
+      </z-form-field>
+    </div>
+  </z-card>
+</div>

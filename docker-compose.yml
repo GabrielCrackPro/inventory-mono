@@ -1,0 +1,68 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16
+    container_name: home_inventory_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: home_inventory
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: inventory_backend
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: 'postgresql://postgres:password@db:5432/home_inventory?schema=public'
+      NODE_ENV: production
+      PORT: 3000
+    ports:
+      - '3000:3000'
+    command: >
+      sh -c "
+      npx prisma migrate deploy &&
+      node dist/main.js
+      "
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend Web App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: inventory_frontend
+    restart: always
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - '4200:80'
+    environment:
+      - API_URL=http://backend:3000
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: inventory_network

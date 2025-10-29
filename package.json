@@ -1,0 +1,41 @@
+{
+  "name": "inventory-dashboard-monorepo",
+  "version": "1.0.0",
+  "description": "Home Inventory Management System - Monorepo",
+  "private": true,
+  "workspaces": [
+    "shared",
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "build": "npm run build:shared && npm run build:backend && npm run build:frontend",
+    "build:shared": "npm run build --workspace=shared",
+    "build:backend": "npm run build --workspace=backend",
+    "build:frontend": "npm run build --workspace=frontend",
+    "dev": "concurrently \"npm run dev:shared\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:shared": "npm run dev --workspace=shared",
+    "dev:backend": "npm run start:dev --workspace=backend",
+    "dev:frontend": "npm run start --workspace=frontend",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up --build",
+    "docker:prod": "docker-compose up --build",
+    "docker:down": "docker-compose down",
+    "clean": "npm run clean --workspace=shared && npm run clean --workspace=backend && npm run clean --workspace=frontend",
+    "install:all": "npm install && npm install --workspace=shared && npm install --workspace=backend && npm install --workspace=frontend",
+    "lint": "npm run lint --workspace=backend && npm run lint --workspace=frontend",
+    "test": "npm run test --workspace=backend && npm run test --workspace=frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "keywords": [
+    "inventory",
+    "management",
+    "nestjs",
+    "angular",
+    "typescript",
+    "monorepo"
+  ],
+  "author": "",
+  "license": "MIT"
+}

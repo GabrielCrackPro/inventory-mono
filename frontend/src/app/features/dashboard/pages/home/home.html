@@ -1,0 +1,184 @@
+@if(isLoading()) {
+<hia-home-skeleton />
+} @else if(loadingState().error) {
+<div class="min-h-screen flex items-center justify-center p-6 animate-fade-in-up">
+  <div class="w-full max-w-md">
+    <z-card class="text-center py-12 animate-scale-in">
+      <div class="animate-fade-in-up animate-stagger-1">
+        <hia-icon name="TriangleAlert" class="h-16 w-16 text-destructive mx-auto mb-6" />
+      </div>
+      <div class="animate-fade-in-up animate-stagger-2">
+        <h3 class="text-xl font-semibold mb-3">Failed to load dashboard</h3>
+        <p class="text-muted-foreground mb-6 leading-relaxed">{{ loadingState().error }}</p>
+      </div>
+      <div class="animate-fade-in-up animate-stagger-3">
+        <z-button zType="outline" label="Try Again" iconName="RefreshCcw" (click)="refreshData()" />
+      </div>
+    </z-card>
+  </div>
+</div>
+} @else {
+<div class="p-6 space-y-8 max-w-7xl mx-auto">
+  <!-- Welcome Section -->
+  <div
+    class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-slide-in-down"
+  >
+    <div class="space-y-1 animate-fade-in-left">
+      <h1
+        class="text-2xl font-bold tracking-tight bg-linear-to-r from-foreground to-foreground/70 bg-clip-text"
+      >
+        Welcome back!
+      </h1>
+      <p class="text-muted-foreground text-md">
+        Here's what's happening with your inventory today.
+      </p>
+    </div>
+    <div class="flex gap-2 animate-fade-in-right">
+      <z-button
+        zType="outline"
+        iconName="RefreshCcw"
+        label="Refresh"
+        [zLoading]="isLoading()"
+        [disabled]="isLoading()"
+        (click)="refreshData()"
+        class="animate-stagger-1 animate-scale-in"
+      />
+      <z-button
+        zType="outline"
+        iconName="Download"
+        label="Export"
+        class="animate-stagger-2 animate-scale-in"
+      />
+      <z-button
+        zType="default"
+        iconName="Plus"
+        label="Add Item"
+        class="animate-stagger-3 animate-scale-in"
+        routerLink="items/new"
+      />
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-fade-in-up">
+    @for (stat of stats(); track stat.title; let i = $index) {
+    <hia-stats-card
+      [title]="stat.title"
+      [value]="stat.value"
+      [icon]="stat.icon"
+      [change]="stat.change"
+      [trend]="stat.trend"
+      [class]="
+        'hover:shadow-md transition-all duration-300 hover:scale-105 animate-scale-in animate-stagger-' +
+        (i + 1)
+      "
+    />
+    }
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="grid gap-8 lg:grid-cols-12">
+    <!-- Recent Items -->
+    <div class="lg:col-span-8 animate-fade-in-left animate-stagger-2">
+      <z-card
+        zTitle="Recent Items"
+        zDescription="Items you've added recently"
+        class="h-fit overflow-hidden transform transition-all duration-300 hover:shadow-lg"
+      >
+        @if (isLoading()) {
+        <div class="space-y-2">
+          @for (i of [1,2,3]; track i) {
+          <div
+            class="p-5 border border-border/60 rounded-xl bg-linear-to-r from-card/80 to-card/60 animate-pulse"
+          >
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-xl bg-muted/60"></div>
+              <div class="flex-1 space-y-2">
+                <div class="h-4 bg-muted/60 rounded w-3/4"></div>
+                <div class="h-3 bg-muted/40 rounded w-1/2"></div>
+              </div>
+              <div class="w-16 h-6 bg-muted/40 rounded-full"></div>
+            </div>
+          </div>
+          }
+        </div>
+        } @else {
+        <div class="animate-fade-in-up">
+          <hia-item-list
+            [items]="recentItemsList()"
+            emptyMessage="No items added yet"
+            emptyIcon="Box"
+            (onItemClick)="handleItemClick($event)"
+            class="max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+          />
+        </div>
+        } @if (recentItems().length > 0) {
+        <div class="mt-6 pt-6 border-t border-border/50">
+          <z-button
+            zType="text"
+            label="View all items"
+            iconName="ArrowRight"
+            iconPosition="right"
+            class="w-full hover:bg-accent/50 transition-colors"
+          />
+        </div>
+        }
+      </z-card>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="lg:col-span-4 space-y-6 animate-fade-in-right animate-stagger-3">
+      <!-- Low Stock Alert -->
+      <z-card
+        zTitle="Stock Alerts"
+        [zDescription]="
+          lowStockItems().length > 0 ? 'Items that need attention' : 'All items well stocked'
+        "
+        class="transform transition-all duration-300 hover:shadow-lg"
+      >
+        @if (lowStockItems().length > 0) {
+        <div class="animate-fade-in-up">
+          <hia-item-list
+            [items]="lowStockItemsList()"
+            emptyMessage="No stock alerts"
+            emptyIcon="CircleCheck"
+            (onItemClick)="handleItemClick($event)"
+            class="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+          />
+          <div class="mt-4 pt-4 border-t border-border/50">
+            <z-button
+              zType="destructive"
+              zSize="sm"
+              label="Restock items"
+              iconName="ShoppingCart"
+              class="w-full"
+            />
+          </div>
+        </div>
+        } @else {
+        <div class="text-center py-8">
+          <div
+            class="w-16 h-16 bg-linear-to-br from-green-100 to-green-50 dark:from-green-900/30 dark:to-green-950/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-200/60 dark:border-green-800/40"
+          >
+            <hia-icon name="CircleCheck" class="h-8 w-8 text-green-600 dark:text-green-400" />
+          </div>
+          <h4 class="text-sm font-semibold text-foreground mb-1">All items well stocked!</h4>
+          <p class="text-xs text-muted-foreground">No action needed at this time</p>
+        </div>
+        }
+      </z-card>
+
+      <!-- Recent Activity -->
+      <div class="animate-fade-in-up animate-stagger-4">
+        <hia-activity-feed
+          [activities]="activities()"
+          [loading]="loadingState().isLoading"
+          (refresh)="refreshData()"
+          (activityClick)="handleActivityClick($event)"
+          class="transform transition-all duration-300 hover:shadow-lg"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+}

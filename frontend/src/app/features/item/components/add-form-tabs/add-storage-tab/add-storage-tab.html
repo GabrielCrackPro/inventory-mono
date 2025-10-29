@@ -1,0 +1,109 @@
+<div [formGroup]="form">
+  <z-card class="space-y-6" [@slideInUp]>
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+        <hia-icon name="Warehouse" class="h-5 w-5 text-primary" />
+      </div>
+      <div>
+        <h3 class="font-semibold">Storage Information</h3>
+        <p class="text-sm text-muted-foreground">
+          Where is this item stored and how much do you have?
+        </p>
+      </div>
+    </div>
+
+    <!-- Form-level validation errors -->
+    @if (hasFormErrors()) {
+    <div class="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+      <div class="flex items-start gap-2">
+        <hia-icon name="TriangleAlert" class="h-4 w-4 text-destructive mt-0.5 shrink-0" />
+        <div class="text-sm">
+          <div class="font-medium text-destructive mb-1">Please fix the following issues:</div>
+          <ul class="text-destructive/80 space-y-1">
+            @for (error of getFormErrors(); track error) {
+            <li>• {{ error }}</li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+    }
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Room -->
+      <z-form-field>
+        <z-form-label zRequired="true">Room</z-form-label>
+        <z-form-control [errorMessage]="getFieldError('room') || ''">
+          <select
+            class="flex h-9 w-full items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:border-ring focus-visible:ring-ring/50"
+            formControlName="room"
+          >
+            <option value="" disabled>Select a room</option>
+            @for (room of rooms(); track room.value) {
+            <option [value]="room.value">{{ room.name }}</option>
+            }
+          </select>
+        </z-form-control>
+      </z-form-field>
+
+      <!-- Specific Location -->
+      <z-form-field>
+        <z-form-label>Specific Location</z-form-label>
+        <z-form-control
+          [errorMessage]="getFieldError('location') || ''"
+          [helpText]="'Optional: Be specific to help you find items quickly'"
+        >
+          <input
+            z-input
+            type="text"
+            formControlName="location"
+            placeholder="e.g., Top shelf, Under sink, Drawer 2"
+            maxlength="200"
+          />
+        </z-form-control>
+      </z-form-field>
+
+      <!-- Quantity -->
+      <z-form-field>
+        <z-form-label zRequired="true">Quantity</z-form-label>
+        <z-form-control [errorMessage]="getFieldError('quantity') || ''">
+          <input z-input type="number" formControlName="quantity" min="0" step="1" />
+        </z-form-control>
+      </z-form-field>
+
+      <!-- Unit -->
+      <z-form-field>
+        <z-form-label zRequired="true">Unit</z-form-label>
+        <z-form-control [errorMessage]="getFieldError('unit') || ''">
+          <select
+            class="flex h-9 w-full items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:border-ring focus-visible:ring-ring/50"
+            formControlName="unit"
+          >
+            <option value="" disabled>Select a unit</option>
+            @for (unit of units; track unit) {
+            <option [value]="unit">{{ unit }}</option>
+            }
+          </select>
+        </z-form-control>
+      </z-form-field>
+
+      <!-- Minimum Stock -->
+      <z-form-field class="md:col-span-2">
+        <z-form-label>Minimum Stock Level</z-form-label>
+        <z-form-control
+          [errorMessage]="getFieldError('minStock') || ''"
+          [helpText]="'Optional: You\'ll get notified when the quantity falls below this level'"
+        >
+          <input
+            z-input
+            type="number"
+            formControlName="minStock"
+            min="0"
+            step="1"
+            placeholder="Alert when quantity falls below this number"
+          />
+        </z-form-control>
+      </z-form-field>
+    </div>
+  </z-card>
+</div>

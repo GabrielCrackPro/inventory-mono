@@ -1,0 +1,177 @@
+<div class="min-h-screen flex items-center justify-center p-6 bg-linear-to-br from-background via-background to-accent/5 dark:to-accent/10 relative overflow-hidden">
+  <!-- Background decorative elements -->
+  <div class="absolute inset-0 pointer-events-none">
+    <!-- Light theme background pattern -->
+    <div class="absolute top-10 left-10 w-32 h-32 rounded-full bg-primary/5 blur-3xl"></div>
+    <div class="absolute bottom-20 right-20 w-40 h-40 rounded-full bg-accent/10 blur-3xl"></div>
+    <div class="absolute top-1/3 right-10 w-24 h-24 rounded-full bg-primary/8 blur-2xl"></div>
+    <div class="absolute bottom-1/3 left-20 w-36 h-36 rounded-full bg-accent/6 blur-3xl"></div>
+  </div>
+  
+  <div class="w-full max-w-4xl mx-auto relative z-10">
+    <!-- Main Content -->
+    <div class="text-center space-y-8">
+      <div class="relative fade-in-up">
+        <div class="relative">
+          <div class="relative">
+            <h1 class="text-9xl md:text-[12rem] font-bold select-none leading-none gradient-404-text relative z-10">
+              404
+            </h1>
+            
+            <!-- Fallback 404 text for better visibility -->
+            <h1 class="absolute inset-0 text-9xl md:text-[12rem] font-bold select-none leading-none text-muted-foreground/20 -z-10">
+              404
+            </h1>
+            
+            <!-- Outline text for extra visibility -->
+            <h1 class="absolute inset-0 text-9xl md:text-[12rem] font-bold select-none leading-none text-transparent stroke-text -z-20">
+              404
+            </h1>
+          </div>
+          
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="relative w-32 h-32">
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="center-icon-container w-16 h-16 rounded-full flex items-center justify-center animate-pulse">
+                  <hia-icon name="Box" [size]="32" class="text-primary drop-shadow-sm" />
+                  <div class="absolute inset-0 rounded-full glow-ring"></div>
+                </div>
+              </div>
+              
+              <div class="floating-icon floating-icon-1 absolute -top-4 -left-4 w-8 h-8 rounded-full flex items-center justify-center">
+                <hia-icon name="House" [size]="16" class="icon-themed" />
+              </div>
+              
+              <div class="floating-icon floating-icon-2 absolute -top-2 -right-6 w-6 h-6 rounded-full flex items-center justify-center">
+                <hia-icon name="Tag" [size]="12" class="icon-themed" />
+              </div>
+              
+              <div class="floating-icon floating-icon-3 absolute -bottom-4 -right-2 w-10 h-10 rounded-full flex items-center justify-center">
+                <hia-icon name="Warehouse" [size]="20" class="icon-themed" />
+              </div>
+              
+              <div class="floating-icon floating-icon-4 absolute -bottom-2 -left-6 w-7 h-7 rounded-full flex items-center justify-center">
+                <hia-icon name="Settings" [size]="14" class="icon-themed" />
+              </div>
+            </div>
+          </div>
+          
+          <!-- Decorative Elements for Light Theme -->
+          <div class="absolute inset-0 pointer-events-none">
+            <div class="light-rays absolute inset-0 opacity-30"></div>
+            <div class="grid-pattern absolute inset-0 opacity-10"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div class="space-y-4 fade-in-up-delay-1">
+        <h2 class="text-3xl md:text-4xl font-bold text-foreground">
+          Oops! Page Not Found
+        </h2>
+        <p class="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          The page you're looking for seems to have wandered off into the inventory void. 
+          Don't worry though – we'll help you find your way back to managing your items!
+        </p>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="space-y-6 fade-in-up-delay-2">
+        <h3 class="text-xl font-semibold text-foreground">Where would you like to go?</h3>
+        
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4 max-w-4xl mx-auto">
+          @for (action of quickActions; track action.route) {
+          <z-card class="group cursor-pointer hover-lift">
+            <button
+              type="button"
+              class="w-full p-6 text-left space-y-4 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-lg"
+              (click)="navigateTo(action.route)"
+            >
+              <!-- Icon -->
+              <div 
+                class="w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-200"
+                [class.bg-primary/20]="action.primary"
+                [class.bg-accent/50]="!action.primary"
+                [class.group-hover:bg-primary/30]="action.primary"
+                [class.group-hover:bg-accent]="!action.primary"
+              >
+                <hia-icon 
+                  [name]="action.icon" 
+                  [size]="24" 
+                  [class.text-primary]="action.primary"
+                  [class.text-muted-foreground]="!action.primary"
+                  [class.group-hover:text-foreground]="!action.primary"
+                  class="transition-colors duration-200"
+                />
+              </div>
+              
+              <!-- Content -->
+              <div class="space-y-2">
+                <h4 
+                  class="font-semibold transition-colors duration-200"
+                  [class.text-primary]="action.primary"
+                  [class.text-foreground]="!action.primary"
+                >
+                  {{ action.label }}
+                </h4>
+                <p class="text-sm text-muted-foreground group-hover:text-muted-foreground/80 transition-colors duration-200">
+                  {{ action.description }}
+                </p>
+              </div>
+            </button>
+          </z-card>
+          }
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8 fade-in-up-delay-3">
+        <z-button
+          zType="default"
+          zSize="lg"
+          iconName="House"
+          label="Go to Dashboard"
+          (click)="goHome()"
+          class="min-w-48"
+        />
+        
+        <z-button
+          zType="outline"
+          zSize="lg"
+          iconName="ArrowRight"
+          iconPosition="left"
+          label="Go Back"
+          (click)="goBack()"
+          class="min-w-48"
+        />
+      </div>
+
+      <!-- Help Section -->
+      <div class="pt-12 border-t border-border/50">
+        <div class="space-y-4">
+          <h3 class="text-lg font-semibold text-foreground">Still need help?</h3>
+          <p class="text-muted-foreground">
+            If you believe this is an error or need assistance, feel free to reach out to our support team.
+          </p>
+          
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <z-button
+              zType="text"
+              iconName="RefreshCcw"
+              label="Refresh Page"
+              (click)="refresh()"
+            />
+            
+            <span class="text-muted-foreground/50">•</span>
+            
+            <z-button
+              zType="text"
+              iconName="Bell"
+              label="Report Issue"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

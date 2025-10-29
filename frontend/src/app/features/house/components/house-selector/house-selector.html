@@ -1,0 +1,76 @@
+<div class="space-y-4">
+  <!-- Header -->
+  <div class="text-center pb-4 border-b border-border/50">
+    <h2 class="text-lg font-semibold text-foreground">Select Your House</h2>
+    <p class="text-sm text-muted-foreground mt-1">Choose which house you'd like to manage</p>
+  </div>
+
+  <!-- Loading Skeleton -->
+  @if (loading()) {
+  <div class="space-y-3 max-h-96 overflow-y-auto">
+    @for (item of [1, 2, 3]; track item) {
+    <div class="animate-pulse">
+      <div class="flex items-center gap-4 p-4 rounded-lg border border-border/50 bg-card">
+        <div class="w-12 h-12 rounded-lg bg-muted/50"></div>
+        <div class="flex-1 space-y-2">
+          <div class="h-4 bg-muted/50 rounded w-3/4"></div>
+          <div class="h-3 bg-muted/30 rounded w-1/2"></div>
+        </div>
+
+        <!-- Action Button Skeleton -->
+        <div class="w-8 h-8 rounded bg-muted/30"></div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Footer Skeleton -->
+  <div class="pt-4 border-t border-border/50">
+    <div class="flex items-center justify-between">
+      <div class="h-3 bg-muted/30 rounded w-24 animate-pulse"></div>
+      <div class="h-3 bg-muted/30 rounded w-20 animate-pulse"></div>
+    </div>
+  </div>
+  } @else if (houses().length > 0) {
+  <!-- House List -->
+  <div class="space-y-3 max-h-96 overflow-y-auto">
+    @for (house of houses(); track house.id) {
+    <hia-house-card [house]="house" (houseChange)="selectHouse($event)" />
+    }
+  </div>
+
+  <!-- Footer Actions -->
+  <div class="pt-4 border-t border-border/50">
+    <div class="flex items-center justify-between">
+      <p class="text-xs text-muted-foreground">
+        {{ houses().length }} house{{ houses().length === 1 ? '' : 's' }} available
+      </p>
+      <button
+        type="button"
+        class="text-xs text-primary hover:text-primary/80 font-medium transition-colors duration-200"
+      >
+        + Add New House
+      </button>
+    </div>
+  </div>
+  } @else {
+  <!-- Empty State -->
+  <div class="text-center py-12">
+    <div class="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
+      <hia-icon name="House" [size]="32" class="text-muted-foreground" />
+    </div>
+    <h3 class="text-lg font-semibold text-foreground mb-2">No Houses Found</h3>
+    <p class="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
+      You don't have any houses set up yet. Create your first house to start managing your
+      inventory.
+    </p>
+    <button
+      type="button"
+      class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors duration-200 font-medium"
+    >
+      <hia-icon name="Plus" [size]="16" />
+      Create Your First House
+    </button>
+  </div>
+  }
+</div>

@@ -1,0 +1,57 @@
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+  <!-- Email Field -->
+  <z-form-field>
+    <label z-form-label>Email</label>
+    <z-form-control>
+      <input
+        z-input
+        type="email"
+        placeholder="Enter your email"
+        formControlName="email"
+        [zStatus]="emailValid ? null : 'error'"
+        autocomplete="email"
+      />
+    </z-form-control>
+    @if (!emailValid) {
+    <z-form-message zType="error">{{ emailErrorMessage }}</z-form-message>
+    }
+  </z-form-field>
+
+  <!-- Password Field -->
+  <z-form-field>
+    <div class="flex items-center justify-between">
+      <label z-form-label>Password</label>
+      <z-button
+        type="button"
+        zType="link"
+        label="Forgot password?"
+        zSize="sm"
+        (click)="onForgotPasswordClick()"
+      />
+    </div>
+    <z-form-control>
+      <input
+        z-input
+        type="password"
+        placeholder="Enter your password"
+        formControlName="password"
+        [zStatus]="passwordValid ? null : 'error'"
+        autocomplete="current-password"
+      />
+    </z-form-control>
+    @if (!passwordValid) {
+    <z-form-message zType="error">{{ passwordErrorMessage }}</z-form-message>
+    }
+  </z-form-field>
+
+  <!-- Submit Button -->
+  <z-button
+    type="submit"
+    label="Sign In"
+    iconName="LogIn"
+    iconPosition="right"
+    [zLoading]="isLoading()"
+    [disabled]="disabled"
+    class="w-full"
+  />
+</form>

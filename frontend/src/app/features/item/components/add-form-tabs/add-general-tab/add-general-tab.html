@@ -1,0 +1,106 @@
+<div [formGroup]="form">
+  <z-card class="space-y-6" [@slideInUp]>
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+        <hia-icon name="Info" class="h-5 w-5 text-primary" />
+      </div>
+      <div>
+        <h3 class="font-semibold">Basic Information</h3>
+        <p class="text-sm text-muted-foreground">Enter the basic details about your item</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Item Name -->
+      <z-form-field>
+        <z-form-label zRequired="true">Item Name</z-form-label>
+        <z-form-control [errorMessage]="getFieldError('name') || ''">
+          <input
+            z-input
+            type="text"
+            formControlName="name"
+            placeholder="e.g., Samsung TV, Office Chair"
+            [zStatus]="getFieldError('name') ? 'error' : undefined"
+          />
+        </z-form-control>
+      </z-form-field>
+
+      <!-- Category -->
+      <z-form-field>
+        <z-form-label>Category</z-form-label>
+        <z-form-control [errorMessage]="getFieldError('category') || ''">
+          <z-select zPlaceholder="Select a category" formControlName="category">
+            @for (category of categories; track category) {
+            <z-select-item [zValue]="category">{{ category }}</z-select-item>
+            }
+          </z-select>
+        </z-form-control>
+      </z-form-field>
+
+      <!-- Brand -->
+      <z-form-field>
+        <z-form-label>Brand</z-form-label>
+        <z-form-control>
+          <input
+            z-input
+            type="text"
+            formControlName="brand"
+            placeholder="e.g., Samsung, IKEA, Apple"
+          />
+        </z-form-control>
+      </z-form-field>
+
+      <!-- Model -->
+      <z-form-field>
+        <z-form-label>Model</z-form-label>
+        <z-form-control>
+          <input
+            z-input
+            type="text"
+            formControlName="model"
+            placeholder="e.g., UN55TU8000, MARKUS"
+          />
+        </z-form-control>
+      </z-form-field>
+
+      <!-- Serial Number -->
+      <z-form-field>
+        <z-form-label>Serial Number</z-form-label>
+        <z-form-control>
+          <input
+            z-input
+            type="text"
+            formControlName="serialNumber"
+            placeholder="Enter serial number"
+          />
+        </z-form-control>
+      </z-form-field>
+
+      <!-- Condition -->
+      <z-form-field>
+        <z-form-label>Condition</z-form-label>
+        <z-form-control>
+          <z-select zPlaceholder="Select a condition" formControlName="condition">
+            @for (condition of conditions; track condition) {
+            <z-select-item [zValue]="condition">{{ condition }}</z-select-item>
+            }
+          </z-select>
+        </z-form-control>
+      </z-form-field>
+    </div>
+
+    <!-- Description -->
+    <z-form-field>
+      <z-form-label>Description</z-form-label>
+      <z-form-control>
+        <textarea
+          z-input
+          formControlName="description"
+          rows="3"
+          placeholder="Describe your item in detail..."
+          class="resize-none"
+        ></textarea>
+      </z-form-control>
+    </z-form-field>
+  </z-card>
+</div>

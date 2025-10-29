@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16
+    container_name: home_inventory_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: home_inventory
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: inventory_app
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: 'postgresql://postgres:password@db:5432/home_inventory?schema=public'
+      NODE_ENV: production
+    ports:
+      - '3000:3000'
+    command: >
+      sh -c "
+      npx prisma migrate deploy &&
+      node dist/main.js
+      "
+
+volumes:
+  postgres_data:

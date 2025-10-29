@@ -1,0 +1,617 @@
+{
+  "info": {
+    "_postman_id": "c8f3a2b8-1a2b-4d5f-9f7c-0a7b9f6a5b1c",
+    "name": "Inventory API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Collection to test Inventory Dashboard API. Uses environment variables for baseUrl and auth token."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ownerId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "itemId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "roomId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "testEmail",
+      "value": "gabriel@example.com",
+      "type": "string"
+    },
+    {
+      "key": "testPassword",
+      "value": "password123",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Gabriel\",\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\",\n  \"role\": \"MEMBER\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "// Save user id and then check houses for created house",
+                    "try {",
+                    "  const body = pm.response.json();",
+                    "  if (body && body.id) {",
+                    "    pm.environment.set('userId', body.id);",
+                    "  }",
+                    "} catch (e) {}",
+                    "// Optionally login to get token and then fetch houses",
+                    "if (pm.environment.get('testEmail') && pm.environment.get('testPassword')) {",
+                    "  pm.sendRequest({",
+                    "    url: pm.environment.get('baseUrl') + '/api/auth/login',",
+                    "    method: 'POST',",
+                    "    header: { 'Content-Type': 'application/json' },",
+                    "    body: { mode: 'raw', raw: JSON.stringify({ email: pm.environment.get('testEmail'), password: pm.environment.get('testPassword') }) }",
+                    "  }, function (err, res) {",
+                    "    try {",
+                    "      const json = res.json();",
+                    "      if (json && json.access_token) {",
+                    "        pm.environment.set('accessToken', json.access_token);",
+                    "        pm.sendRequest({",
+                    "          url: pm.environment.get('baseUrl') + '/api/houses',",
+                    "          method: 'GET',",
+                    "          header: { Authorization: 'Bearer ' + json.access_token },",
+                    "        }, function (err2, res2) {",
+                    "          try {",
+                    "            const houses = res2.json();",
+                    "            if (Array.isArray(houses) && houses.length > 0) {",
+                    "              pm.environment.set('houseId', houses[0].id);",
+                    "            }",
+                    "          } catch (e) {}",
+                    "        });",
+                    "      }",
+                    "    } catch (e) {}",
+                    "  });",
+                    "}"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Save access token and refresh token to environment",
+                  "try {",
+                  "  const json = pm.response.json();",
+                  "  if (json && json.access_token) {",
+                  "    pm.environment.set('accessToken', json.access_token);",
+                  "  }",
+                  "  if (json && json.refresh_token) {",
+                  "    pm.environment.set('refreshToken', json.refresh_token);",
+                  "  }",
+                  "  if (json && json.jti) {",
+                  "    pm.environment.set('jti', json.jti);",
+                  "  }",
+                  "} catch (e) { console.log('no json'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Refresh",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "refresh"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "try{ const body=pm.response.json(); if(body && body.access_token) pm.environment.set('accessToken', body.access_token); if(body && body.refresh_token) pm.environment.set('refreshToken', body.refresh_token);}catch(e){}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Create user (public)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New User\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"secret123\",\n  \"role\": \"MEMBER\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "try{ const body=pm.response.json(); if(body && body.id) pm.environment.set('userId', body.id);}catch(e){}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List users (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          }
+        },
+        {
+          "name": "Get user by id",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update user",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated\",\n  \"email\": \"updated@example.com\",\n  \"password\": \"newpass123\",\n  \"role\": \"MEMBER\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete user (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Items",
+      "item": [
+        {
+          "name": "Create item",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Item\",\n  \"description\": \"A new item\",\n  \"quantity\": 1,\n  \"purchaseDate\": \"2025-10-18T00:00:00.000Z\",\n  \"expiration\": null,\n  \"value\": 0.0,\n  \"imageUrl\": null,\n  \"userId\": {{userId}},\n  \"roomId\": {{roomId}},\n  \"categoryId\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/items",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "items"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "try{ const body=pm.response.json(); if(body && body.id) pm.environment.set('itemId', body.id);}catch(e){}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List my items",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/items",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "items"]
+            }
+          }
+        },
+        {
+          "name": "Get item",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/items/{{itemId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "items", "{{itemId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Item\",\n  \"description\": \"Updated description\",\n  \"quantity\": 2,\n  \"purchaseDate\": \"2025-10-18T00:00:00.000Z\",\n  \"expiration\": null,\n  \"value\": 12.5,\n  \"imageUrl\": null,\n  \"userId\": {{userId}},\n  \"roomId\": {{roomId}},\n  \"categoryId\": null\n}\n",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/items/{{itemId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "items", "{{itemId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete item",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/items/{{itemId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["items", "{{itemId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rooms",
+      "item": [
+        {
+          "name": "Create room",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Room\",\n  \"type\": \"PUBLIC\",\n  \"ownerId\": {{userId}},\n  \"shared\": false\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "try{ const body=pm.response.json(); if(body && body.id) pm.environment.set('roomId', body.id);}catch(e){}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List my rooms",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms"]
+            }
+          }
+        },
+        {
+          "name": "Get room",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms/{{roomId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms", "{{roomId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update room",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Room\",\n  \"type\": \"PRIVATE\",\n  \"ownerId\": {{userId}},\n  \"shared\": true\n}\n",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms/{{roomId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms", "{{roomId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete room",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/rooms/{{roomId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["rooms", "{{roomId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Houses",
+      "item": [
+        {
+          "name": "Create house",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"My House\",\n  \"address\": \"123 Main St\",\n  \"ownerId\": {{ownerId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/houses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "houses"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "try{ const body=pm.response.json(); if(body && body.id) pm.environment.set('houseId', body.id);}catch(e){}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List my houses",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/houses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "houses"]
+            }
+          }
+        },
+        {
+          "name": "Get house",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/houses/{{houseId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "houses", "{{houseId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update house",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated House\",\n  \"address\": \"456 New St\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/houses/{{houseId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "houses", "{{houseId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete house",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/houses/{{houseId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "houses", "{{houseId}}"]
+            }
+          }
+        },
+        {
+          "name": "Share house",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"permission\": \"EDIT\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/houses/{{houseId}}/share",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "houses", "{{houseId}}", "share"]
+            }
+          }
+        },
+        {
+          "name": "Revoke access",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/houses/{{houseId}}/access/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "houses", "{{houseId}}", "access", "{{userId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
