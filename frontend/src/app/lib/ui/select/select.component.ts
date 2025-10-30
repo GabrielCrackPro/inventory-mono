@@ -71,7 +71,7 @@ type OnChangeType = (value: string) => void;
         <span class="text-muted-foreground">{{ zPlaceholder() }}</span>
         }
       </span>
-      <hia-icon name="ChevronDown" [size]="20" classNames="opacity-50" />
+      <hia-icon name="ChevronDown" [size]="20" class="opacity-50" />
     </button>
 
     <ng-template #dropdownTemplate>

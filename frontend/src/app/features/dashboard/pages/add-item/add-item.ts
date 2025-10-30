@@ -1,10 +1,10 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
+  computed,
   inject,
   signal,
-  computed,
-  ChangeDetectorRef,
 } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,9 +14,10 @@ import {
   AddPurchaseTabComponent,
   AddSharingTabComponent,
   AddStorageTabComponent,
-  ItemService,
   ItemFormService,
+  ItemService,
 } from '@features/item';
+import { ProfileService } from '@features/user';
 import { AlertDialogService, ToastService } from '@shared/services';
 import { ZardButtonComponent } from '@ui/button';
 import { ZardTabComponent, ZardTabGroupComponent } from '@ui/tabs';
@@ -41,6 +42,7 @@ export class AddItemComponent {
   private readonly itemService = inject(ItemService);
   private readonly toastService = inject(ToastService);
   private readonly alertDialogService = inject(AlertDialogService);
+  private readonly profileService = inject(ProfileService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly router = inject(Router);
 
@@ -53,6 +55,10 @@ export class AddItemComponent {
     return this.formService.itemForm;
   }
 
+  get profile() {
+    return this.profileService.getProfile();
+  }
+
   readonly formProgress = computed(() => this.formService.progress().overall);
   readonly completionSummary = computed(() => this.formService.progress());
 
@@ -63,6 +69,8 @@ export class AddItemComponent {
   }
 
   onSubmit(): void {
+    const currentItems = this.profile?.stats.items || 0;
+
     if (this.formService.isFormValid()) {
       this.isSubmitting.set(true);
 
@@ -72,6 +80,15 @@ export class AddItemComponent {
         next: () => {
           this.isSubmitting.set(false);
           this.formService.resetForm();
+          this.profileService.updateProfile({
+            ...this.profile,
+            stats: {
+              items: currentItems + 1,
+              rooms: this.profile?.stats?.rooms || 0,
+              categories: this.profile?.stats?.categories || 0,
+              lowStockItems: this.profile?.stats?.lowStockItems || 0,
+            },
+          });
           this.toastService.success({
             title: 'Add item',
             message: 'Item added successfully',

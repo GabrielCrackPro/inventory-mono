@@ -15,7 +15,7 @@ export class IconComponent implements OnInit {
   color = input<string>('var(--color-primary)');
   strokeWidth = input<number>(2);
   absoluteStrokeWidth = input<boolean>(false);
-  classNames = input<string>();
+  class = input<string>();
 
   private _lucideIconConfig = inject(LucideIconConfig);
 

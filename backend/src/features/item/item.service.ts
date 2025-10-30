@@ -152,7 +152,6 @@ export class ItemService {
   }
 
   private async findOrCreateCategory(categoryName: string) {
-    // Try to find existing category
     let category = await this.prisma.category.findFirst({
       where: {
         name: {
@@ -329,7 +328,10 @@ export class ItemService {
       where: {
         userId,
         quantity: {
-          lt: 3,
+          lt: 2,
+        },
+        minStock: {
+          not: null,
         },
       },
       include: { room: true, category: true, user: true },

@@ -14,6 +14,8 @@ export const buttonVariants = cva(
         ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline',
         text: 'bg-transparent shadow-none hover:bg-transparent hover:text-primary dark:hover:bg-transparent dark:hover:text-primary',
+        warning:
+          'bg-orange-500/60 dark:bg-orange-800 text-white shadow-xs hover:bg-orange/90 focus-visible:ring-orange/20 dark:focus-visible:ring-orange/40 dark:bg-orange/60',
       },
       zSize: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',

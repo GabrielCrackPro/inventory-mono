@@ -28,15 +28,13 @@ export class ItemService {
           const itemData = ItemHelpers.formDataToItem(formData, this.userId());
           // Add houseId to the payload
           itemData.houseId = house?.id || 1;
-          console.log('Final payload:', itemData);
           return this._apiService.post<Item, any>('items', itemData);
         })
       );
     } else {
       // Fallback if no house is selected
       const itemData = ItemHelpers.formDataToItem(formData, this.userId());
-      itemData.houseId = 1; // Default house ID
-      console.log('Final payload (no house selected):', itemData);
+      itemData.houseId = 1;
       return this._apiService.post<Item, any>('items', itemData);
     }
   }

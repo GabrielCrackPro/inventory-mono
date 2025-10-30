@@ -126,7 +126,7 @@ export class HomeComponent implements OnInit {
         id: item.id,
         title: item.name,
         subtitle: `${item.room.name} • ${item.category.name}`,
-        description: `Added to your inventory`,
+        // description: `Added to your inventory`,
         icon: item.icon,
         badge: `${item.quantity}`,
         badgeVariant: item.quantity > 10 ? 'success' : item.quantity > 5 ? 'default' : 'warning',

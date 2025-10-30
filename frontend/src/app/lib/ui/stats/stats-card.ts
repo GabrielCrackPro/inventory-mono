@@ -21,7 +21,7 @@ import { IconName } from '@core/config';
     <z-card [class]="cardClasses()">
       <div class="flex items-center justify-between space-y-0 pb-2">
         <h3 class="text-sm font-medium tracking-tight">{{ title() }}</h3>
-        <hia-icon [name]="icon()" color="var(--color-primary)" class="h-4 w-4" />
+        <hia-icon [name]="icon()" class="h-6 w-6" />
       </div>
       <div class="space-y-1">
         <div class="text-2xl font-bold">{{ value() }}</div>
@@ -30,7 +30,7 @@ import { IconName } from '@core/config';
           <hia-icon
             [name]="trend() === 'up' ? 'TrendingUp' : trend() === 'down' ? 'TrendingDown' : 'Minus'"
             [color]="trendIconColors()"
-            [size]="12"
+            [size]="14"
           />
           {{ change() }}
           @if (changeLabel()) {

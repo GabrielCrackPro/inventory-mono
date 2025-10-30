@@ -126,18 +126,6 @@ export interface ListItem {
 
           <!-- Action indicator -->
           <div class="shrink-0 flex items-center">
-            @if (item.status === 'low-stock' || item.status === 'out-of-stock') {
-            <div class="flex items-center gap-2 mr-2">
-              <hia-icon
-                [name]="item.status === 'out-of-stock' ? 'TriangleAlert' : 'TriangleAlert'"
-                [class]="
-                  item.status === 'out-of-stock'
-                    ? 'h-4 w-4 text-destructive'
-                    : 'h-4 w-4 text-orange-500'
-                "
-              />
-            </div>
-            }
             <hia-icon name="ChevronRight" class="h-4 w-4 text-muted-foreground/40" />
           </div>
         </div>
@@ -176,7 +164,7 @@ export class ItemListComponent {
 
   protected getItemClasses(item: ListItem): string {
     return mergeClasses(
-      'group relative p-6 border rounded-2xl transition-colors duration-200 ease-out overflow-hidden',
+      'group relative p-3 border rounded-2xl transition-colors duration-200 ease-out overflow-hidden',
       'bg-gradient-to-br from-card/95 to-card/85 backdrop-blur-sm',
       // Status-based styling
       {
@@ -224,7 +212,7 @@ export class ItemListComponent {
   }
 
   protected getIconClasses(item: ListItem): string {
-    return mergeClasses('h-6 w-6', {
+    return mergeClasses({
       'text-primary': !item.status || item.status === 'normal',
       'text-orange-600 dark:text-orange-400': item.status === 'low-stock',
       'text-destructive': item.status === 'out-of-stock',
