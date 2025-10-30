@@ -66,7 +66,7 @@ export class AddStorageTabComponent implements OnInit {
     this._rooms().map((r) => {
       return {
         name: r.name,
-        value: r.name.toLowerCase().split(' ').join('-'),
+        value: r.id,
       };
     })
   );

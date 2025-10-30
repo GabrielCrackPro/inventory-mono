@@ -1,6 +1,6 @@
 import { IconName } from '@core/config';
 
-export type ItemCondition = 'New' | 'Like New' | 'Good' | 'Fair' | 'Poor';
+export type ItemCondition = 'NEW' | 'USED' | 'DAMAGED';
 export type ItemVisibility = 'private' | 'household' | 'public';
 export type ItemUnit =
   | 'pieces'
@@ -80,7 +80,7 @@ export interface ItemFormData {
 
   // Purchase Info
   purchaseDate: string; // Form uses string, converted to Date in service
-  purchasePrice: number;
+  price: number;
   supplier: string;
   warranty: string;
 
@@ -123,34 +123,35 @@ export interface ActivityItem {
 // Helper functions for data transformation
 export class ItemHelpers {
   /**
-   * Converts form data to Item model
+   * Converts form data to backend DTO format
    */
-  static formDataToItem(
-    formData: ItemFormData,
-    userId: number | undefined
-  ): Omit<Item, 'id' | 'createdAt' | 'updatedAt'> {
-    const now = new Date();
+  static formDataToItem(formData: ItemFormData, userId: number | undefined): any {
+    console.log({ formData });
+
+    // Parse roomId from the room selection (room field contains the ID)
+    const roomId = parseInt(formData.room) || 0;
 
     return {
       // General Information
       name: formData.name.trim(),
       description: formData.description?.trim() || undefined,
-      category: formData.category,
+      category: formData.category || undefined,
       brand: formData.brand?.trim() || undefined,
       model: formData.model?.trim() || undefined,
       serialNumber: formData.serialNumber?.trim() || undefined,
       condition: formData.condition,
 
       // Storage & Location
-      room: formData.room,
+      room: formData.room, // Keep for display purposes
+      roomId: roomId,
       location: formData.location?.trim() || undefined,
-      quantity: formData.quantity,
-      unit: formData.unit,
-      minStock: formData.minStock,
+      quantity: parseInt(formData.quantity.toString()) || 1,
+      unit: formData.unit || 'pieces',
+      minStock: formData.minStock ? parseInt(formData.minStock.toString()) : 0,
 
       // Purchase Information
-      purchaseDate: formData.purchaseDate ? new Date(formData.purchaseDate) : undefined,
-      purchasePrice: formData.purchasePrice || undefined,
+      purchaseDate: formData.purchaseDate || undefined,
+      price: formData.price ? parseFloat(formData.price.toString()) : undefined,
       supplier: formData.supplier?.trim() || undefined,
       warranty: formData.warranty?.trim() || undefined,
 
@@ -164,17 +165,14 @@ export class ItemHelpers {
       notes: formData.notes?.trim() || undefined,
 
       // Sharing & Access
-      isShared: formData.isShared,
+      isShared: formData.isShared || false,
       sharedWith: formData.sharedWith
         ? formData.sharedWith
             .split(',')
             .map((email) => email.trim())
             .filter((email) => email.length > 0)
         : [],
-      visibility: formData.visibility,
-
-      // System fields
-      createdBy: userId!.toString(),
+      visibility: formData.visibility || 'private',
     };
   }
 
@@ -201,7 +199,7 @@ export class ItemHelpers {
 
       // Purchase Info
       purchaseDate: item.purchaseDate ? item.purchaseDate.toISOString().split('T')[0] : '',
-      purchasePrice: item.purchasePrice || 0,
+      price: item.purchasePrice || 0,
       supplier: item.supplier || '',
       warranty: item.warranty || '',
 

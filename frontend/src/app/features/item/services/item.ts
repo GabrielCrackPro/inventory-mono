@@ -2,7 +2,8 @@ import { HttpParams } from '@angular/common/http';
 import { computed, inject, Injectable } from '@angular/core';
 import { ApiService } from '@core/services';
 import { ProfileService } from '@features/user';
-import { Observable } from 'rxjs';
+import { HouseService } from '@features/house';
+import { Observable, switchMap, of } from 'rxjs';
 import { Item, ItemFormData, ItemHelpers, LowStockItem, RecentItem } from '../models/item';
 
 @Injectable({
@@ -11,6 +12,7 @@ import { Item, ItemFormData, ItemHelpers, LowStockItem, RecentItem } from '../mo
 export class ItemService {
   private _apiService = inject(ApiService);
   private _profileService = inject(ProfileService);
+  private _houseService = inject(HouseService);
 
   userId = computed(() => this._profileService.getProfile()?.id);
 
@@ -18,8 +20,25 @@ export class ItemService {
    * Creates a new item from form data
    */
   addItem(formData: ItemFormData): Observable<Item> {
-    const itemData = ItemHelpers.formDataToItem(formData, this.userId());
-    return this._apiService.post<Item, any>('items', itemData);
+    const selectedHouse = this._houseService.getSelectedHouse();
+
+    if (selectedHouse) {
+      return selectedHouse.pipe(
+        switchMap((house) => {
+          const itemData = ItemHelpers.formDataToItem(formData, this.userId());
+          // Add houseId to the payload
+          itemData.houseId = house?.id || 1;
+          console.log('Final payload:', itemData);
+          return this._apiService.post<Item, any>('items', itemData);
+        })
+      );
+    } else {
+      // Fallback if no house is selected
+      const itemData = ItemHelpers.formDataToItem(formData, this.userId());
+      itemData.houseId = 1; // Default house ID
+      console.log('Final payload (no house selected):', itemData);
+      return this._apiService.post<Item, any>('items', itemData);
+    }
   }
 
   /**

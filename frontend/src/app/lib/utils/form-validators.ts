@@ -350,10 +350,6 @@ export class FormValidators {
       const value = control.value?.trim();
       if (!value) return { required: true };
 
-      if (value.length < 2) {
-        return { minLength: { requiredLength: 2, actualLength: value.length } };
-      }
-
       return null;
     };
   }

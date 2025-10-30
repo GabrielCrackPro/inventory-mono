@@ -60,7 +60,7 @@ export class AddGeneralTabComponent {
     'Other',
   ];
 
-  conditions = ['New', 'Like New', 'Good', 'Fair', 'Poor'];
+  conditions = ['NEW', 'USED', 'DAMAGED'];
 
   getFieldError(fieldName: string): string | null {
     return this.formService.getFieldError(fieldName);

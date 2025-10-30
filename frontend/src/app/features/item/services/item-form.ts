@@ -138,14 +138,14 @@ export class ItemFormService {
         brand: [''],
         model: [''],
         serialNumber: [''],
-        condition: ['New'],
+        condition: ['NEW'],
 
         // Storage & Location
         room: ['', FormValidators.room()],
         location: ['', FormValidators.location()],
         quantity: [1, FormValidators.quantity()],
         unit: ['pieces', FormValidators.unit(validUnits)],
-        minStock: ['', FormValidators.minStock()],
+        minStock: [0, FormValidators.minStock()],
 
         // Purchase Info
         purchaseDate: ['', [this.dateRangeValidator]],
@@ -344,7 +344,7 @@ export class ItemFormService {
       unit: 'pieces',
       minStock: 0,
       purchasePrice: 0,
-      condition: 'New',
+      condition: 'NEW',
       isShared: false,
       visibility: 'private',
     });
