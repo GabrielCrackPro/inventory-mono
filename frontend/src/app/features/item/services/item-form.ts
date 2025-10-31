@@ -23,13 +23,10 @@ export interface FormProgress {
 export class ItemFormService {
   private readonly fb = new FormBuilder();
 
-  // Form instance
   readonly itemForm: FormGroup;
 
-  // Reactive form state
   private readonly formState = signal<any>({});
 
-  // Field groups configuration
   private readonly fieldGroups = {
     general: {
       weight: 40,
@@ -58,7 +55,6 @@ export class ItemFormService {
     },
   };
 
-  // Date validator
   private dateRangeValidator = (control: AbstractControl) => {
     if (!control.value) return null;
 
@@ -77,9 +73,7 @@ export class ItemFormService {
     return null;
   };
 
-  // Computed progress
   readonly progress = computed<FormProgress>(() => {
-    // Access the signal to trigger reactivity
     this.formState();
 
     const tabProgress = {
@@ -111,6 +105,7 @@ export class ItemFormService {
   constructor() {
     // Define valid units for validation
     const validUnits = [
+      'unit',
       'pieces',
       'kg',
       'g',
@@ -145,7 +140,7 @@ export class ItemFormService {
         location: ['', FormValidators.location()],
         quantity: [1, FormValidators.quantity()],
         unit: ['pieces', FormValidators.unit(validUnits)],
-        minStock: [0, FormValidators.minStock()],
+        minStock: [null, FormValidators.minStock()],
 
         // Purchase Info
         purchaseDate: ['', [this.dateRangeValidator]],
@@ -314,7 +309,7 @@ export class ItemFormService {
       unit: 'Unit',
       minStock: 'Minimum stock',
       purchaseDate: 'Purchase date',
-      purchasePrice: 'Purchase price',
+      price: 'Purchase price',
       supplier: 'Supplier',
       warranty: 'Warranty',
       tags: 'Tags',
@@ -343,7 +338,7 @@ export class ItemFormService {
       quantity: 1,
       unit: 'pieces',
       minStock: 0,
-      purchasePrice: 0,
+      price: 0,
       condition: 'NEW',
       isShared: false,
       visibility: 'private',

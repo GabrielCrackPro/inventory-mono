@@ -11,7 +11,7 @@ export interface CreateItemDto {
   model?: string;
   serialNumber?: string;
   condition?: ItemCondition;
-  room: string;
+  room: number; // Room ID
   location?: string;
   quantity: number;
   unit?: string;
@@ -44,7 +44,7 @@ export interface UpdateItemDto {
   model?: string;
   serialNumber?: string;
   condition?: ItemCondition;
-  room?: string;
+  room?: number; // Room ID
   location?: string;
   quantity?: number;
   unit?: string;

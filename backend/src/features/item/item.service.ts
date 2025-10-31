@@ -29,8 +29,8 @@ export class ItemService {
    * @throws ForbiddenException If the user is not allowed to create items in the room.
    */
   async create(userId: number, dto: CreateItemDto) {
-    // Find room by name or identifier
-    const room = await this.findRoomByIdentifier(dto.room, userId);
+    // Find room strictly by numeric ID
+    const room = await this.findRoomById(dto.room, userId);
     if (!room) {
       throw new ForbiddenException('Room not found or access denied.');
     }
@@ -92,10 +92,10 @@ export class ItemService {
     return item;
   }
 
-  private async findRoomByIdentifier(roomIdentifier: string, userId: number) {
-    // Get all rooms accessible to the user
-    const allUserRooms = await this.prisma.room.findMany({
+  private async findRoomById(roomId: number, userId: number) {
+    return this.prisma.room.findFirst({
       where: {
+        id: roomId,
         OR: [
           { ownerId: userId },
           { sharedWith: { some: { userId } } },
@@ -104,50 +104,6 @@ export class ItemService {
         ],
       },
       include: { house: true },
-    });
-
-    // Special case: if "general-room" is passed, try to find the default room
-    if (roomIdentifier === 'general-room') {
-      const defaultRoom =
-        allUserRooms.find(
-          (room) =>
-            room.name.toLowerCase().includes('general') ||
-            room.name.toLowerCase().includes('default'),
-        ) || allUserRooms[0]; // Fallback to first room
-
-      if (defaultRoom) return defaultRoom;
-    }
-
-    // First try to find by ID if it's a number
-    if (!isNaN(Number(roomIdentifier))) {
-      const room = await this.prisma.room.findFirst({
-        where: {
-          id: Number(roomIdentifier),
-          OR: [
-            { ownerId: userId },
-            { sharedWith: { some: { userId } } },
-            { house: { ownerId: userId } },
-            { house: { sharedWith: { some: { userId } } } },
-          ],
-        },
-      });
-      if (room) return room;
-    }
-
-    // Try to find by name
-    return this.prisma.room.findFirst({
-      where: {
-        name: {
-          equals: roomIdentifier,
-          mode: 'insensitive',
-        },
-        OR: [
-          { ownerId: userId },
-          { sharedWith: { some: { userId } } },
-          { house: { ownerId: userId } },
-          { house: { sharedWith: { some: { userId } } } },
-        ],
-      },
     });
   }
 
@@ -213,8 +169,8 @@ export class ItemService {
   async update(id: number, userId: number, dto: UpdateItemDto) {
     // Find room by identifier if room is being updated
     let room;
-    if (dto.room) {
-      room = await this.findRoomByIdentifier(dto.room, userId);
+    if (dto.room !== undefined) {
+      room = await this.findRoomById(dto.room, userId);
       if (!room) {
         throw new ForbiddenException('Room not found or access denied.');
       }

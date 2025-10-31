@@ -4,7 +4,6 @@ import {
   IsArray,
   IsBoolean,
   IsDateString,
-  IsIn,
   IsInt,
   IsNumber,
   IsOptional,
@@ -58,9 +57,9 @@ export class CreateItemDto implements ICreateItemDto {
   @ApiPropertyOptional({ enum: ItemCondition })
   condition?: ItemCondition;
 
-  @IsString()
-  @ApiProperty({ example: 'Office' })
-  room: string;
+  @IsInt()
+  @ApiProperty({ example: 1, description: 'Room ID' })
+  room: number;
 
   @IsOptional()
   @IsString()

@@ -29,11 +29,13 @@
       <z-form-field>
         <z-form-label>Category</z-form-label>
         <z-form-control [errorMessage]="getFieldError('category') || ''">
-          <z-select zPlaceholder="Select a category" formControlName="category">
-            @for (category of categories; track category) {
-            <z-select-item [zValue]="category">{{ category }}</z-select-item>
-            }
-          </z-select>
+          <z-combobox
+            [options]="categories"
+            formControlName="category"
+            placeholder="Select a category"
+            searchPlaceholder="Search a category"
+            emptyText="No categories found"
+          />
         </z-form-control>
       </z-form-field>
 
@@ -80,11 +82,14 @@
       <z-form-field>
         <z-form-label>Condition</z-form-label>
         <z-form-control>
-          <z-select zPlaceholder="Select a condition" formControlName="condition">
-            @for (condition of conditions; track condition) {
-            <z-select-item [zValue]="condition">{{ condition }}</z-select-item>
-            }
-          </z-select>
+          <z-combobox
+            [options]="conditions"
+            [searchable]="false"
+            formControlName="condition"
+            placeholder="Select a condition"
+            searchPlaceholder="Search a condition"
+            emptyText="No conditions found"
+          />
         </z-form-control>
       </z-form-field>
     </div>

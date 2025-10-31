@@ -34,15 +34,14 @@
       <z-form-field>
         <z-form-label zRequired="true">Room</z-form-label>
         <z-form-control [errorMessage]="getFieldError('room') || ''">
-          <select
-            class="flex h-9 w-full items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:border-ring focus-visible:ring-ring/50"
+          <z-combobox
+            [options]="rooms()"
+            [searchable]="rooms().length > SEARCHABLE_ROOMS_LIMIT"
             formControlName="room"
-          >
-            <option value="" disabled>Select a room</option>
-            @for (room of rooms(); track room.value) {
-            <option [value]="room.value">{{ room.name }}</option>
-            }
-          </select>
+            placeholder="Select a room"
+            searchPlaceholder="Search for a room"
+            emptyText="No rooms found"
+          />
         </z-form-control>
       </z-form-field>
 
@@ -67,7 +66,7 @@
       <z-form-field>
         <z-form-label zRequired="true">Quantity</z-form-label>
         <z-form-control [errorMessage]="getFieldError('quantity') || ''">
-          <input z-input type="number" formControlName="quantity" min="0" step="1" />
+          <input z-input type="number" formControlName="quantity" min="1" step="1" />
         </z-form-control>
       </z-form-field>
 
@@ -75,15 +74,13 @@
       <z-form-field>
         <z-form-label zRequired="true">Unit</z-form-label>
         <z-form-control [errorMessage]="getFieldError('unit') || ''">
-          <select
-            class="flex h-9 w-full items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:border-ring focus-visible:ring-ring/50"
+          <z-combobox
+            [options]="units"
             formControlName="unit"
-          >
-            <option value="" disabled>Select a unit</option>
-            @for (unit of units; track unit) {
-            <option [value]="unit">{{ unit }}</option>
-            }
-          </select>
+            placeholder="Select a unit"
+            searchPlaceholder="Search for a unit"
+            emptyText="No units found"
+          />
         </z-form-control>
       </z-form-field>
 

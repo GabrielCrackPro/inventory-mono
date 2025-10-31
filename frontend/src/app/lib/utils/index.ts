@@ -5,3 +5,4 @@ export * from './number';
 export * from './password-utils';
 export * from './route.utils';
 export * from './time';
+export * from './text';

@@ -1,25 +1,25 @@
-import { ChangeDetectionStrategy, Component, input, inject } from '@angular/core';
-import { trigger, transition, style, animate } from '@angular/animations';
+import { animate, style, transition, trigger } from '@angular/animations';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ItemFormService } from '@features/item/services/item-form';
+import { capitalizeFirstLetter } from '@lib/utils';
 import { ZardCardComponent } from '@ui/card';
+import { ZardComboboxComponent } from '@ui/combobox';
+import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@ui/form';
 import { IconComponent } from '@ui/icon';
-import { ZardSelectComponent, ZardSelectItemComponent } from '@ui/select';
-import { ZardFormFieldComponent, ZardFormControlComponent, ZardFormLabelComponent } from '@ui/form';
 import { ZardInputDirective } from '@ui/input';
 
 @Component({
   selector: 'hia-add-general-tab',
   imports: [
     ReactiveFormsModule,
-    ZardSelectComponent,
-    ZardSelectItemComponent,
     ZardCardComponent,
     IconComponent,
     ZardFormFieldComponent,
     ZardFormControlComponent,
     ZardFormLabelComponent,
     ZardInputDirective,
+    ZardComboboxComponent,
   ],
   templateUrl: './add-general-tab.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,20 +47,23 @@ export class AddGeneralTabComponent {
   }
 
   categories = [
-    'Electronics',
-    'Furniture',
-    'Kitchen',
-    'Clothing',
-    'Books',
-    'Tools',
-    'Sports',
-    'Health & Beauty',
-    'Cleaning',
-    'Food & Beverages',
-    'Other',
-  ];
+    'electronics',
+    'furniture',
+    'kitchen',
+    'clothing',
+    'books',
+    'tools',
+    'sports',
+    'health',
+    'cleaning',
+    'food',
+    'other',
+  ].map((c) => ({ label: capitalizeFirstLetter(c), value: c }));
 
-  conditions = ['NEW', 'USED', 'DAMAGED'];
+  conditions = ['NEW', 'USED', 'DAMAGED'].map((c) => ({
+    label: capitalizeFirstLetter(c.toLowerCase()),
+    value: c,
+  }));
 
   getFieldError(fieldName: string): string | null {
     return this.formService.getFieldError(fieldName);

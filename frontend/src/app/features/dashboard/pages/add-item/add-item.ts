@@ -69,7 +69,7 @@ export class AddItemComponent {
   }
 
   onSubmit(): void {
-    const currentItems = this.profile?.stats.items || 0;
+    const currentItems = this.profile?.stats?.items || 0;
 
     if (this.formService.isFormValid()) {
       this.isSubmitting.set(true);
@@ -80,13 +80,14 @@ export class AddItemComponent {
         next: () => {
           this.isSubmitting.set(false);
           this.formService.resetForm();
+          const currentProfile = this.profileService.getProfile();
           this.profileService.updateProfile({
-            ...this.profile,
+            ...(currentProfile ? currentProfile : {}),
             stats: {
               items: currentItems + 1,
-              rooms: this.profile?.stats?.rooms || 0,
-              categories: this.profile?.stats?.categories || 0,
-              lowStockItems: this.profile?.stats?.lowStockItems || 0,
+              rooms: currentProfile?.stats?.rooms || 0,
+              categories: currentProfile?.stats?.categories || 0,
+              lowStockItems: currentProfile?.stats?.lowStockItems || 0,
             },
           });
           this.toastService.success({

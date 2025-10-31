@@ -25,14 +25,14 @@ export interface Item {
   // General Information
   name: string;
   description?: string;
-  category: string;
+  category: any;
   brand?: string;
   model?: string;
   serialNumber?: string;
   condition: ItemCondition;
 
   // Storage & Location
-  room: string;
+  room: any;
   location?: string;
   quantity: number;
   unit: ItemUnit;
@@ -126,10 +126,8 @@ export class ItemHelpers {
    * Converts form data to backend DTO format
    */
   static formDataToItem(formData: ItemFormData, userId: number | undefined): any {
-    console.log({ formData });
-
     // Parse roomId from the room selection (room field contains the ID)
-    const roomId = parseInt(formData.room) || 0;
+    const roomId = typeof formData.room === 'number' ? formData.room : parseInt(formData.room) || 0;
 
     return {
       // General Information
@@ -142,7 +140,7 @@ export class ItemHelpers {
       condition: formData.condition,
 
       // Storage & Location
-      room: formData.room, // Keep for display purposes
+      room: roomId, // Send numeric Room ID to backend
       roomId: roomId,
       location: formData.location?.trim() || undefined,
       quantity: parseInt(formData.quantity.toString()) || 1,
@@ -199,7 +197,7 @@ export class ItemHelpers {
 
       // Purchase Info
       purchaseDate: item.purchaseDate ? item.purchaseDate.toISOString().split('T')[0] : '',
-      price: item.purchasePrice || 0,
+      price: (item as any).price ?? (item as any).purchasePrice ?? 0,
       supplier: item.supplier || '',
       warranty: item.warranty || '',
 

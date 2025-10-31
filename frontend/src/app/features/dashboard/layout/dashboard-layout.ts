@@ -10,7 +10,6 @@ import { RouterLinkWithHref, RouterOutlet } from '@angular/router';
 import { IconName } from '@core/config';
 import { StorageService } from '@core/services';
 import { HeaderComponent } from '@features/layout';
-
 import { LayoutModule, SidebarGroupComponent, SidebarGroupLabelComponent } from '@ui/layout';
 import { ZardMenuModule } from '@ui/menu';
 import { NavItemComponent } from '@ui/navigation';
@@ -61,7 +60,7 @@ export class DashboardLayoutComponent {
 
   items: MenuItem[] = [
     { icon: 'LayoutDashboard', label: 'Overview', to: '/' },
-    { icon: 'Box', label: 'Items', to: 'items' },
+    { icon: 'Box', label: 'Items', to: 'items/list' },
     { icon: 'Warehouse', label: 'Rooms', to: 'rooms' },
     { icon: 'Settings', label: 'Settings', to: 'settings' },
   ];

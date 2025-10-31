@@ -347,10 +347,23 @@ export class FormValidators {
    */
   static room(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      const value = control.value?.trim();
-      if (!value) return { required: true };
+      const raw = control.value;
+      if (raw === null || raw === undefined || raw === '') return { required: true };
 
-      return null;
+      if (typeof raw === 'string') {
+        const value = raw.trim();
+        if (!value) return { required: true };
+        return null;
+      }
+
+      if (typeof raw === 'number') {
+        // Accept any positive integer ID (0 is invalid in our domain)
+        if (Number.isFinite(raw) && raw > 0) return null;
+        return { required: true };
+      }
+
+      // Fallback: consider truthy values valid
+      return raw ? null : { required: true };
     };
   }
 

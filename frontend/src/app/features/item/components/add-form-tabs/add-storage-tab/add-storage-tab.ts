@@ -16,6 +16,8 @@ import { ZardFormFieldComponent, ZardFormControlComponent, ZardFormLabelComponen
 import { ZardInputDirective } from '@ui/input';
 import { ItemFormService } from '@features/item/services/item-form';
 import { HouseService } from '@features/house';
+import { ZardComboboxComponent } from '@ui/combobox';
+import { capitalizeFirstLetter } from '@lib/utils';
 
 @Component({
   selector: 'hia-add-storage-tab',
@@ -26,6 +28,7 @@ import { HouseService } from '@features/house';
     ZardFormFieldComponent,
     ZardFormControlComponent,
     ZardFormLabelComponent,
+    ZardComboboxComponent,
     ZardInputDirective,
   ],
   templateUrl: './add-storage-tab.html',
@@ -46,6 +49,8 @@ import { HouseService } from '@features/house';
   ],
 })
 export class AddStorageTabComponent implements OnInit {
+  SEARCHABLE_ROOMS_LIMIT = 4;
+
   itemForm = input<any>();
   private readonly formService = inject(ItemFormService);
   private readonly _houseService = inject(HouseService);
@@ -65,13 +70,14 @@ export class AddStorageTabComponent implements OnInit {
   rooms = computed(() =>
     this._rooms().map((r) => {
       return {
-        name: r.name,
+        label: r.name,
         value: r.id,
       };
     })
   );
 
   units = [
+    'unit',
     'pieces',
     'kg',
     'g',
@@ -87,7 +93,7 @@ export class AddStorageTabComponent implements OnInit {
     'boxes',
     'bottles',
     'cans',
-  ];
+  ].map((u) => ({ label: capitalizeFirstLetter(u), value: u }));
 
   getFieldError(fieldName: string): string | null {
     return this.formService.getFieldError(fieldName);
