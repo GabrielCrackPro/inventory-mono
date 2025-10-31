@@ -101,6 +101,14 @@ export interface ListItem {
             </p>
             }
 
+            <!-- Last updated -->
+            @if (isValidLastUpdated(item.lastUpdated)) {
+            <div class="flex items-center gap-1 text-[11px] text-muted-foreground/70">
+              <hia-icon name="History" class="h-3.5 w-3.5" />
+              <span>Updated {{ formatLastUpdated(item.lastUpdated) }}</span>
+            </div>
+            }
+
             <!-- Tags and metadata row -->
             @if (item.tags?.length || item.lastUpdated) {
             <div class="flex items-center justify-between gap-2 pt-1">
@@ -120,6 +128,28 @@ export interface ListItem {
                 }
               </div>
               }
+
+              <!-- Metadata chips -->
+              <div class="ml-auto flex items-center gap-1 flex-wrap">
+                @if (item.metadata?.['quantity'] != null) {
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-muted/60 text-muted-foreground border border-border/40">
+                  <hia-icon name="Boxes" class="h-3.5 w-3.5" />
+                  <span>{{ item.metadata?.['quantity'] }}{{ item.metadata?.['unit'] ? ' ' + (item.metadata?.['unit'] || '') : '' }}</span>
+                </span>
+                }
+                @if (item.metadata?.['room']) {
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-muted/60 text-muted-foreground border border-border/40">
+                  <hia-icon name="Warehouse" class="h-3.5 w-3.5" />
+                  <span>{{ item.metadata?.['room'] }}</span>
+                </span>
+                }
+                @if (item.metadata?.['category']) {
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-muted/60 text-muted-foreground border border-border/40">
+                  <hia-icon name="Tag" class="h-3.5 w-3.5" />
+                  <span>{{ item.metadata?.['category'] }}</span>
+                </span>
+                }
+              </div>
             </div>
             }
           </div>
@@ -259,10 +289,20 @@ export class ItemListComponent {
     )
   );
 
-  protected formatLastUpdated(date: Date): string {
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+  protected isValidLastUpdated(value: unknown): boolean {
+    const d = this.parseDate(value);
+    return !!d && !isNaN(d.getTime());
+  }
 
+  protected formatLastUpdated(value: unknown): string {
+    const date = this.parseDate(value);
+    if (!date || isNaN(date.getTime())) return '';
+
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    if (diffMs < 0) return 'Just now';
+
+    const diffInHours = Math.floor(diffMs / (1000 * 60 * 60));
     if (diffInHours < 1) return 'Just now';
     if (diffInHours < 24) return `${diffInHours}h ago`;
     if (diffInHours < 48) return 'Yesterday';
@@ -271,5 +311,15 @@ export class ItemListComponent {
     if (diffInDays < 7) return `${diffInDays}d ago`;
 
     return date.toLocaleDateString();
+  }
+
+  private parseDate(value: unknown): Date | null {
+    if (value instanceof Date) return value;
+    if (typeof value === 'number') return new Date(value);
+    if (typeof value === 'string') {
+      const parsed = new Date(value);
+      return isNaN(parsed.getTime()) ? null : parsed;
+    }
+    return null;
   }
 }

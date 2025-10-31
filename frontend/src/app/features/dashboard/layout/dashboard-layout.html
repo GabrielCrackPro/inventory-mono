@@ -24,9 +24,19 @@
         #sidebarNav
         role="navigation"
         aria-label="Main navigation"
-        class="flex-1 px-2 py-4 space-y-1"
+        class="relative flex-1 px-2 py-4 space-y-1"
         (mouseleave)="leaveHover()"
       >
+        @if (!sidebarCollapsed() && hoverEffect().visible) {
+        <div
+          class="absolute z-0 rounded-md bg-primary/15 ring-1 ring-primary/20 shadow-sm backdrop-blur-[2px] transition-all duration-200 pointer-events-none"
+          [style.top.px]="hoverEffect().top"
+          [style.left.px]="hoverEffect().left"
+          [style.width.px]="hoverEffect().width"
+          [style.height.px]="hoverEffect().height"
+          aria-hidden="true"
+        ></div>
+        }
         <!-- Navigation Items -->
         <z-sidebar-group>
           <z-sidebar-group-label [collapsed]="sidebarCollapsed()">
@@ -66,7 +76,9 @@
 
     <!-- Main Content -->
     <main class="flex-1 overflow-auto bg-background">
-      <router-outlet />
+      <div class="mx-auto max-w-7xl p-6">
+        <router-outlet />
+      </div>
     </main>
   </div>
 </div>

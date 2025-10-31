@@ -4,5 +4,6 @@ export * from './merge-classes';
 export * from './number';
 export * from './password-utils';
 export * from './route.utils';
-export * from './time';
+export * from './table';
 export * from './text';
+export * from './time';

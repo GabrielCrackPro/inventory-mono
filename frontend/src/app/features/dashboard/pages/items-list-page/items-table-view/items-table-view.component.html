@@ -1,0 +1,41 @@
+<div class="overflow-auto h-full">
+  <table z-table class="w-full table-fixed text-sm">
+    <thead z-table-header>
+      <tr z-table-row>
+        @for (col of columns(); track col.key) {
+        <th
+          z-table-head
+          class="whitespace-nowrap text-xs"
+          [class.cursor-pointer]="col.sortable"
+          (click)="onColSort(col.key)"
+        >
+          <span class="inline-flex items-center gap-1">
+            {{ col.header }}
+            @if (col.sortable && sortKey() === col.key) {
+            <span class="text-[10px] text-muted-foreground">{{
+              sortDir() === 'asc' ? '▲' : '▼'
+            }}</span>
+            }
+          </span>
+        </th>
+        }
+      </tr>
+    </thead>
+    <tbody z-table-body>
+      @for (item of items(); track item.id) {
+      <tr z-table-row class="cursor-pointer hover:bg-accent/20">
+        @for (col of columns(); track col.key) {
+        <td z-table-cell [class]="'truncate ' + (col.cellClass || '')">
+          @switch (col.format) {
+            @case ('currency') { {{ getRaw(item, col) ?? 0 | currency }} }
+            @case ('date') { @if (getRaw(item, col)) { {{ getRaw(item, col) | date : 'MMM d, y' }} } @else { - } }
+            @case ('datetime') { @if (getRaw(item, col)) { {{ getRaw(item, col) | date : 'MMM d, y, HH:mm' }} } @else { - } }
+            @default { {{ getRaw(item, col) || '-' }} }
+          }
+        </td>
+        }
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>

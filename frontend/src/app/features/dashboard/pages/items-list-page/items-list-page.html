@@ -1,6 +1,25 @@
-<div class="py-4 px-6">
+<div class="h-full flex flex-col py-4 px-6">
   <div class="flex justify-between items-center mb-4">
     <p class="text-2xl font-bold">{{ items().length }} items</p>
-    <z-button zType="outline" label="Filter" />
+    <div class="flex items-center gap-2">
+      <z-button zType="outline" label="Filter" />
+      <z-segmented
+        [zOptions]="viewOptions()"
+        [zDefaultValue]="defaultView()"
+        (zChange)="changeViewMode($event)"
+      />
+    </div>
+  </div>
+  <div class="flex-1 h-full min-h-0 overflow-auto">
+    @if (viewMode() === 'grid') {
+    <hia-items-grid-view [items]="items()" />
+    } @else {
+    <hia-items-table-view
+      [items]="itemsSorted()"
+      [columns]="columns"
+      [sortKey]="sortKey()"
+      (onSort)="setSort($event)"
+    />
+    }
   </div>
 </div>

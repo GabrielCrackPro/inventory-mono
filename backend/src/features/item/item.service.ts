@@ -63,8 +63,8 @@ export class ItemService {
       isShared: dto.isShared || false,
       sharedWith: dto.sharedWith || [],
       visibility: dto.visibility || ItemVisibility.PRIVATE,
-      purchaseDate: dto.purchaseDate || null,
-      expiration: dto.expiration || null,
+      purchaseDate: this.parseDate(dto.purchaseDate),
+      expiration: this.parseDate(dto.expiration),
       value: dto.value ?? undefined,
       price: dto.price ?? undefined,
       supplier: dto.supplier || null,
@@ -214,8 +214,8 @@ export class ItemService {
       ...(dto.isShared !== undefined && { isShared: dto.isShared }),
       ...(dto.sharedWith !== undefined && { sharedWith: dto.sharedWith }),
       ...(dto.visibility !== undefined && { visibility: dto.visibility }),
-      ...(dto.purchaseDate !== undefined && { purchaseDate: dto.purchaseDate }),
-      ...(dto.expiration !== undefined && { expiration: dto.expiration }),
+      ...(dto.purchaseDate !== undefined && { purchaseDate: this.parseDate(dto.purchaseDate) }),
+      ...(dto.expiration !== undefined && { expiration: this.parseDate(dto.expiration) }),
       ...(dto.value !== undefined && { value: dto.value }),
       ...(dto.price !== undefined && { price: dto.price }),
       ...(dto.supplier !== undefined && { supplier: dto.supplier }),
@@ -325,5 +325,14 @@ export class ItemService {
       include: { room: true, category: true, user: true },
       orderBy: [{ updatedAt: 'desc' }, { createdAt: 'desc' }],
     });
+  }
+
+  /**
+   * Parses an incoming date value (ISO string) into a Date or returns null if invalid/empty
+   */
+  private parseDate(value?: string | null): Date | null {
+    if (!value) return null;
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? null : d;
   }
 }

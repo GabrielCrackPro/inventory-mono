@@ -37,11 +37,21 @@ import { IconName } from '@core/config';
         [attr.title]="collapsed() ? label() : null"
       >
         <div class="flex items-center gap-3 relative z-10">
-          <div class="flex items-center justify-center w-5 h-5 shrink-0">
-            <hia-icon [name]="icon()" [size]="iconSize()" class="transition-colors duration-200" />
+          <div class="relative flex items-center justify-center w-5 h-5 shrink-0">
+            <div
+              class="absolute inset-0 rounded-md bg-primary/10 scale-0 opacity-0 transition-all duration-200 group-[.active]:scale-100 group-[.active]:opacity-100"
+              aria-hidden="true"
+            ></div>
+            <hia-icon
+              [name]="icon()"
+              [size]="iconSize()"
+              class="transition-colors duration-200 group-[.active]:text-foreground"
+            />
           </div>
           @if (!collapsed()) {
-          <span class="font-medium text-sm truncate transition-opacity duration-200">
+          <span
+            class="text-sm truncate transition-opacity duration-200 group-[.active]:font-semibold"
+          >
             {{ label() }}
           </span>
           }
@@ -49,12 +59,12 @@ import { IconName } from '@core/config';
 
         <!-- Active indicator -->
         <div
-          class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full transition-all duration-200 opacity-0 -translate-x-2 group-[.active]:opacity-100 group-[.active]:translate-x-0"
+          class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-primary rounded-r-full shadow-[0_0_12px_--theme(--color-primary/40)] transition-all duration-200 opacity-0 -translate-x-2 group-[.active]:opacity-100 group-[.active]:translate-x-0"
         ></div>
 
         <!-- Hover background -->
         <div
-          class="absolute inset-0 bg-accent/50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 -z-10"
+          class="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 -z-10 bg-accent/50 group-[.active]:bg-accent/80 group-[.active]:opacity-100"
         ></div>
       </a>
       } @else {
@@ -65,11 +75,21 @@ import { IconName } from '@core/config';
         (click)="onClick.emit()"
       >
         <div class="flex items-center gap-3 relative z-10">
-          <div class="flex items-center justify-center w-5 h-5 shrink-0">
-            <hia-icon [name]="icon()" [size]="iconSize()" class="transition-colors duration-200" />
+          <div class="relative flex items-center justify-center w-5 h-5 shrink-0">
+            <div
+              class="absolute inset-0 rounded-md bg-primary/10 scale-0 opacity-0 transition-all duration-200 group-[.active]:scale-100 group-[.active]:opacity-100"
+              aria-hidden="true"
+            ></div>
+            <hia-icon
+              [name]="icon()"
+              [size]="iconSize()"
+              class="transition-colors duration-200 group-[.active]:text-foreground"
+            />
           </div>
           @if (!collapsed()) {
-          <span class="font-medium text-sm truncate transition-opacity duration-200">
+          <span
+            class="text-sm truncate transition-opacity duration-200 group-[.active]:font-semibold"
+          >
             {{ label() }}
           </span>
           }
@@ -77,7 +97,7 @@ import { IconName } from '@core/config';
 
         <!-- Hover background -->
         <div
-          class="absolute inset-0 bg-accent/50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 -z-10"
+          class="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 -z-10 bg-accent/50 group-[.active]:bg-accent/80 group-[.active]:opacity-100"
         ></div>
       </button>
       }
