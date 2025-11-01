@@ -33,6 +33,7 @@ import { IconName } from '@core/config';
         class="animate-spin"
         [size]="iconSize()"
         [color]="iconColor()"
+        [class]="iconClasses()"
       />
       <span>Loading...</span>
       } @else { @if (iconPosition() === 'left' && iconName()) {
@@ -42,6 +43,7 @@ import { IconName } from '@core/config';
         [color]="iconColor()"
         [strokeWidth]="iconStrokeWidth()"
         [absoluteStrokeWidth]="iconAbsoluteStrokeWidth()"
+        [class]="iconClasses()"
       />
       }
 
@@ -54,6 +56,7 @@ import { IconName } from '@core/config';
         [color]="iconColor()"
         [strokeWidth]="iconStrokeWidth()"
         [absoluteStrokeWidth]="iconAbsoluteStrokeWidth()"
+        [class]="iconClasses()"
       />
       } }
     </button>
@@ -77,6 +80,7 @@ export class ZardButtonComponent {
   readonly iconColor = input<string>('currentColor');
   readonly iconStrokeWidth = input<number>(2);
   readonly iconAbsoluteStrokeWidth = input<boolean>(false);
+  readonly iconClasses = input<string>('');
   readonly disabled = input(false, { transform });
 
   protected readonly classes = computed(() =>

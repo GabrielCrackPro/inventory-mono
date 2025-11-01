@@ -1,23 +1,52 @@
 <div class="h-full flex flex-col py-4 px-6">
   <div class="flex justify-between items-center mb-4">
-    <p class="text-2xl font-bold">{{ items().length }} items</p>
     <div class="flex items-center gap-2">
-      <z-button zType="outline" label="Filter" />
+      <p class="text-2xl font-bold">{{ items().length }} items</p>
+      @if (selectMode()) {
+      <p class="text-muted-foreground">{{ selectedItems().length }} selected</p>
+      }
+    </div>
+    <div class="flex items-center gap-2">
+      <z-button
+        zType="outline"
+        [label]="selectMode() ? 'Done' : 'Select'"
+        (click)="toggleSelectMode()"
+      />
+      @if (!selectMode()) {
       <z-segmented
         [zOptions]="viewOptions()"
         [zDefaultValue]="defaultView()"
         (zChange)="changeViewMode($event)"
       />
+      } @else { @for (action of tableActions(); track $index) {
+      <z-button
+        zType="text"
+        [iconName]="action.icon"
+        [iconClasses]="action.iconClasses"
+        [disabled]="selectedItems().length === 0"
+        (click)="action.action()"
+      />
+      } }
     </div>
   </div>
   <div class="flex-1 h-full min-h-0 overflow-auto">
     @if (viewMode() === 'grid') {
-    <hia-items-grid-view [items]="items()" />
+    <hia-items-grid-view
+      [items]="items()"
+      [selectedIds]="selectedIds()"
+      [selectMode]="selectMode()"
+      (toggleSelect)="onToggleSelect($event)"
+      (toggleSelectAll)="onToggleSelectAll($event)"
+    />
     } @else {
     <hia-items-table-view
       [items]="itemsSorted()"
-      [columns]="columns"
+      [columns]="columns()"
       [sortKey]="sortKey()"
+      [sortDir]="sortDir()"
+      [selectedIds]="selectedIds()"
+      (toggleSelect)="onToggleSelect($event)"
+      (toggleSelectAll)="onToggleSelectAll($event)"
       (onSort)="setSort($event)"
     />
     }

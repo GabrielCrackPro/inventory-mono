@@ -161,6 +161,16 @@ export class CreateItemDto implements ICreateItemDto {
   categoryId?: number;
 }
 
+export class DeleteMultipleItemsDto {
+  @IsArray()
+  @IsInt({ each: true })
+  @Transform(({ value }) =>
+    Array.isArray(value) ? value.map((v: any) => Number(v)) : [],
+  )
+  @ApiProperty({ type: [Number], example: [1, 2, 3] })
+  ids: number[];
+}
+
 export class UpdateItemDto
   extends PartialType(CreateItemDto)
   implements IUpdateItemDto {}

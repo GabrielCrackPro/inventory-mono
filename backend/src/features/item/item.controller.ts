@@ -147,4 +147,22 @@ export class ItemController {
       throw new ForbiddenException('Cannot delete item');
     }
   }
+
+  @Post('delete-multiple')
+  @ApiDocs({
+    summary: 'Delete multiple items',
+    responses: [{ status: 200, description: 'Items deleted' }],
+  })
+  /**
+   * Delete multiple items for the authenticated user.
+   */
+  async removeMultiple(
+    @Body() ids: (number | string)[],
+    @GetUser() user: JwtUser,
+  ) {
+    const parsedIds = Array.isArray(ids)
+      ? ids.map((v) => Number(v)).filter((n) => !Number.isNaN(n))
+      : [];
+    return await this.itemService.removeMany(parsedIds, user.id);
+  }
 }

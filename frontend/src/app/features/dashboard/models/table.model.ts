@@ -30,3 +30,5 @@ export type TableColSortKey =
   | 'purchaseDate'
   | 'updatedAt'
   | 'actions';
+
+export type SelectionToggle = { id: string; selected: boolean };

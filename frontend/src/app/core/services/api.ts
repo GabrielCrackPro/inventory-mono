@@ -16,6 +16,7 @@ export interface ApiEndpoints {
   houses: string;
   stats: string;
   activeHouseRooms: string;
+  deleteMultipleItems: string;
 }
 
 @Injectable({
@@ -38,6 +39,7 @@ export class ApiService {
     houses: 'houses',
     stats: 'activities/stadistics',
     activeHouseRooms: 'rooms/house',
+    deleteMultipleItems: 'items/delete-multiple',
   };
 
   /**

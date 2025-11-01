@@ -214,8 +214,12 @@ export class ItemService {
       ...(dto.isShared !== undefined && { isShared: dto.isShared }),
       ...(dto.sharedWith !== undefined && { sharedWith: dto.sharedWith }),
       ...(dto.visibility !== undefined && { visibility: dto.visibility }),
-      ...(dto.purchaseDate !== undefined && { purchaseDate: this.parseDate(dto.purchaseDate) }),
-      ...(dto.expiration !== undefined && { expiration: this.parseDate(dto.expiration) }),
+      ...(dto.purchaseDate !== undefined && {
+        purchaseDate: this.parseDate(dto.purchaseDate),
+      }),
+      ...(dto.expiration !== undefined && {
+        expiration: this.parseDate(dto.expiration),
+      }),
       ...(dto.value !== undefined && { value: dto.value }),
       ...(dto.price !== undefined && { price: dto.price }),
       ...(dto.supplier !== undefined && { supplier: dto.supplier }),
@@ -271,6 +275,44 @@ export class ItemService {
     }
 
     return deletedItem;
+  }
+
+  /**
+   * Delete multiple items for a user.
+   * @param ids Array of item IDs to delete.
+   * @param userId The ID of the user performing the deletion.
+   * @returns The number of deleted items.
+   */
+  async removeMany(ids: number[], userId: number) {
+    if (!ids || ids.length === 0) return { count: 0 };
+
+    // Fetch items first for activity logging and to ensure ownership
+    const items = await this.prisma.item.findMany({
+      where: { id: { in: ids }, userId },
+    });
+
+    const itemIds = items.map((i) => i.id);
+    if (itemIds.length === 0) return { count: 0 };
+
+    // Delete and then log activities
+    const deleteResult = await this.prisma.item.deleteMany({
+      where: { id: { in: itemIds }, userId },
+    });
+
+    // Log asynchronously per item (fire-and-forget to not block response)
+    await Promise.all(
+      items.map((item) =>
+        this.activityService.logActivity(
+          userId,
+          ActivityType.ITEM_DELETED,
+          `Deleted item: ${item.name}`,
+          `Deleted item "${item.name}" from room ${item.roomId}`,
+          { itemId: item.id, roomId: item.roomId },
+        ),
+      ),
+    );
+
+    return { count: deleteResult.count };
   }
 
   /**

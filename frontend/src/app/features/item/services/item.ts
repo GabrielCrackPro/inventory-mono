@@ -79,6 +79,10 @@ export class ItemService {
     return this._apiService.delete<void>('items', id);
   }
 
+  deleteMultipleItems(ids: string[]): Observable<void> {
+    return this._apiService.post<any, string[]>('deleteMultipleItems', ids);
+  }
+
   /**
    * Gets items with low stock (using existing endpoint)
    */

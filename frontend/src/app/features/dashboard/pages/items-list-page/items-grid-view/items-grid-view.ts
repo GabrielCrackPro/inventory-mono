@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Item } from '@features/item';
 import { ZardCardComponent } from '@ui/card';
@@ -14,4 +14,16 @@ import { IconComponent } from '@ui/icon';
 })
 export class ItemsGridViewComponent {
   @Input() items: Item[] = [];
+  @Input() selectedIds: string[] = [];
+  @Input() selectMode = false;
+  @Output() toggleSelect = new EventEmitter<{ id: string; selected: boolean }>();
+  @Output() toggleSelectAll = new EventEmitter<boolean>();
+
+  onCardClick(item: Item, evt: MouseEvent) {
+    if (!this.selectMode) return;
+    evt.preventDefault();
+    evt.stopPropagation();
+    const selected = !this.selectedIds.includes(item.id);
+    this.toggleSelect.emit({ id: item.id, selected });
+  }
 }
