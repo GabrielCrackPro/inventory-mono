@@ -1,0 +1,37 @@
+@if (variant() === 'grid') {
+  <div class="p-2 grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    @for (i of [0,1,2,3,4,5,6,7,8,9,10,11]; track i) {
+      <div class="rounded-xl border border-border/50 p-3">
+        <div class="flex items-center justify-between gap-2">
+          <z-skeleton class="h-4 w-2/3" />
+          <z-skeleton class="h-4 w-12 rounded-full" />
+        </div>
+        <div class="mt-2 flex items-center gap-2">
+          <z-skeleton class="h-5 w-24 rounded-md" />
+          <z-skeleton class="h-5 w-28 rounded-md" />
+        </div>
+      </div>
+    }
+  </div>
+} @else {
+  <div class="overflow-auto h-full">
+    <div class="w-full table-fixed text-sm">
+      <div class="grid grid-cols-[24px_1fr_1fr_1fr_1fr] gap-3 px-2 py-3 border-b">
+        <z-skeleton class="h-4 w-4" />
+        <z-skeleton class="h-4 w-24" />
+        <z-skeleton class="h-4 w-24" />
+        <z-skeleton class="h-4 w-24" />
+        <z-skeleton class="h-4 w-24" />
+      </div>
+      @for (i of [0,1,2,3,4,5,6,7,8,9,10]; track i) {
+        <div class="grid grid-cols-[24px_1fr_1fr_1fr_1fr] gap-3 px-2 py-3 border-b">
+          <z-skeleton class="h-4 w-4" />
+          <z-skeleton class="h-4 w-32" />
+          <z-skeleton class="h-4 w-24" />
+          <z-skeleton class="h-4 w-20" />
+          <z-skeleton class="h-4 w-24" />
+        </div>
+      }
+    </div>
+  </div>
+}

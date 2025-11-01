@@ -11,10 +11,15 @@ import { TableCol, TableColSortKey } from '@features/dashboard';
 import { Item, ItemService } from '@features/item';
 import { ProfileService } from '@features/user';
 import { buildItemColumns, sortItems } from '@lib/utils';
-import { ZardButtonComponent } from '@ui/button';
-import { ZardSegmentedComponent } from '@ui/segmented';
+import { AlertDialogService, LoadingService } from '@shared/services';
 import { ItemsGridViewComponent } from './items-grid-view';
 import { ItemsTableViewComponent } from './items-table-view';
+import { ItemListPageSkeletonComponent } from './item-list-page-skeleton';
+import { ZardEmptyComponent } from '@ui/empty';
+import { ZardCardComponent } from '@ui/card';
+import { RouterLink } from '@angular/router';
+import { ItemsListHeaderComponent } from './items-list-header';
+import { ZardButtonComponent } from '@ui/button';
 
 interface ViewOption {
   value: string;
@@ -27,10 +32,14 @@ type ViewMode = 'grid' | 'table';
 @Component({
   selector: 'hia-items-list-page',
   imports: [
-    ZardButtonComponent,
-    ZardSegmentedComponent,
     ItemsGridViewComponent,
     ItemsTableViewComponent,
+    ItemListPageSkeletonComponent,
+    ZardEmptyComponent,
+    ZardCardComponent,
+    RouterLink,
+    ItemsListHeaderComponent,
+    ZardButtonComponent,
   ],
   templateUrl: './items-list-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,6 +47,8 @@ type ViewMode = 'grid' | 'table';
 export class ItemsListPageComponent implements OnInit {
   private readonly _itemsService = inject(ItemService);
   private readonly _profileService = inject(ProfileService);
+  private readonly _alertDialogService = inject(AlertDialogService);
+  private readonly _loadingService = inject(LoadingService);
 
   private _items = signal<Item[]>([]);
 
@@ -48,6 +59,8 @@ export class ItemsListPageComponent implements OnInit {
   );
 
   selectMode = signal<boolean>(false);
+
+  loading = computed(() => this._loadingService.isLoading());
 
   viewMode = computed<ViewMode>(() => this.defaultView());
   sortKey = signal<TableColSortKey>('updatedAt');
@@ -90,8 +103,8 @@ export class ItemsListPageComponent implements OnInit {
   items = computed(() => this._items());
 
   viewOptions = computed<ViewOption[]>(() => [
-    { value: 'grid', label: 'Grid', icon: 'Grid2x2' },
-    { value: 'table', label: 'Table', icon: 'Table' },
+    { value: 'grid', label: '', icon: 'Grid3x3' },
+    { value: 'table', label: '', icon: 'TableProperties' },
   ]);
 
   tableActions = computed<
@@ -156,10 +169,20 @@ export class ItemsListPageComponent implements OnInit {
   }
 
   handleDelete(): void {
-    this._itemsService.deleteMultipleItems(this.selectedIds()).subscribe(() => {
-      this.selectedItems.set([]);
-      this.selectMode.set(false);
-      this.reloadItems();
+    this._alertDialogService.confirm({
+      zTitle: 'Delete Items',
+      zContent: `Are you sure you want to delete ${this.selectedIds().length} items?`,
+      zType: 'destructive',
+      zOkDestructive: true,
+      zOnOk: () => {
+        this._itemsService.deleteMultipleItems(this.selectedIds()).subscribe(() => {
+          this.selectedItems.set([]);
+          this.selectMode.set(false);
+          this.reloadItems();
+        });
+      },
     });
   }
+
+  onSettingsClick(): void {}
 }

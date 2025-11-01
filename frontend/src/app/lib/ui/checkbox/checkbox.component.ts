@@ -15,6 +15,7 @@ import type { ClassValue } from 'clsx';
 import { checkboxLabelVariants, checkboxVariants, ZardCheckboxVariants } from './checkbox.variants';
 import { mergeClasses, transform } from '@lib/utils/merge-classes';
 import { IconComponent } from '@ui/icon';
+import { computed as ngComputed } from '@angular/core';
 
 type OnTouchedType = () => any;
 type OnChangeType = (value: any) => void;
@@ -29,6 +30,9 @@ type OnChangeType = (value: any) => void;
       tabindex="0"
       class="flex items-center gap-2"
       [class]="disabled() ? 'cursor-not-allowed' : 'cursor-pointer'"
+      role="checkbox"
+      [attr.aria-checked]="ariaChecked()"
+      [attr.aria-disabled]="disabled() ? 'true' : 'false'"
       (click)="onCheckboxChange()"
       (keyup)="onKeyboardEvent($event)"
     >
@@ -37,21 +41,32 @@ type OnChangeType = (value: any) => void;
           #input
           type="checkbox"
           [class]="classes()"
-          [checked]="checked"
+          [id]="inputId"
+          [checked]="currentChecked()"
           [disabled]="disabled()"
+          [indeterminate]="indeterminate()"
           (blur)="onCheckboxBlur()"
           name="checkbox"
         />
         <hia-icon
           name="Check"
+          color="var(--primary-foreground)"
           [size]="10"
           [class]="
             'absolute flex items-center justify-center text-primary-foreground top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-opacity ' +
-            (checked ? 'opacity-100' : 'opacity-0')
+            (currentChecked() && !indeterminate() ? 'opacity-100' : 'opacity-0')
+          "
+        />
+        <hia-icon
+          name="Minus"
+          [size]="10"
+          [class]="
+            'absolute flex items-center justify-center text-primary-foreground top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-opacity ' +
+            (indeterminate() ? 'opacity-100' : 'opacity-0')
           "
         />
       </main>
-      <label [class]="labelClasses()" for="checkbox">
+      <label [class]="labelClasses()" [attr.for]="inputId">
         <ng-content></ng-content>
       </label>
     </span>
@@ -75,6 +90,9 @@ export class ZardCheckboxComponent implements ControlValueAccessor {
   readonly zType = input<ZardCheckboxVariants['zType']>('default');
   readonly zSize = input<ZardCheckboxVariants['zSize']>('default');
   readonly zShape = input<ZardCheckboxVariants['zShape']>('default');
+  readonly indeterminate = input(false, { transform });
+  // When provided, the component becomes controlled and reflects this value instead of internal state
+  readonly checkedInput = input<boolean | null>(null);
   /* eslint-disable-next-line @typescript-eslint/no-empty-function */
   private onChange: OnChangeType = () => {};
   /* eslint-disable-next-line @typescript-eslint/no-empty-function */
@@ -90,6 +108,16 @@ export class ZardCheckboxComponent implements ControlValueAccessor {
     mergeClasses(checkboxLabelVariants({ zSize: this.zSize() }))
   );
   checked = false;
+  private static uid = 0;
+  readonly inputId = `z-checkbox-${++ZardCheckboxComponent.uid}`;
+
+  // If checkedInput is provided, prefer that; otherwise use internal checked
+  protected readonly currentChecked = ngComputed(() =>
+    this.checkedInput() !== null ? (this.checkedInput() as boolean) : this.checked
+  );
+  protected readonly ariaChecked = ngComputed(() =>
+    this.indeterminate() ? 'mixed' : this.currentChecked() ? 'true' : 'false'
+  );
 
   writeValue(val: boolean): void {
     this.checked = val;
@@ -112,9 +140,13 @@ export class ZardCheckboxComponent implements ControlValueAccessor {
   onCheckboxChange(): void {
     if (this.disabled()) return;
 
-    this.checked = !this.checked;
-    this.onChange(this.checked);
-    this.checkChange.emit(this.checked);
+    const next = !this.currentChecked();
+    // Only update internal state if uncontrolled
+    if (this.checkedInput() === null) {
+      this.checked = next;
+    }
+    this.onChange(next);
+    this.checkChange.emit(next);
     this.cdr.markForCheck();
   }
 

@@ -4,10 +4,11 @@ import { RouterLink } from '@angular/router';
 import { Item } from '@features/item';
 import { ZardCardComponent } from '@ui/card';
 import { IconComponent } from '@ui/icon';
+import { ZardCheckboxComponent } from '@ui/checkbox';
 
 @Component({
   selector: 'hia-items-grid-view',
-  imports: [CommonModule, RouterLink, ZardCardComponent, IconComponent],
+  imports: [CommonModule, RouterLink, ZardCardComponent, IconComponent, ZardCheckboxComponent],
   templateUrl: './items-grid-view.html',
   host: { class: 'block h-full' },
   changeDetection: ChangeDetectionStrategy.OnPush,

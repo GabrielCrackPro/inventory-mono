@@ -60,7 +60,7 @@ export class ZardSegmentedItemComponent {
         [attr.id]="option.value + '-tab'"
         (click)="selectOption(option.value)"
       >
-        <hia-icon [name]="option.icon" [size]="12" />
+        <hia-icon [name]="option.icon" [size]="16" />
         <span>{{ option.label }}</span>
       </button>
       } } @else { @for (item of items(); track item.value()) {

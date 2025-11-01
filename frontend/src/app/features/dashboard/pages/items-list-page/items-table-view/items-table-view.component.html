@@ -1,5 +1,5 @@
 <div class="overflow-auto h-full">
-  <table z-table class="w-full table-fixed text-sm">
+  <table z-table class="table-fixed text-sm">
     <thead z-table-header>
       <tr z-table-row>
         @for (col of columns(); track col?.key) { @if (col) {
@@ -10,13 +10,12 @@
           (click)="col.key !== 'select' && onColSort(col.key)"
         >
           @if (col.key === 'select') {
-          <input
-            type="checkbox"
+          <z-checkbox
             class="h-4 w-4"
-            [checked]="items().length > 0 && selectedIds().length === items().length"
+            [checkedInput]="items().length > 0 && selectedIds().length === items().length"
             [indeterminate]="selectedIds().length > 0 && selectedIds().length < items().length"
             (click)="$event.stopPropagation()"
-            (change)="toggleSelectAll.emit($any($event.target).checked)"
+            (checkChange)="toggleSelectAll.emit($event)"
           />
           } @else {
           <span class="inline-flex items-center gap-1">
@@ -43,12 +42,11 @@
           [class]="(col.key === 'select' ? '' : 'truncate ') + (col.cellClass || '')"
         >
           @if (col.key === 'select') {
-          <input
-            type="checkbox"
+          <z-checkbox
             class="h-4 w-4"
-            [checked]="selectedIds().includes(item.id)"
+            [checkedInput]="selectedIds().includes(item.id)"
             (click)="$event.stopPropagation()"
-            (change)="toggleSelect.emit({ id: item.id, selected: $any($event.target).checked })"
+            (checkChange)="toggleSelect.emit({ id: item.id, selected: $event })"
           />
           } @else { @switch (col.format) { @case ('currency') {
           {{ getRaw(item, col) ?? 0 | currency }} } @case ('date') { @if (getRaw(item, col)) {

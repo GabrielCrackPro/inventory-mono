@@ -1,0 +1,35 @@
+<div class="flex justify-between items-center mb-4">
+  <div class="flex items-center gap-2">
+    <p class="text-2xl font-bold">{{ itemsCount() }} items</p>
+    @if (selectMode()) {
+    <p class="text-muted-foreground">{{ selectedCount() }} selected</p>
+    }
+  </div>
+  <div class="flex items-center">
+    @if (showSettings()) {
+    <z-button zType="text" iconName="Settings" [iconSize]="20" (click)="onSettingsClick()" />
+    }
+    <z-button
+      zType="text"
+      [iconName]="selectMode() ? 'ListX' : 'ListCheck'"
+      [iconSize]="20"
+      [iconClasses]="selectMode() ? 'text-destructive' : ''"
+      (click)="onToggleSelectMode()"
+    />
+    @if (!selectMode()) {
+    <z-segmented
+      [zOptions]="viewOptions()"
+      [zDefaultValue]="defaultView()"
+      (zChange)="onChangeViewMode($event)"
+    />
+    } @else { @for (action of tableActions(); track $index) {
+    <z-button
+      zType="text"
+      [iconName]="action.icon"
+      [iconClasses]="action.iconClasses"
+      [disabled]="selectedCount() === 0"
+      (click)="action.action()"
+    />
+    } }
+  </div>
+</div>

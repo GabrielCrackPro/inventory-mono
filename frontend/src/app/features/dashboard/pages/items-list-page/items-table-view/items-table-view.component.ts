@@ -5,10 +5,11 @@ import { Item } from '@features/item';
 import { ZardTableModule } from '@ui/table';
 import { RouterLink } from '@angular/router';
 import { IconComponent } from '@ui/icon';
+import { ZardCheckboxComponent } from '@ui/checkbox';
 
 @Component({
   selector: 'hia-items-table-view',
-  imports: [CommonModule, ZardTableModule, RouterLink, IconComponent],
+  imports: [CommonModule, ZardTableModule, RouterLink, IconComponent, ZardCheckboxComponent],
   templateUrl: './items-table-view.component.html',
   host: { class: 'block h-full' },
   changeDetection: ChangeDetectionStrategy.OnPush,

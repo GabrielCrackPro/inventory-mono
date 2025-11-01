@@ -70,15 +70,9 @@
       <z-form-field>
         <z-form-control>
           <div class="flex items-center gap-2">
-            <input
-              type="checkbox"
-              formControlName="isShared"
-              id="isShared"
-              class="rounded border-border text-primary focus:ring-primary"
-            />
-            <label for="isShared" class="text-sm font-medium text-foreground cursor-pointer">
-              Allow others to edit this item
-            </label>
+            <z-checkbox formControlName="isShared">
+              <span class="text-sm font-medium text-foreground">Allow others to edit this item</span>
+            </z-checkbox>
           </div>
           <p class="text-xs text-muted-foreground ml-6 mt-1">
             When enabled, people with access can modify this item's details

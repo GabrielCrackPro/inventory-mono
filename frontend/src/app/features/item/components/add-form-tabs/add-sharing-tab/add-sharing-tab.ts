@@ -6,6 +6,7 @@ import { ZardCardComponent } from '@ui/card';
 import { IconComponent } from '@ui/icon';
 import { ZardFormFieldComponent, ZardFormControlComponent, ZardFormLabelComponent } from '@ui/form';
 import { ZardInputDirective } from '@ui/input';
+import { ZardCheckboxComponent } from '@ui/checkbox';
 
 @Component({
   selector: 'hia-add-sharing-tab',
@@ -17,6 +18,7 @@ import { ZardInputDirective } from '@ui/input';
     ZardFormControlComponent,
     ZardFormLabelComponent,
     ZardInputDirective,
+    ZardCheckboxComponent,
   ],
   templateUrl: './add-sharing-tab.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
