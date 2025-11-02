@@ -36,20 +36,28 @@
     <div class="flex gap-2 animate-fade-in-right">
       <z-button
         zType="outline"
-        iconName="RefreshCcw"
-        label="Refresh"
-        [zLoading]="isLoading()"
-        [disabled]="isLoading()"
-        (click)="refreshData()"
+        iconName="Menu"
+        label="Actions"
         class="animate-stagger-1 animate-scale-in"
+        z-dropdown
+        [zDropdownMenu]="homeActionsMenu"
+        [zDisabled]="isLoading()"
+        [disabled]="isLoading()"
       />
-      <z-button
-        zType="outline"
-        iconName="Download"
-        label="Export"
-        (click)="exportItems()"
-        class="animate-stagger-2 animate-scale-in"
-      />
+      <z-dropdown-menu-content #homeActionsMenu>
+        <z-dropdown-menu-item (click)="refreshData()">
+          <span class="flex items-center gap-2">
+            <hia-icon name="RefreshCcw" [size]="14" />
+            Refresh
+          </span>
+        </z-dropdown-menu-item>
+        <z-dropdown-menu-item (click)="exportItems()">
+          <span class="flex items-center gap-2">
+            <hia-icon name="Download" [size]="14" />
+            Export
+          </span>
+        </z-dropdown-menu-item>
+      </z-dropdown-menu-content>
       <z-button
         zType="default"
         iconName="Plus"

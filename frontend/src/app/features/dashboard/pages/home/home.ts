@@ -22,6 +22,11 @@ import { ItemService } from '@features/item';
 import { ProfileService } from '@features/user';
 import { DialogService, LoadingService } from '@shared/services';
 import { ZardButtonComponent } from '@ui/button';
+import {
+  ZardDropdownDirective,
+  ZardDropdownMenuContentComponent,
+  ZardDropdownMenuItemComponent,
+} from '@ui/dropdown';
 import { ZardCardComponent } from '@ui/card';
 import { IconComponent } from '@ui/icon';
 import { ItemListComponent, ListItem } from '@ui/list';
@@ -52,6 +57,9 @@ interface LoadingState {
     ItemListComponent,
     ActivityFeed,
     RouterLink,
+    ZardDropdownDirective,
+    ZardDropdownMenuContentComponent,
+    ZardDropdownMenuItemComponent,
   ],
   templateUrl: './home.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -149,14 +157,15 @@ export class HomeComponent implements OnInit {
       zTitle: 'Export Dashboard Data',
       zDescription: 'Select the data you want to export',
       zOnOk: (cmp: DashboardExportModalComponent) => {
+        const exportMap: Record<string, () => void> = {
+          csv: () => this._exportService.exportItemsCsv(cmp.scope, cmp.selectedFields),
+          json: () => this._exportService.exportItemsJson(cmp.scope, cmp.selectedFields),
+        };
+
         if (!cmp.selectedFields || cmp.selectedFields.length === 0) {
           return false;
         }
-        if (cmp.format === 'json') {
-          this._exportService.exportItemsJson(cmp.scope, cmp.selectedFields);
-        } else {
-          this._exportService.exportItemsCsv(cmp.scope, cmp.selectedFields);
-        }
+        exportMap[cmp.format]();
         return;
       },
     });
