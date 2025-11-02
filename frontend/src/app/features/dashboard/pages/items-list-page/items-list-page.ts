@@ -9,6 +9,7 @@ import {
 import { IconName } from '@core/config';
 import { TableCol, TableColSortKey } from '@features/dashboard';
 import { Item, ItemService } from '@features/item';
+import { HouseContextService } from '@features/house/services/house-context';
 import { ProfileService } from '@features/user';
 import { buildItemColumns, sortItems } from '@lib/utils';
 import { AlertDialogService, DialogService, LoadingService } from '@shared/services';
@@ -50,6 +51,7 @@ export class ItemsListPageComponent implements OnInit {
   private readonly _dialogService = inject(DialogService);
   private readonly _alertDialogService = inject(AlertDialogService);
   private readonly _loadingService = inject(LoadingService);
+  private readonly _houseContext = inject(HouseContextService);
 
   private _items = signal<Item[]>([]);
   private hiddenCols = signal<Set<string>>(new Set());
@@ -70,10 +72,10 @@ export class ItemsListPageComponent implements OnInit {
   sortDir = signal<'asc' | 'desc'>('desc');
 
   ngOnInit(): void {
-    // load items
-    this._itemsService.getItems().subscribe((items) => {
-      this._items.set(items);
-    });
+    // initial load
+    this.reloadItems();
+    // reload on active house change
+    this._houseContext.selectedHouseChanged$.subscribe(() => this.reloadItems());
     // initialize hidden columns from profile preferences
     const prefHidden = (this._profileService.getProfile() as any)?.preferences?.itemsHiddenCols as
       | string[]

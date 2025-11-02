@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { JwtUser } from '@inventory/shared';
@@ -54,8 +55,9 @@ export class ItemController {
   /**
    * Get all items for the authenticated user.
    */
-  async findAll(@GetUser() user: JwtUser) {
-    return this.itemService.findAllForUser(user.id);
+  async findAll(@GetUser() user: JwtUser, @Query('houseId') houseId?: string) {
+    const parsed = houseId ? Number(houseId) : undefined;
+    return this.itemService.findAllForUser(user.id, parsed);
   }
 
   @Get('low-stock')
@@ -67,8 +69,12 @@ export class ItemController {
    * Get all low stock items for the authenticated user.
    * An item is considered low stock when its quantity is below 3.
    */
-  findLowStockItems(@GetUser() user: JwtUser) {
-    return this.itemService.findLowStockItems(user.id);
+  findLowStockItems(
+    @GetUser() user: JwtUser,
+    @Query('houseId') houseId?: string,
+  ) {
+    const parsed = houseId ? Number(houseId) : undefined;
+    return this.itemService.findLowStockItems(user.id, parsed);
   }
 
   @Get('recent')
@@ -80,8 +86,12 @@ export class ItemController {
    * Get recently created or updated items for the authenticated user.
    * Returns items created or updated in the last 7 days.
    */
-  findRecentItems(@GetUser() user: JwtUser) {
-    return this.itemService.findRecentItems(user.id);
+  findRecentItems(
+    @GetUser() user: JwtUser,
+    @Query('houseId') houseId?: string,
+  ) {
+    const parsed = houseId ? Number(houseId) : undefined;
+    return this.itemService.findRecentItems(user.id, 7, parsed);
   }
 
   @Get(':id')

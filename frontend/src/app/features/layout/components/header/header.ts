@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit } from '@angular/core';
 import { StorageService, TokenService } from '@core/services';
 import { AuthService } from '@features/auth';
 import { NotificationCenterComponent, ProfileMenuComponent } from '@features/dashboard';
@@ -9,6 +9,7 @@ import { AlertDialogService, DialogService } from '@shared/services';
 import { ZHeaderComponent } from '@ui/layout';
 import { ZardMenuModule } from '@ui/menu';
 import { ThemeSwitcherComponent } from '../theme-switcher';
+import { HouseContextService } from '@features/house/services/house-context';
 
 @Component({
   selector: 'hia-header',
@@ -23,15 +24,24 @@ import { ThemeSwitcherComponent } from '../theme-switcher';
   templateUrl: './header.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   private readonly _authService = inject(AuthService);
   private readonly _tokenService = inject(TokenService);
   private readonly _storageService = inject(StorageService);
   private readonly _alertDialogService = inject(AlertDialogService);
   private readonly _profileService = inject(ProfileService);
   private readonly _dialogService = inject(DialogService);
+  private readonly _houseContext = inject(HouseContextService);
 
   userProfile = computed(() => this._profileService.getProfile());
+
+  ngOnInit(): void {
+    // Initialize house context from profile on app start
+    const id = this._profileService.getProfile()?.selectedHouseId ?? null;
+    if (id) {
+      this._houseContext.notifySelectedHouseChange(id);
+    }
+  }
 
   onOpenHouseDialog() {
     const dialogRef = this._dialogService.create({

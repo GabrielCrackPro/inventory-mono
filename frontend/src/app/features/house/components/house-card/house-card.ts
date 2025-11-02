@@ -13,6 +13,7 @@ export class HouseCardComponent {
 
   readonly house = input<UserHouse>();
   readonly houseChange = output<number>();
+  readonly houseDelete = output<number>();
 
   selectedHouseId = computed(() => this._profileService.getProfile()?.selectedHouseId);
   isSelected = computed(() => {
@@ -27,5 +28,11 @@ export class HouseCardComponent {
   switchHouse(id: number | undefined) {
     if (!id || this.selectedHouseId() === id) return;
     this.houseChange.emit(id);
+  }
+
+  onDelete(event: MouseEvent) {
+    event.stopPropagation();
+    const id = this.house()?.id;
+    if (id) this.houseDelete.emit(id);
   }
 }

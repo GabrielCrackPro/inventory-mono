@@ -18,6 +18,16 @@
     <hia-icon name="CircleCheck" [size]="16" class="text-primary-foreground" />
   </div>
   }
+  @if (!isSelected()) {
+  <button
+    type="button"
+    class="absolute top-3 right-3 w-8 h-8 rounded-full bg-accent/50 hover:bg-accent flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+    (click)="onDelete($event)"
+    aria-label="Delete house"
+  >
+    <hia-icon name="Trash" [size]="16" />
+  </button>
+  }
 
   <div class="flex items-start gap-4">
     <!-- House Icon -->

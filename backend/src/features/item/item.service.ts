@@ -138,9 +138,9 @@ export class ItemService {
     });
   }
 
-  async findAllForUser(userId: number) {
+  async findAllForUser(userId: number, houseId?: number) {
     return this.prisma.item.findMany({
-      where: { userId },
+      where: { userId, ...(houseId ? { houseId } : {}) },
       include: { room: true, category: true, user: true },
     });
   }
@@ -321,10 +321,11 @@ export class ItemService {
    * @param userId The ID of the user to get low stock items for.
    * @returns An array of low stock items.
    */
-  async findLowStockItems(userId: number) {
+  async findLowStockItems(userId: number, houseId?: number) {
     return this.prisma.item.findMany({
       where: {
         userId,
+        ...(houseId ? { houseId } : {}),
         quantity: {
           lt: 2,
         },
@@ -344,13 +345,14 @@ export class ItemService {
    * @param days Number of days to look back (default: 7).
    * @returns An array of recently created/updated items.
    */
-  async findRecentItems(userId: number, days: number = 7) {
+  async findRecentItems(userId: number, days: number = 7, houseId?: number) {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
 
     return this.prisma.item.findMany({
       where: {
         userId,
+        ...(houseId ? { houseId } : {}),
         OR: [
           {
             createdAt: {

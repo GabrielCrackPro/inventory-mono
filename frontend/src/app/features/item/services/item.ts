@@ -3,6 +3,7 @@ import { computed, inject, Injectable } from '@angular/core';
 import { ApiService } from '@core/services';
 import { ProfileService } from '@features/user';
 import { HouseService } from '@features/house';
+import { HouseContextService } from '@features/house/services/house-context';
 import { Observable, switchMap, of } from 'rxjs';
 import { Item, ItemFormData, ItemHelpers, LowStockItem, RecentItem } from '../models/item';
 
@@ -13,6 +14,7 @@ export class ItemService {
   private _apiService = inject(ApiService);
   private _profileService = inject(ProfileService);
   private _houseService = inject(HouseService);
+  private _houseContext = inject(HouseContextService);
 
   userId = computed(() => this._profileService.getProfile()?.id);
 
@@ -64,6 +66,9 @@ export class ItemService {
     search?: string;
   }): Observable<Item[]> {
     let params = new HttpParams();
+    // Ensure we filter by the active house
+    const houseId = this._houseContext.currentSelectedHouseId() ?? this._profileService.getProfile()?.selectedHouseId;
+    if (houseId) params = params.set('houseId', String(houseId));
     if (filters?.category) params = params.append('category', filters.category);
     if (filters?.room) params = params.append('room', filters.room);
     if (filters?.lowStock) params = params.append('lowStock', 'true');
@@ -87,14 +92,21 @@ export class ItemService {
    * Gets items with low stock (using existing endpoint)
    */
   getLowStock(): Observable<LowStockItem[]> {
-    return this._apiService.get<LowStockItem[]>('lowStockItems');
+    const houseId =
+      this._houseContext.currentSelectedHouseId() ?? this._profileService.getProfile()?.selectedHouseId;
+    let params = new HttpParams();
+    if (houseId) params = params.set('houseId', String(houseId));
+    return this._apiService.get<LowStockItem[]>('lowStockItems', params);
   }
 
   /**
    * Gets recently added items (using existing endpoint)
    */
   getRecent(limit: number = 10): Observable<RecentItem[]> {
-    const params = new HttpParams().set('limit', limit.toString());
+    const houseId =
+      this._houseContext.currentSelectedHouseId() ?? this._profileService.getProfile()?.selectedHouseId;
+    let params = new HttpParams().set('limit', limit.toString());
+    if (houseId) params = params.set('houseId', String(houseId));
     return this._apiService.get<RecentItem[]>('recentItems', params);
   }
 

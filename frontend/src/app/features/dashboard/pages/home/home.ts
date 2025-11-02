@@ -16,7 +16,10 @@ import { IconComponent } from '@ui/icon';
 import { ItemListComponent, ListItem } from '@ui/list';
 import { StatsCardComponent } from '@ui/stats';
 import { finalize } from 'rxjs';
+import { HouseContextService } from '@features/house/services/house-context';
 import { RouterLink } from '@angular/router';
+import { ItemService } from '@features/item';
+import { HouseService } from '@features/house';
 
 interface DashboardStat {
   title: string;
@@ -50,6 +53,9 @@ export class HomeComponent implements OnInit {
   private readonly _loadingService = inject(LoadingService);
   private readonly _profileService = inject(ProfileService);
   private readonly _dashboardService = inject(DashboardService);
+  private readonly _houseContext = inject(HouseContextService);
+  private readonly _itemService = inject(ItemService);
+  private readonly _houseService = inject(HouseService);
 
   private readonly _dashboardData = signal<DashboardData>({
     activities: [],
@@ -82,6 +88,12 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this._loadDashboardData();
+    this._loadCounters();
+    // reload when active house changes
+    this._houseContext.selectedHouseChanged$.subscribe(() => {
+      this._loadDashboardData();
+      this._loadCounters();
+    });
   }
 
   private _loadDashboardData(): void {
@@ -114,6 +126,22 @@ export class HomeComponent implements OnInit {
 
   refreshData(): void {
     this._loadDashboardData();
+  }
+
+  // Load counters based on the currently selected house and update profile stats
+  private _loadCounters(): void {
+    this._itemService.getItems().subscribe((items) => {
+      this._houseService.getActiveHouseRooms().subscribe((rooms) => {
+        const current = this._profileService.getProfile() as any;
+        const prevStats = current?.stats ?? {};
+        this._profileService.updateStats({
+          items: items.length,
+          rooms: Array.isArray(rooms) ? rooms.length : 0,
+          categories: prevStats.categories ?? 0,
+          lowStockItems: prevStats.lowStockItems ?? 0,
+        });
+      });
+    });
   }
 
   // Transform recent items for the item list component

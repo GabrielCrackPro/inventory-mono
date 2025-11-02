@@ -10,6 +10,7 @@ import {
 import { UserHouse } from '@features/house/models';
 import { HouseService } from '@features/house/services';
 import { IconComponent } from '@ui/icon';
+import { HouseContextService } from '@features/house/services/house-context';
 
 @Component({
   selector: 'hia-house-switcher',
@@ -19,6 +20,7 @@ import { IconComponent } from '@ui/icon';
 })
 export class HouseSwitcherComponent implements OnInit {
   private readonly _houseService = inject(HouseService);
+  private readonly _houseContext = inject(HouseContextService);
 
   onClick = output<void>();
 
@@ -40,6 +42,20 @@ export class HouseSwitcherComponent implements OnInit {
       error: () => {
         this.isLoading.set(false);
       },
+    });
+
+    // Refresh selected house when context changes
+    this._houseContext.selectedHouseChanged$.subscribe(() => {
+      this.isLoading.set(true);
+      this._houseService.getSelectedHouse()?.subscribe({
+        next: (data) => {
+          this.selectedHouse.set(data);
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.isLoading.set(false);
+        },
+      });
     });
   }
 
