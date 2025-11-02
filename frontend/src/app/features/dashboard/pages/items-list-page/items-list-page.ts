@@ -170,15 +170,7 @@ export class ItemsListPageComponent implements OnInit {
   changeViewMode(mode: string): void {
     const next = this._coerceViewMode(mode);
     this.defaultView.set(next);
-    const current = (this._profileService.getProfile() as any) ?? {};
-    const updated = {
-      ...current,
-      preferences: {
-        ...(current.preferences ?? {}),
-        itemsViewMode: next,
-      },
-    };
-    this._profileService.updateProfile(updated);
+    this._profileService.savePreferences({ itemsViewMode: next })?.subscribe();
   }
 
   reloadItems(): void {
@@ -237,7 +229,6 @@ export class ItemsListPageComponent implements OnInit {
         try {
           const keys: string[] = cmp.getHiddenKeys?.() ?? [];
           this.hiddenCols.set(new Set(keys));
-          const current = (this._profileService.getProfile() as any) ?? {};
           const order: string[] = cmp.getOrder?.() ?? this.colOrder() ?? [];
           this.colOrder.set(order.length ? order : null);
           const defaultOrder = (
@@ -245,17 +236,11 @@ export class ItemsListPageComponent implements OnInit {
           ).map((c) => c.key);
           const isDefault =
             order.length === defaultOrder.length && order.every((k, i) => k === defaultOrder[i]);
-          const prefs = {
-            ...(current.preferences ?? {}),
-            itemsHiddenCols: keys,
-          } as any;
+          const payload: any = { itemsHiddenCols: keys };
           if (!isDefault && order.length) {
-            prefs.itemsColsOrder = order;
-          } else if (prefs.itemsColsOrder) {
-            delete prefs.itemsColsOrder;
+            payload.itemsColsOrder = order;
           }
-          const updated = { ...current, preferences: prefs };
-          this._profileService.updateProfile(updated);
+          this._profileService.savePreferences(payload)?.subscribe();
         } catch {}
       },
     });

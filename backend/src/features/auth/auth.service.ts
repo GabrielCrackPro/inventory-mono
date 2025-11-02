@@ -160,6 +160,7 @@ export class AuthService {
         email: true,
         role: true,
         name: true,
+        preferences: true,
         items: {
           select: {
             id: true,
@@ -206,6 +207,7 @@ export class AuthService {
       email: fullUser?.email ?? user.email,
       role: fullUser?.role ?? user.role,
       name: fullUser?.name ?? user.name,
+      preferences: fullUser?.preferences,
       itemIds,
       houseIds,
       roomIds,
@@ -297,6 +299,7 @@ export class AuthService {
         email: true,
         role: true,
         name: true,
+        preferences: true,
         ownedHouses: { select: { id: true } },
         sharedHouses: { select: { houseId: true } },
       },
@@ -325,6 +328,7 @@ export class AuthService {
         email: userRecord?.email,
         role: userRecord?.role,
         name: userRecord?.name,
+        preferences: userRecord?.preferences,
         houseIds,
       } as unknown as AuthUser & {
         itemIds: number[];

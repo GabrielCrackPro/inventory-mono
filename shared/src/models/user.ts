@@ -14,6 +14,7 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  preferences?: Record<string, any>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -57,4 +58,5 @@ export interface UpdateUserData {
   name?: string;
   email?: string;
   role?: UserRole;
+  preferences?: Record<string, any>;
 }
