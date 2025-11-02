@@ -1,2 +1,1 @@
-export * from './house-selector';
 export * from './house-selector-add';

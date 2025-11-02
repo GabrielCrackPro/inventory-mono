@@ -26,7 +26,6 @@ export class HouseSwitcherComponent implements OnInit {
   isLoading = signal<boolean>(false);
 
   houseName = computed(() => this.selectedHouse()?.name || 'Select House');
-  houseAddress = computed(() => this.selectedHouse()?.address || 'No address');
   itemCount = computed(() => this.selectedHouse()?.items?.length || 0);
   roomCount = computed(() => this.selectedHouse()?.rooms?.length || 0);
   hasHouse = computed(() => !!this.selectedHouse());

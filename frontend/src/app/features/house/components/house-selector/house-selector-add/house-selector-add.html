@@ -1,0 +1,60 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
+  <!-- Name -->
+  <z-form-field>
+    <z-form-label zRequired>House Name</z-form-label>
+    <z-form-control>
+      <input
+        z-input
+        type="text"
+        placeholder="e.g. Main Residence"
+        formControlName="name"
+        [zStatus]="validName ? null : 'error'"
+        autocomplete="off"
+      />
+    </z-form-control>
+    @if (!validName) {
+    <z-form-message zType="error">{{ errors.name }}</z-form-message>
+    }
+  </z-form-field>
+
+  <!-- Address -->
+  <z-form-field>
+    <z-form-label>Address</z-form-label>
+    <z-form-control>
+      <input
+        z-input
+        type="text"
+        placeholder="Street, City, etc."
+        formControlName="address"
+        [zStatus]="validAddress ? null : 'error'"
+        autocomplete="off"
+      />
+    </z-form-control>
+    @if (!validAddress) {
+    <z-form-message zType="error">{{ errors.address }}</z-form-message>
+    }
+  </z-form-field>
+
+  <!-- Actions -->
+  <div class="flex items-center justify-end gap-2 pt-2">
+    <z-button
+      type="button"
+      zType="outline"
+      zSize="sm"
+      label="Cancel"
+      iconName="X"
+      (click)="onCancel()"
+      [disabled]="isLoading()"
+    />
+
+    <z-button
+      type="submit"
+      zSize="sm"
+      label="Create House"
+      iconName="HousePlus"
+      iconPosition="right"
+      [zLoading]="isLoading()"
+      [disabled]="disabled"
+    />
+  </div>
+</form>

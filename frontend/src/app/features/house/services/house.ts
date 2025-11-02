@@ -28,4 +28,11 @@ export class HouseService {
 
     return this._apiService.get('activeHouseRooms', undefined, houseId);
   }
+
+  createHouse(body: { name: string; address?: string; ownerId?: number }): Observable<UserHouse> {
+    return this._apiService.post<UserHouse, typeof body>('houses', {
+      ...body,
+      ownerId: this._profileService.getProfile()?.id || 1,
+    });
+  }
 }

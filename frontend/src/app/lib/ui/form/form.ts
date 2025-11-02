@@ -1,5 +1,3 @@
-import type { ClassValue } from 'clsx';
-
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,11 +5,11 @@ import {
   input,
   ViewEncapsulation,
 } from '@angular/core';
-
 import { mergeClasses, transform } from '@lib/utils/merge-classes';
+import type { ClassValue } from 'clsx';
 import {
-  formFieldVariants,
   formControlVariants,
+  formFieldVariants,
   formLabelVariants,
   formMessageVariants,
   ZardFormMessageVariants,
@@ -48,7 +46,7 @@ export class ZardFormFieldComponent {
     @if (errorMessage() || helpText()) {
     <div class="mt-1.5 min-h-5">
       @if (errorMessage()) {
-      <p class="text-sm text-red-500">{{ errorMessage() }}</p>
+      <p class="text-sm text-destructive">{{ errorMessage() }}</p>
       } @else if (helpText()) {
       <p class="text-sm text-muted-foreground">{{ helpText() }}</p>
       }
