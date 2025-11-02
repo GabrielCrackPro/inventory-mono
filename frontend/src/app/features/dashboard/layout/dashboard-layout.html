@@ -10,15 +10,7 @@
       [zCollapsed]="sidebarCollapsed()"
       [zCollapsedWidth]="64"
       (zCollapsedChange)="onCollapsedChangeAndReposition($event)"
-      class="h-[calc(100vh-64px)]"
     >
-      <!-- Sidebar Header -->
-      <div slot="header" class="px-4 py-4 border-b border-border/50">
-        @if (!sidebarCollapsed()) {
-        <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Menu</div>
-        }
-      </div>
-
       <!-- Navigation -->
       <nav
         #sidebarNav
