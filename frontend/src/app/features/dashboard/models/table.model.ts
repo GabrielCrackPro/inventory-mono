@@ -5,6 +5,7 @@ export interface TableCol {
   format?: 'currency' | 'date' | 'datetime';
   get?: (item: any) => unknown;
   cellClass?: string;
+  visible?: boolean;
 }
 
 export interface TableColAction {

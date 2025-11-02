@@ -2,7 +2,7 @@
   <table z-table class="table-fixed text-sm">
     <thead z-table-header>
       <tr z-table-row>
-        @for (col of columns(); track col?.key) { @if (col) {
+        @for (col of columns(); track col?.key) { @if (col && (col.visible ?? true)) {
         <th
           z-table-head
           class="whitespace-nowrap text-xs"
@@ -36,7 +36,7 @@
         class="cursor-pointer hover:bg-accent/20"
         [routerLink]="hasSelectColumn() ? undefined : ['/dashboard/items/detail', item.id]"
       >
-        @for (col of columns(); track col?.key) { @if (col) {
+        @for (col of columns(); track col?.key) { @if (col && (col.visible ?? true)) {
         <td
           z-table-cell
           [class]="(col.key === 'select' ? '' : 'truncate ') + (col.cellClass || '')"

@@ -11,9 +11,9 @@ import { TableCol, TableColSortKey } from '@features/dashboard';
 import { Item, ItemService } from '@features/item';
 import { ProfileService } from '@features/user';
 import { buildItemColumns, sortItems } from '@lib/utils';
-import { AlertDialogService, LoadingService } from '@shared/services';
+import { AlertDialogService, DialogService, LoadingService } from '@shared/services';
 import { ItemsGridViewComponent } from './items-grid-view';
-import { ItemsTableViewComponent } from './items-table-view';
+import { ItemsTableSettingsComponent, ItemsTableViewComponent } from './items-table-view';
 import { ItemListPageSkeletonComponent } from './item-list-page-skeleton';
 import { ZardEmptyComponent } from '@ui/empty';
 import { ZardCardComponent } from '@ui/card';
@@ -47,10 +47,13 @@ type ViewMode = 'grid' | 'table';
 export class ItemsListPageComponent implements OnInit {
   private readonly _itemsService = inject(ItemService);
   private readonly _profileService = inject(ProfileService);
+  private readonly _dialogService = inject(DialogService);
   private readonly _alertDialogService = inject(AlertDialogService);
   private readonly _loadingService = inject(LoadingService);
 
   private _items = signal<Item[]>([]);
+  private hiddenCols = signal<Set<string>>(new Set());
+  private colOrder = signal<string[] | null>(null);
 
   defaultView = signal<ViewMode>(
     this._coerceViewMode(
@@ -67,9 +70,24 @@ export class ItemsListPageComponent implements OnInit {
   sortDir = signal<'asc' | 'desc'>('desc');
 
   ngOnInit(): void {
+    // load items
     this._itemsService.getItems().subscribe((items) => {
       this._items.set(items);
     });
+    // initialize hidden columns from profile preferences
+    const prefHidden = (this._profileService.getProfile() as any)?.preferences?.itemsHiddenCols as
+      | string[]
+      | undefined;
+    if (Array.isArray(prefHidden)) {
+      this.hiddenCols.set(new Set(prefHidden));
+    }
+    // initialize column order from profile preferences
+    const prefOrder = (this._profileService.getProfile() as any)?.preferences?.itemsColsOrder as
+      | string[]
+      | undefined;
+    if (Array.isArray(prefOrder)) {
+      this.colOrder.set(prefOrder);
+    }
   }
 
   onToggleSelect(evt: { id: string; selected: boolean }): void {
@@ -118,9 +136,25 @@ export class ItemsListPageComponent implements OnInit {
     },
   ]);
 
-  readonly columns = computed<(TableCol | null)[]>(() =>
-    buildItemColumns(this.selectMode()).filter((c) => c)
-  );
+  readonly columns = computed<(TableCol | null)[]>(() => {
+    const hidden = this.hiddenCols();
+    const order = this.colOrder();
+    const cols = buildItemColumns(this.selectMode()).filter((c) => c) as TableCol[];
+    const selectCol = cols.find((c) => c.key === 'select') || null;
+    const others = cols.filter((c) => c.key !== 'select');
+    // apply order if present to non-select columns only
+    const orderedOthers = order
+      ? [...others].sort((a, b) => {
+          const ia = order.indexOf(a.key);
+          const ib = order.indexOf(b.key);
+          return (
+            (ia === -1 ? Number.MAX_SAFE_INTEGER : ia) - (ib === -1 ? Number.MAX_SAFE_INTEGER : ib)
+          );
+        })
+      : others;
+    const merged = selectCol ? [selectCol, ...orderedOthers] : orderedOthers;
+    return merged.map((c) => ({ ...c, visible: c.key === 'select' ? true : !hidden.has(c.key) }));
+  });
 
   itemsSorted = computed(() => sortItems(this.items(), this.sortKey(), this.sortDir()));
 
@@ -184,5 +218,46 @@ export class ItemsListPageComponent implements OnInit {
     });
   }
 
-  onSettingsClick(): void {}
+  onSettingsClick(): void {
+    this._dialogService.create({
+      zContent: ItemsTableSettingsComponent,
+      zTitle: 'Table Settings',
+      zOkIcon: 'Save',
+      zOkText: 'Save',
+      zCancelIcon: 'X',
+      zCancelText: 'Cancel',
+      zClosable: false,
+      zData: {
+        columns: this.columns(),
+        defaultOrder: (
+          buildItemColumns(this.selectMode()).filter((c) => c && c.key !== 'select') as TableCol[]
+        ).map((c) => c.key),
+      },
+      zOnOk: (cmp: any) => {
+        try {
+          const keys: string[] = cmp.getHiddenKeys?.() ?? [];
+          this.hiddenCols.set(new Set(keys));
+          const current = (this._profileService.getProfile() as any) ?? {};
+          const order: string[] = cmp.getOrder?.() ?? this.colOrder() ?? [];
+          this.colOrder.set(order.length ? order : null);
+          const defaultOrder = (
+            buildItemColumns(this.selectMode()).filter((c) => c && c.key !== 'select') as TableCol[]
+          ).map((c) => c.key);
+          const isDefault =
+            order.length === defaultOrder.length && order.every((k, i) => k === defaultOrder[i]);
+          const prefs = {
+            ...(current.preferences ?? {}),
+            itemsHiddenCols: keys,
+          } as any;
+          if (!isDefault && order.length) {
+            prefs.itemsColsOrder = order;
+          } else if (prefs.itemsColsOrder) {
+            delete prefs.itemsColsOrder;
+          }
+          const updated = { ...current, preferences: prefs };
+          this._profileService.updateProfile(updated);
+        } catch {}
+      },
+    });
+  }
 }

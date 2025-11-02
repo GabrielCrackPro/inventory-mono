@@ -9,6 +9,7 @@ interface ColumnOptions {
   get?: (item: any) => unknown;
   // Optional dot-path for nested extraction, e.g. 'room.name'
   path?: string;
+  visible?: boolean;
 }
 
 function getByPath(obj: any, path?: string) {
@@ -17,7 +18,7 @@ function getByPath(obj: any, path?: string) {
 }
 
 export function createColumn(options: ColumnOptions): TableCol {
-  const { key, header, sortable, format, cellClass, get, path } = options;
+  const { key, header, sortable, format, cellClass, get, path, visible } = options;
   const getter = get
     ? get
     : path
@@ -31,5 +32,6 @@ export function createColumn(options: ColumnOptions): TableCol {
     format,
     cellClass,
     get: getter,
+    visible: visible ?? true,
   };
 }
