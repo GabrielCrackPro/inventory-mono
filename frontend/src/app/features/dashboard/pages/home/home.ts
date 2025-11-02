@@ -6,20 +6,27 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { IconName } from '@core/config';
-import { DashboardData, DashboardService, ActivityFeed, HomeSkeleton } from '@features/dashboard';
+import {
+  ActivityFeed,
+  DashboardData,
+  DashboardExportModalComponent,
+  DashboardExportService,
+  DashboardService,
+  HomeSkeleton,
+} from '@features/dashboard';
+import { HouseService } from '@features/house';
+import { HouseContextService } from '@features/house/services';
+import { ItemService } from '@features/item';
 import { ProfileService } from '@features/user';
-import { LoadingService } from '@shared/services';
+import { DialogService, LoadingService } from '@shared/services';
 import { ZardButtonComponent } from '@ui/button';
 import { ZardCardComponent } from '@ui/card';
 import { IconComponent } from '@ui/icon';
 import { ItemListComponent, ListItem } from '@ui/list';
 import { StatsCardComponent } from '@ui/stats';
 import { finalize } from 'rxjs';
-import { HouseContextService } from '@features/house/services/house-context';
-import { RouterLink } from '@angular/router';
-import { ItemService } from '@features/item';
-import { HouseService } from '@features/house';
 
 interface DashboardStat {
   title: string;
@@ -56,6 +63,8 @@ export class HomeComponent implements OnInit {
   private readonly _houseContext = inject(HouseContextService);
   private readonly _itemService = inject(ItemService);
   private readonly _houseService = inject(HouseService);
+  private readonly _dialogService = inject(DialogService);
+  private readonly _exportService = inject(DashboardExportService);
 
   private readonly _dashboardData = signal<DashboardData>({
     activities: [],
@@ -89,7 +98,7 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this._loadDashboardData();
     this._loadCounters();
-    // reload when active house changes
+
     this._houseContext.selectedHouseChanged$.subscribe(() => {
       this._loadDashboardData();
       this._loadCounters();
@@ -128,7 +137,31 @@ export class HomeComponent implements OnInit {
     this._loadDashboardData();
   }
 
-  // Load counters based on the currently selected house and update profile stats
+  exportItems(): void {
+    this._dialogService.create({
+      zContent: DashboardExportModalComponent,
+      zOkText: 'Export',
+      zOkIcon: 'Download',
+      zCancelText: 'Cancel',
+      zCancelIcon: 'X',
+      zClosable: false,
+      zMaskClosable: true,
+      zTitle: 'Export Dashboard Data',
+      zDescription: 'Select the data you want to export',
+      zOnOk: (cmp: DashboardExportModalComponent) => {
+        if (!cmp.selectedFields || cmp.selectedFields.length === 0) {
+          return false;
+        }
+        if (cmp.format === 'json') {
+          this._exportService.exportItemsJson(cmp.scope, cmp.selectedFields);
+        } else {
+          this._exportService.exportItemsCsv(cmp.scope, cmp.selectedFields);
+        }
+        return;
+      },
+    });
+  }
+
   private _loadCounters(): void {
     this._itemService.getItems().subscribe((items) => {
       this._houseService.getActiveHouseRooms().subscribe((rooms) => {
@@ -154,7 +187,6 @@ export class HomeComponent implements OnInit {
         id: item.id,
         title: item.name,
         subtitle: `${item.room.name} • ${item.category.name}`,
-        // description: `Added to your inventory`,
         icon: item.icon,
         badge: `${item.quantity}`,
         badgeVariant: item.quantity > 10 ? 'success' : item.quantity > 5 ? 'default' : 'warning',

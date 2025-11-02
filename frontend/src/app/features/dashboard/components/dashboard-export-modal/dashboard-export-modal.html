@@ -1,0 +1,33 @@
+<form novalidate>
+  <div class="space-y-4">
+    <section>
+      <h3 class="font-medium">Scope</h3>
+      <div class="mt-2 space-y-2">
+        <z-radio name="scope" [value]="'all'" [(ngModel)]="scope">All items</z-radio>
+        <z-radio name="scope" [value]="'low-stock'" [(ngModel)]="scope">Low stock only</z-radio>
+      </div>
+    </section>
+
+    <section>
+      <h3 class="font-medium">Format</h3>
+      <div class="mt-2 space-y-2">
+        <z-radio name="format" [value]="'csv'" [(ngModel)]="format">CSV</z-radio>
+        <z-radio name="format" [value]="'json'" [(ngModel)]="format">JSON</z-radio>
+      </div>
+    </section>
+
+    <section>
+      <h3 class="font-medium">Fields</h3>
+      <div class="mt-2 grid grid-cols-2 gap-2">
+        @for (f of fields; track f.key) {
+        <z-checkbox
+          [checkedInput]="selectedFields.includes(f.key)"
+          (checkChange)="toggleField(f.key, $event)"
+        >
+          {{ f.label }}
+        </z-checkbox>
+        }
+      </div>
+    </section>
+  </div>
+</form>
