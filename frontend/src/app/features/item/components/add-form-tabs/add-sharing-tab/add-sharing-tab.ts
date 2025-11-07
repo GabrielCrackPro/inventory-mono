@@ -1,12 +1,13 @@
-import { ChangeDetectionStrategy, Component, input, inject } from '@angular/core';
-import { trigger, transition, style, animate } from '@angular/animations';
+import { animate, style, transition, trigger } from '@angular/animations';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ItemFormService } from '@features/item/services/item-form';
 import { ZardCardComponent } from '@ui/card';
-import { IconComponent } from '@ui/icon';
-import { ZardFormFieldComponent, ZardFormControlComponent, ZardFormLabelComponent } from '@ui/form';
-import { ZardInputDirective } from '@ui/input';
 import { ZardCheckboxComponent } from '@ui/checkbox';
+import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@ui/form';
+import { IconComponent } from '@ui/icon';
+import { ZardInputDirective } from '@ui/input';
+import { ZardRadioComponent } from '@ui/radio';
 
 @Component({
   selector: 'hia-add-sharing-tab',
@@ -19,6 +20,7 @@ import { ZardCheckboxComponent } from '@ui/checkbox';
     ZardFormLabelComponent,
     ZardInputDirective,
     ZardCheckboxComponent,
+    ZardRadioComponent,
   ],
   templateUrl: './add-sharing-tab.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

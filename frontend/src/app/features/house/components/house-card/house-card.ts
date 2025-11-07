@@ -1,10 +1,11 @@
+import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { UserHouse } from '@features/house/models';
 import { ProfileService } from '@features/user';
-import { IconComponent } from '@ui/index';
+import { IconComponent, ZardButtonComponent } from '@ui/index';
 @Component({
   selector: 'hia-house-card',
-  imports: [IconComponent],
+  imports: [IconComponent, ZardButtonComponent, NgClass],
   templateUrl: './house-card.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

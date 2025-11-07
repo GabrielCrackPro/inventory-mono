@@ -19,12 +19,7 @@
             <label
               class="flex items-center gap-3 p-3 border border-border rounded-lg cursor-pointer hover:bg-accent/50 transition-colors"
             >
-              <input
-                type="radio"
-                formControlName="visibility"
-                value="private"
-                class="text-primary focus:ring-primary"
-              />
+              <z-radio value="private" formControlName="visibility" />
               <div class="flex-1">
                 <div class="font-medium">Private</div>
                 <div class="text-sm text-muted-foreground">Only you can see this item</div>
@@ -34,12 +29,7 @@
             <label
               class="flex items-center gap-3 p-3 border border-border rounded-lg cursor-pointer hover:bg-accent/50 transition-colors"
             >
-              <input
-                type="radio"
-                formControlName="visibility"
-                value="household"
-                class="text-primary focus:ring-primary"
-              />
+              <z-radio value="household" formControlName="visibility" />
               <div class="flex-1">
                 <div class="font-medium">Household</div>
                 <div class="text-sm text-muted-foreground">Visible to household members</div>
@@ -49,12 +39,7 @@
             <label
               class="flex items-center gap-3 p-3 border border-border rounded-lg cursor-pointer hover:bg-accent/50 transition-colors"
             >
-              <input
-                type="radio"
-                formControlName="visibility"
-                value="public"
-                class="text-primary focus:ring-primary"
-              />
+              <z-radio value="public" formControlName="visibility" />
               <div class="flex-1">
                 <div class="font-medium">Public</div>
                 <div class="text-sm text-muted-foreground">
@@ -71,7 +56,9 @@
         <z-form-control>
           <div class="flex items-center gap-2">
             <z-checkbox formControlName="isShared">
-              <span class="text-sm font-medium text-foreground">Allow others to edit this item</span>
+              <span class="text-sm font-medium text-foreground"
+                >Allow others to edit this item</span
+              >
             </z-checkbox>
           </div>
           <p class="text-xs text-muted-foreground ml-6 mt-1">
@@ -86,8 +73,7 @@
         <z-form-control
           [helpText]="'These users will have access regardless of visibility setting'"
         >
-          <input
-            z-input
+          <z-input
             type="text"
             formControlName="sharedWith"
             placeholder="Enter email addresses (separate with commas)"
