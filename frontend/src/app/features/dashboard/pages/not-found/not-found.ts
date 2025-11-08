@@ -30,7 +30,7 @@ export class NotFoundComponent {
       label: 'Items',
       description: 'Manage your inventory items',
       icon: 'Box' as const,
-      route: '/dashboard/items',
+      route: '/dashboard/items/list',
       primary: false,
     },
     {

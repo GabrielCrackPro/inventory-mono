@@ -17,6 +17,16 @@ export const dashboardRoutes: Routes = [
         loadComponent: () => import('./pages').then((m) => m.ItemsListPageComponent),
       }),
       createRoute({
+        title: 'Item Detail',
+        path: 'items/detail/:id',
+        loadComponent: () => import('./pages').then((m) => m.ItemDetailPageComponent),
+      }),
+      createRoute({
+        title: 'Edit Item',
+        path: 'items/edit/:id',
+        loadComponent: () => import('./pages').then((m) => m.AddItemComponent),
+      }),
+      createRoute({
         title: 'Add Item',
         path: 'items/new',
         loadComponent: () => import('./pages').then((m) => m.AddItemComponent),

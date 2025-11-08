@@ -1,0 +1,96 @@
+<div class="space-y-6">
+  <z-tab-group class="mt-2">
+    <z-tab label="Link">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-muted-foreground mb-2">Link</label>
+          <div class="flex gap-2">
+            <input z-input [value]="shareUrl()" readonly class="flex-1" />
+            <z-button
+              zType="outline"
+              [label]="isCopied() ? 'Copied' : 'Copy'"
+              [disabled]="isCopied()"
+              [iconName]="isCopied() ? commonIcons['success'] : commonIcons['copy']"
+              (click)="copyLink()"
+            />
+          </div>
+        </div>
+      </div>
+    </z-tab>
+
+    <z-tab label="Settings">
+      <form [formGroup]="form" class="space-y-6" (ngSubmit)="onOk()">
+        <!-- Visibility -->
+        <z-form-field>
+          <z-form-label>Visibility</z-form-label>
+          <z-form-control>
+            <div class="space-y-3">
+              <label
+                class="flex items-center gap-3 p-3 border border-border rounded-lg cursor-pointer hover:bg-accent/50 transition-colors"
+              >
+                <z-radio value="private" formControlName="visibility" />
+                <div class="flex-1">
+                  <div class="font-medium">Private</div>
+                  <div class="text-sm text-muted-foreground">Only you can see this item</div>
+                </div>
+              </label>
+
+              <label
+                class="flex items-center gap-3 p-3 border border-border rounded-lg cursor-pointer hover:bg-accent/50 transition-colors"
+              >
+                <z-radio value="household" formControlName="visibility" />
+                <div class="flex-1">
+                  <div class="font-medium">Household</div>
+                  <div class="text-sm text-muted-foreground">Visible to household members</div>
+                </div>
+              </label>
+
+              <label
+                class="flex items-center gap-3 p-3 border border-border rounded-lg cursor-pointer hover:bg-accent/50 transition-colors"
+              >
+                <z-radio value="public" formControlName="visibility" />
+                <div class="flex-1">
+                  <div class="font-medium">Public</div>
+                  <div class="text-sm text-muted-foreground">
+                    Anyone with access can see this item
+                  </div>
+                </div>
+              </label>
+            </div>
+          </z-form-control>
+        </z-form-field>
+
+        <!-- Shared Access -->
+        <z-form-field>
+          <z-form-control>
+            <div class="flex items-center gap-2">
+              <z-checkbox formControlName="isShared">
+                <span class="text-sm font-medium text-foreground"
+                  >Allow others to edit this item</span
+                >
+              </z-checkbox>
+            </div>
+            <p class="text-xs text-muted-foreground ml-6 mt-1">
+              When enabled, people with access can modify this item's details
+            </p>
+          </z-form-control>
+        </z-form-field>
+
+        <!-- Share with specific users -->
+        <z-form-field>
+          <z-form-label>Share with specific users</z-form-label>
+          <z-form-control
+            [helpText]="'These users will have access regardless of visibility setting'"
+          >
+            <input
+              z-input
+              type="text"
+              formControlName="sharedWith"
+              placeholder="Enter email addresses (separate with commas)"
+            />
+          </z-form-control>
+        </z-form-field>
+      </form>
+    </z-tab>
+  </z-tab-group>
+</div>

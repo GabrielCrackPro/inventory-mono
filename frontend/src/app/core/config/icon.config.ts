@@ -43,6 +43,8 @@ export const commonIcons: Record<string, IconName> = {
   search: 'lucideSearch',
   filter: 'lucideFilter',
   settings: 'lucideSettings',
+  share: 'lucideShare2',
+  copy: 'lucideCopy',
 
   // Navigation
   back: 'lucideArrowLeft',

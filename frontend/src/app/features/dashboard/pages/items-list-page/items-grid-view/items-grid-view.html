@@ -17,7 +17,7 @@
     @for (item of items; track item.id) {
     <z-card
       class="group relative overflow-hidden rounded-2xl transition-all duration-300 ease-out hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/25 hover:scale-[1.03] hover:-translate-y-2 cursor-pointer border-border/30 hover:border-border/50 bg-linear-to-br from-card/95 to-card/90 backdrop-blur-sm min-h-[280px]"
-      [routerLink]="['/dashboard/items', item.id]"
+      [routerLink]="['/dashboard/items/detail', item.id]"
       (click)="onCardClick(item, $event)"
     >
       <!-- Subtle background pattern -->
