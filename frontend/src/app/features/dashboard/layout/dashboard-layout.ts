@@ -59,10 +59,10 @@ export class DashboardLayoutComponent {
   }
 
   items: MenuItem[] = [
-    { icon: 'LayoutDashboard', label: 'Overview', to: '/' },
-    { icon: 'Box', label: 'Items', to: 'items/list' },
-    { icon: 'Warehouse', label: 'Rooms', to: 'rooms' },
-    { icon: 'Settings', label: 'Settings', to: 'settings' },
+    { icon: 'lucideLayoutDashboard', label: 'Overview', to: '/' },
+    { icon: 'lucideBox', label: 'Items', to: 'items/list' },
+    { icon: 'lucideWarehouse', label: 'Rooms', to: 'rooms' },
+    { icon: 'lucideSettings', label: 'Settings', to: 'settings' },
   ];
 
   onCollapsedChange(collapsed: boolean) {

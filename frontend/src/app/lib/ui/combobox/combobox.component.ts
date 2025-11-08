@@ -70,7 +70,7 @@ export interface ZardComboboxGroup {
       [class]="buttonClasses()"
       [disabled]="disabled()"
       [label]="displayValue() || placeholder()"
-      iconName="ChevronsUpDown"
+      iconName="lucideChevronsUpDown"
       (zVisibleChange)="setOpen($event)"
       #popoverTrigger
     />
@@ -99,7 +99,7 @@ export interface ZardComboboxGroup {
               >
                 {{ option.label }}
                 @if (option.value === getCurrentValue()) {
-                <hia-icon name="Check" class="ml-auto" />
+                <hia-icon name="lucideCheck" class="ml-auto" />
                 }
               </z-command-option>
               }
@@ -114,7 +114,7 @@ export interface ZardComboboxGroup {
             >
               {{ option.label }}
               @if (option.value === getCurrentValue()) {
-              <hia-icon name="Check" class="ml-auto" />
+              <hia-icon name="lucideCheck" class="ml-auto" />
               }
             </z-command-option>
             } } } } @else if (options().length > 0) { @for (option of options(); track option.value)
@@ -128,7 +128,7 @@ export interface ZardComboboxGroup {
             >
               {{ option.label }}
               @if (option.value === getCurrentValue()) {
-              <hia-icon name="Check" class="ml-auto" />
+              <hia-icon name="lucideCheck" class="ml-auto" />
               }
             </z-command-option>
             } }

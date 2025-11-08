@@ -223,7 +223,7 @@ export class ItemHelpers {
       category: item.category,
       quantity: item.quantity,
       addedDate: item.createdAt.toISOString(),
-      icon: item.icon || 'Box',
+      icon: item.icon || 'lucideBox',
     };
   }
 

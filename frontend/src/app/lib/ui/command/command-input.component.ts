@@ -32,7 +32,7 @@ import { commandInputVariants } from './command.variants';
   encapsulation: ViewEncapsulation.None,
   template: `
     <div class="flex items-center border-b px-3" cmdk-input-wrapper="">
-      <hia-icon name="Search" [size]="14" class="mr-2 shrink-0 opacity-50" />
+      <hia-icon name="lucideSearch" [size]="14" class="mr-2 shrink-0 opacity-50" />
       <input
         #searchInput
         [class]="classes()"

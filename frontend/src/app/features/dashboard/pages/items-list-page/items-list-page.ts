@@ -72,18 +72,14 @@ export class ItemsListPageComponent implements OnInit {
   sortDir = signal<'asc' | 'desc'>('desc');
 
   ngOnInit(): void {
-    // initial load
     this.reloadItems();
-    // reload on active house change
     this._houseContext.selectedHouseChanged$.subscribe(() => this.reloadItems());
-    // initialize hidden columns from profile preferences
     const prefHidden = (this._profileService.getProfile() as any)?.preferences?.itemsHiddenCols as
       | string[]
       | undefined;
     if (Array.isArray(prefHidden)) {
       this.hiddenCols.set(new Set(prefHidden));
     }
-    // initialize column order from profile preferences
     const prefOrder = (this._profileService.getProfile() as any)?.preferences?.itemsColsOrder as
       | string[]
       | undefined;
@@ -123,8 +119,8 @@ export class ItemsListPageComponent implements OnInit {
   items = computed(() => this._items());
 
   viewOptions = computed<ViewOption[]>(() => [
-    { value: 'grid', label: '', icon: 'Grid3x3' },
-    { value: 'table', label: '', icon: 'TableProperties' },
+    { value: 'grid', label: '', icon: 'lucideGrid3x3' },
+    { value: 'table', label: '', icon: 'lucideTableProperties' },
   ]);
 
   tableActions = computed<
@@ -132,7 +128,7 @@ export class ItemsListPageComponent implements OnInit {
   >(() => [
     {
       label: '',
-      icon: 'Trash',
+      icon: 'lucideTrash',
       iconClasses: 'text-destructive',
       action: () => this.handleDelete(),
     },
@@ -216,9 +212,9 @@ export class ItemsListPageComponent implements OnInit {
     this._dialogService.create({
       zContent: ItemsTableSettingsComponent,
       zTitle: 'Table Settings',
-      zOkIcon: 'Save',
+      zOkIcon: 'lucideSave',
       zOkText: 'Save',
-      zCancelIcon: 'X',
+      zCancelIcon: 'lucideX',
       zCancelText: 'Cancel',
       zClosable: false,
       zData: {

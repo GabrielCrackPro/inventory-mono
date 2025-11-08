@@ -6,7 +6,6 @@ import { ZardCardComponent } from '@ui/card';
 import { ZardCheckboxComponent } from '@ui/checkbox';
 import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@ui/form';
 import { IconComponent } from '@ui/icon';
-import { ZardInputDirective } from '@ui/input';
 import { ZardRadioComponent } from '@ui/radio';
 
 @Component({
@@ -18,7 +17,6 @@ import { ZardRadioComponent } from '@ui/radio';
     ZardFormFieldComponent,
     ZardFormControlComponent,
     ZardFormLabelComponent,
-    ZardInputDirective,
     ZardCheckboxComponent,
     ZardRadioComponent,
   ],

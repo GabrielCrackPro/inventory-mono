@@ -109,7 +109,7 @@ export class AddItemComponent {
     if (this.itemForm.dirty) {
       this.alertDialogService.confirm({
         zType: 'destructive',
-        zIcon: 'TriangleAlert',
+        zIcon: 'lucideTriangleAlert',
         zTitle: 'Add Item',
         zDescription: "You've unsaved progress, are you sure do you want to exit?",
         zCancelText: 'No',

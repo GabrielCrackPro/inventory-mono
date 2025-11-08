@@ -3,7 +3,7 @@
   <div class="flex items-center justify-between">
     <div>
       <div class="flex items-center gap-3">
-        <z-button iconName="ArrowLeft" zType="text" (click)="goBack()" />
+        <z-button iconName="lucideArrowLeft" zType="text" (click)="goBack()" />
         <h1 class="text-2xl font-bold text-foreground">Add New Item</h1>
       </div>
       <p class="text-muted-foreground">Add items to your inventory with detailed information</p>
@@ -72,7 +72,7 @@
         <z-button zType="outline" label="Cancel" (click)="onCancel()" [disabled]="isSubmitting()" />
         <z-button
           label="Add Item"
-          iconName="Plus"
+          iconName="lucidePlus"
           type="submit"
           [zLoading]="isSubmitting()"
           [disabled]="!completionSummary().isMinimumComplete || isSubmitting()"

@@ -40,7 +40,9 @@ import { IconName } from '@core/config';
         <div class="flex items-center gap-2">
           <span [class]="trendBadgeClasses()">
             <hia-icon
-              [name]="trend() === 'up' ? 'TrendingUp' : trend() === 'down' ? 'TrendingDown' : 'Minus'"
+              [name]="
+                trend() === 'up' ? 'TrendingUp' : trend() === 'down' ? 'TrendingDown' : 'Minus'
+              "
               [size]="14"
               class="opacity-90"
             />

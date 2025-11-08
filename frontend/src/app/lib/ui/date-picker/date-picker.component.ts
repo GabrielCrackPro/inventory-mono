@@ -57,7 +57,7 @@ import { ZardPopoverDirective } from '../popover/popover.component';
         readonly
       />
       <hia-icon
-        name="Calendar"
+        name="lucideCalendar"
         class="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none"
         [size]="14"
       />

@@ -50,7 +50,7 @@ export class ZardEmptyComponent {
   readonly zImage = input<string | TemplateRef<unknown>>();
   readonly zDescription = input<string | TemplateRef<unknown>>('No data');
   readonly zSize = input<ZardEmptyVariants['zSize']>('default');
-  readonly zIcon = input<IconName>('Box');
+  readonly zIcon = input<IconName>('lucideBox');
   readonly zIconSize = input<number>(18);
   readonly class = input<ClassValue>('');
 

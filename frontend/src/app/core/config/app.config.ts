@@ -10,7 +10,7 @@ import { errorInterceptor } from '@core/interceptors/error';
 import { loadingInterceptor } from '@core/interceptors/loading';
 import { tokenInterceptor } from '@core/interceptors/token';
 import { routes } from './app.routes';
-import { provideIcons } from './icon.config';
+import { iconProviders } from './icon.config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,7 +18,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withInterceptors([errorInterceptor, tokenInterceptor, loadingInterceptor])),
-    provideIcons(),
+    ...iconProviders,
     provideAnimationsAsync(),
   ],
 };

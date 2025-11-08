@@ -29,20 +29,19 @@ import { IconName } from '@core/config';
     >
       @if (zLoading()) {
       <hia-icon
-        name="LoaderCircle"
-        class="animate-spin"
+        name="lucideLoaderCircle"
+        [class]="'animate-spin ' + (iconClasses() || '')"
         [size]="iconSize()"
         [color]="iconColor()"
-        [class]="iconClasses()"
       />
       <span>Loading...</span>
       } @else { @if (iconPosition() === 'left' && iconName()) {
       <hia-icon
         [name]="iconName()"
+        [family]="iconFamily()"
         [size]="iconSize()"
         [color]="iconColor()"
         [strokeWidth]="iconStrokeWidth()"
-        [absoluteStrokeWidth]="iconAbsoluteStrokeWidth()"
         [class]="iconClasses()"
       />
       }
@@ -52,10 +51,10 @@ import { IconName } from '@core/config';
       @if (iconPosition() === 'right' && iconName()) {
       <hia-icon
         [name]="iconName()"
+        [family]="iconFamily()"
         [size]="iconSize()"
         [color]="iconColor()"
         [strokeWidth]="iconStrokeWidth()"
-        [absoluteStrokeWidth]="iconAbsoluteStrokeWidth()"
         [class]="iconClasses()"
       />
       } }
@@ -74,7 +73,8 @@ export class ZardButtonComponent {
   readonly zFull = input(false, { transform });
   readonly zLoading = input(false, { transform });
   readonly label = input<string>('');
-  readonly iconName = input<IconName>();
+  readonly iconName = input<IconName | string | undefined>();
+  readonly iconFamily = input<'lucide' | 'mat' | 'tabler' | 'mat-outline' | 'svg'>('lucide');
   readonly iconPosition = input<'left' | 'right'>('left');
   readonly iconSize = input<number>(16);
   readonly iconColor = input<string>('currentColor');

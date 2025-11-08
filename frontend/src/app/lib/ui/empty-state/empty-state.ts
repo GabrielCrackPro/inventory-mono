@@ -21,7 +21,7 @@ import { IconComponent } from '../icon';
   template: `
     <div [class]="containerClasses()">
       <div [class]="iconContainerClasses()">
-        <hia-icon [name]="icon()" [class]="iconClasses()" />
+        <hia-icon [name]="icon()" [family]="iconFamily()" [class]="iconClasses()" />
       </div>
 
       <div class="space-y-2 text-center">
@@ -36,6 +36,7 @@ import { IconComponent } from '../icon';
         [zType]="actionType()"
         [zSize]="actionSize()"
         [iconName]="actionIcon()"
+        [iconFamily]="iconFamily()"
         [label]="actionLabel() ?? ''"
         (click)="onAction.emit()"
         class="mt-4"
@@ -47,10 +48,11 @@ import { IconComponent } from '../icon';
 export class EmptyStateComponent {
   readonly title = input.required<string>();
   readonly description = input<string>();
-  readonly icon = input<IconName>('Box');
+  readonly icon = input.required<IconName>();
+  readonly iconFamily = input<'lucide' | 'mat' | 'tabler' | 'mat-outline' | 'svg'>('lucide');
   readonly iconSize = input<'sm' | 'md' | 'lg'>('md');
   readonly actionLabel = input<string>();
-  readonly actionIcon = input<IconName>();
+  readonly actionIcon = input<IconName | string | undefined>();
   readonly actionType = input<'default' | 'outline' | 'ghost'>('default');
   readonly actionSize = input<'sm' | 'default' | 'lg'>('default');
   readonly class = input<ClassValue>('');

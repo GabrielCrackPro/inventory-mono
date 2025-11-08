@@ -18,7 +18,7 @@
   <div
     class="absolute top-3 right-3 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center"
   >
-    <hia-icon name="CircleCheck" [size]="14" class="opacity-90" />
+    <hia-icon name="lucideCircleCheck" [size]="14" class="opacity-90" />
   </div>
   }
 
@@ -33,7 +33,7 @@
           'group-hover:bg-accent/50': !isSelected(),
         }"
       >
-        <hia-icon name="House" [size]="26" [class.text-primary]="isSelected()"
+        <hia-icon name="lucideHouse" [size]="26" [class.text-primary]="isSelected()"
         [class.text-foreground/80]="!isSelected()" class="transition-colors duration-200" />
       </div>
     </div>
@@ -55,7 +55,7 @@
             }"
           >
             <hia-icon
-              name="Warehouse"
+              name="lucideWarehouse"
               [size]="16"
               [class.text-primary]="isSelected()"
               [class.text-muted-foreground]="!isSelected()"
@@ -77,7 +77,7 @@
             }"
           >
             <hia-icon
-              name="Box"
+              name="lucideBox"
               [size]="16"
               [class.text-primary]="isSelected()"
               [class.text-muted-foreground]="!isSelected()"
@@ -94,7 +94,7 @@
             <z-button
               zType="text"
               zSize="sm"
-              iconName="Trash"
+              iconName="lucideTrash"
               iconColor="var(--destructive)"
               (click)="onDelete($event)"
             />
@@ -110,7 +110,7 @@
       class="flex items-center justify-center w-8 h-8 rounded-full bg-accent/30 group-hover:bg-accent transition-colors duration-200 mt-2"
     >
       <hia-icon
-        name="ChevronRight"
+        name="lucideChevronRight"
         [size]="16"
         class="text-muted-foreground group-hover:text-foreground transition-colors duration-200"
       />

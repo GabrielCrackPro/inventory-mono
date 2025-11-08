@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit } from '@angular/core';
 import { StorageService, TokenService } from '@core/services';
 import { AuthService } from '@features/auth';
-import { NotificationCenterComponent, ProfileMenuComponent } from '@features/dashboard';
+import { ProfileMenuComponent } from '@features/dashboard';
 import { HouseSelectorComponent, HouseSwitcherComponent, UserHouse } from '@features/house';
 import { ProfileService } from '@features/user';
 import { AuthUser } from '@shared/models';
@@ -18,7 +18,6 @@ import { HouseContextService } from '@features/house/services/house-context';
     ThemeSwitcherComponent,
     HouseSwitcherComponent,
     ProfileMenuComponent,
-    NotificationCenterComponent,
     ZardMenuModule,
   ],
   templateUrl: './header.html',
@@ -48,6 +47,8 @@ export class HeaderComponent implements OnInit {
       zSize: 'md',
       zHideFooter: true,
       zMaskClosable: true,
+      zCancelIcon: 'lucideX',
+      zOkIcon: 'lucideCheck',
       zContent: HouseSelectorComponent,
     });
 
@@ -62,7 +63,7 @@ export class HeaderComponent implements OnInit {
     this._alertDialogService.confirm({
       zTitle: 'Sign Out',
       zDescription: 'Are you sure you want to sign out of your account?',
-      zIcon: 'LogOut',
+      zIcon: 'lucideLogOut',
       zType: 'destructive',
       zOkText: 'Sign Out',
       zCancelText: 'Cancel',

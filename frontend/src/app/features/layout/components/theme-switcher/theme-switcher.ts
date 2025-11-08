@@ -17,7 +17,7 @@ export class ThemeSwitcherComponent {
   }
 
   get themeIcon(): IconName {
-    return this.currentTheme === 'dark' ? 'Sun' : 'Moon';
+    return this.currentTheme === 'dark' ? 'lucideSun' : 'lucideMoon';
   }
 
   toggleTheme(): void {

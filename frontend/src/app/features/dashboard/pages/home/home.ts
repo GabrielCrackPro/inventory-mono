@@ -149,9 +149,9 @@ export class HomeComponent implements OnInit {
     this._dialogService.create({
       zContent: DashboardExportModalComponent,
       zOkText: 'Export',
-      zOkIcon: 'Download',
+      zOkIcon: 'lucideDownload',
       zCancelText: 'Cancel',
-      zCancelIcon: 'X',
+      zCancelIcon: 'lucideX',
       zClosable: false,
       zMaskClosable: true,
       zTitle: 'Export Dashboard Data',
@@ -227,7 +227,7 @@ export class HomeComponent implements OnInit {
           title: item.name,
           subtitle: `${item.room.name}`,
           description: `Only ${item.quantity} left in stock`,
-          icon: 'TriangleAlert',
+          icon: 'lucideTriangleAlert',
           badge: `${item.quantity}`,
           badgeVariant: item.quantity === 0 ? 'destructive' : 'warning',
           status: item.quantity === 0 ? 'out-of-stock' : 'low-stock',
@@ -249,10 +249,10 @@ export class HomeComponent implements OnInit {
     lowStock?: number;
   }): DashboardStat[] {
     const statsMap: Record<string, { icon: IconName; value: number }> = {
-      Items: { icon: 'Box', value: items },
-      Rooms: { icon: 'Warehouse', value: rooms },
-      Categories: { icon: 'List', value: categories },
-      'Low Stock': { icon: 'TriangleAlert', value: lowStock },
+      Items: { icon: 'lucideBox', value: items },
+      Rooms: { icon: 'lucideWarehouse', value: rooms },
+      Categories: { icon: 'lucideList', value: categories },
+      'Low Stock': { icon: 'lucideTriangleAlert', value: lowStock },
     };
 
     return Object.entries(statsMap).map(([title, { icon, value }]) => ({

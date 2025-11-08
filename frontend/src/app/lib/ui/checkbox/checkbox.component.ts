@@ -49,7 +49,7 @@ type OnChangeType = (value: any) => void;
           name="checkbox"
         />
         <hia-icon
-          name="Check"
+          name="lucideCheck"
           color="var(--primary-foreground)"
           [size]="10"
           [class]="
@@ -58,7 +58,7 @@ type OnChangeType = (value: any) => void;
           "
         />
         <hia-icon
-          name="Minus"
+          name="lucideMinus"
           [size]="10"
           [class]="
             'absolute flex items-center justify-center text-primary-foreground top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-opacity ' +

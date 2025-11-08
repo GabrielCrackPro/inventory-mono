@@ -27,12 +27,12 @@ export class ProfileMenuComponent {
   menuItems = signal<MenuItem[]>([
     {
       label: 'Acount Settings',
-      icon: 'User',
+      icon: 'lucideUser',
       to: 'settings/account',
     },
     {
       label: 'Prefrences',
-      icon: 'Settings',
+      icon: 'lucideSettings',
       to: 'settings',
     },
   ]);

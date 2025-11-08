@@ -5,14 +5,14 @@
   <div class="w-full max-w-md">
     <z-card class="text-center py-12 animate-scale-in">
       <div class="animate-fade-in-up animate-stagger-1">
-        <hia-icon name="TriangleAlert" class="h-16 w-16 text-destructive mx-auto mb-6" />
+        <hia-icon name="lucideTriangleAlert" class="h-16 w-16 text-destructive mx-auto mb-6" />
       </div>
       <div class="animate-fade-in-up animate-stagger-2">
         <h3 class="text-xl font-semibold mb-3">Failed to load dashboard</h3>
         <p class="text-muted-foreground mb-6 leading-relaxed">{{ loadingState().error }}</p>
       </div>
       <div class="animate-fade-in-up animate-stagger-3">
-        <z-button zType="outline" label="Try Again" iconName="RefreshCcw" (click)="refreshData()" />
+        <z-button zType="outline" label="Try Again" iconName="lucideRefreshCcw" (click)="refreshData()" />
       </div>
     </z-card>
   </div>
@@ -36,7 +36,7 @@
     <div class="flex gap-2 animate-fade-in-right">
       <z-button
         zType="outline"
-        iconName="Menu"
+        iconName="lucideMenu"
         label="Actions"
         class="animate-stagger-1 animate-scale-in"
         z-dropdown
@@ -47,20 +47,20 @@
       <z-dropdown-menu-content #homeActionsMenu>
         <z-dropdown-menu-item (click)="refreshData()">
           <span class="flex items-center gap-2">
-            <hia-icon name="RefreshCcw" [size]="14" />
+            <hia-icon name="lucideRefreshCcw" [size]="14" />
             Refresh
           </span>
         </z-dropdown-menu-item>
         <z-dropdown-menu-item (click)="exportItems()">
           <span class="flex items-center gap-2">
-            <hia-icon name="Download" [size]="14" />
+            <hia-icon name="lucideDownload" [size]="14" />
             Export
           </span>
         </z-dropdown-menu-item>
       </z-dropdown-menu-content>
       <z-button
         zType="default"
-        iconName="Plus"
+        iconName="lucidePlus"
         label="Add Item"
         class="animate-stagger-3 animate-scale-in"
         routerLink="items/new"
@@ -116,7 +116,7 @@
           <hia-item-list
             [items]="recentItemsList()"
             emptyMessage="No items added yet"
-            emptyIcon="Box"
+            emptyIcon="lucideBox"
             (onItemClick)="handleItemClick($event)"
             class="max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
           />
@@ -126,7 +126,7 @@
           <z-button
             zType="text"
             label="View all items"
-            iconName="ArrowRight"
+            iconName="lucideArrowRight"
             iconPosition="right"
             class="w-full hover:bg-accent/50 transition-colors"
           />
@@ -150,7 +150,7 @@
           <hia-item-list
             [items]="lowStockItemsList()"
             emptyMessage="No stock alerts"
-            emptyIcon="CircleCheck"
+            emptyIcon="lucideCircleCheck"
             (onItemClick)="handleItemClick($event)"
             class="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
           />
@@ -159,7 +159,7 @@
               zType="warning"
               zSize="sm"
               label="Restock items"
-              iconName="ShoppingCart"
+              iconName="lucideShoppingCart"
               class="w-full"
             />
           </div>
@@ -169,7 +169,7 @@
           <div
             class="w-16 h-16 bg-linear-to-br from-green-100 to-green-50 dark:from-green-900/30 dark:to-green-950/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-200/60 dark:border-green-800/40"
           >
-            <hia-icon name="CircleCheck" class="text-green-600 dark:text-green-400" />
+            <hia-icon name="lucideCircleCheck" class="text-green-600 dark:text-green-400" />
           </div>
           <h4 class="text-sm font-semibold text-foreground mb-1">All items well stocked!</h4>
           <p class="text-xs text-muted-foreground">No action needed at this time</p>

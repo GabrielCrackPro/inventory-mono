@@ -28,7 +28,7 @@ export class LoginComponent {
   readonly layoutConfig: AuthLayoutConfig = {
     title: 'Welcome back',
     subtitle: 'Sign in to your inventory dashboard',
-    icon: 'House',
+    icon: 'lucideHouse',
     alternateAction: {
       text: "Don't have an account?",
       linkText: 'Create new account',

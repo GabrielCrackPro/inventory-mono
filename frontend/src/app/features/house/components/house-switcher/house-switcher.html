@@ -24,9 +24,9 @@
         class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-200"
       >
         @if (hasHouse()) {
-        <hia-icon name="House" [size]="20" class="text-primary" />
+        <hia-icon name="lucideHouse" [size]="20" class="text-primary" />
         } @else {
-        <hia-icon name="Plus" [size]="20" class="text-muted-foreground" />
+        <hia-icon name="lucidePlus" [size]="20" class="text-muted-foreground" />
         }
       </div>
 
@@ -60,12 +60,12 @@
         <span
           class="inline-flex items-center gap-1 rounded-md bg-accent/50 px-1.5 py-0.5 text-[10px] text-muted-foreground"
         >
-          <hia-icon name="Box" [size]="12" /> {{ itemCount() }}
+          <hia-icon name="lucideBox" [size]="12" /> {{ itemCount() }}
         </span>
         <span
           class="inline-flex items-center gap-1 rounded-md bg-accent/50 px-1.5 py-0.5 text-[10px] text-muted-foreground"
         >
-          <hia-icon name="Warehouse" [size]="12" /> {{ roomCount() }}
+          <hia-icon name="lucideWarehouse" [size]="12" /> {{ roomCount() }}
         </span>
       </div>
 
@@ -80,7 +80,7 @@
         class="w-6 h-6 rounded-full bg-accent/50 group-hover:bg-accent flex items-center justify-center transition-colors duration-200"
       >
         <hia-icon
-          name="ChevronRight"
+          name="lucideChevronRight"
           [size]="14"
           class="text-muted-foreground group-hover:text-foreground transition-colors duration-200"
         />

@@ -73,7 +73,7 @@ export class HouseSelectorComponent implements OnInit {
       zType: 'destructive',
       zOkDestructive: true,
       zOkText: 'Delete',
-      zIcon: 'Trash',
+      zIcon: 'lucideTrash',
       zCancelText: 'Cancel',
       zOnOk: () => {
         this._houseService.deleteHouse(id).subscribe(() => {

@@ -23,7 +23,7 @@ export class RegisterComponent {
   readonly layoutConfig: AuthLayoutConfig = {
     title: 'Create your account',
     subtitle: 'Join us and start managing your inventory',
-    icon: 'HousePlus',
+    icon: 'lucideHousePlus',
     alternateAction: {
       text: 'Already have an account?',
       linkText: 'Sign in instead',

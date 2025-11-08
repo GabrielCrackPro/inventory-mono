@@ -8,8 +8,9 @@ import {
   input,
   Renderer2,
   ViewContainerRef,
+  Input,
 } from '@angular/core';
-import { IconName } from '@core/config';
+import { IconName } from '@core/config/icon.config';
 import { mergeClasses } from '@lib/utils';
 import { IconComponent } from '@ui/icon';
 import type { ClassValue } from 'clsx';
@@ -29,20 +30,20 @@ export class IconDirective {
   private readonly renderer = inject(Renderer2);
   private readonly vcr = inject(ViewContainerRef);
 
-  readonly iconName = input<IconName>();
-  readonly iconPosition = input<IconPosition>('left');
-  readonly iconSize = input<number>(16);
-  readonly iconColor = input<string>('currentColor');
-  readonly iconStrokeWidth = input<number>(2);
-  readonly iconAbsoluteStrokeWidth = input<boolean>(false);
-  readonly iconClass = input<ClassValue>('');
+  @Input() iconName?: IconName;
+  @Input() iconFamily: 'lucide' | 'mat' | 'tabler' | 'mat-outline' | 'svg' = 'lucide';
+  @Input() iconPosition: IconPosition = 'left';
+  @Input() iconSize: number = 16;
+  @Input() iconColor: string = 'currentColor';
+  @Input() iconStrokeWidth: number | string = 2;
+  @Input() iconClass: ClassValue = '';
 
   private iconRef?: ComponentRef<IconComponent>;
 
   protected readonly classes = computed(() => {
     const base = 'relative flex items-center';
-    const spacing = this.iconName() ? (this.iconPosition() === 'left' ? 'pl-8' : 'pr-8') : '';
-    return mergeClasses(base, spacing, this.iconClass());
+    const spacing = this.iconName ? (this.iconPosition === 'left' ? 'pl-8' : 'pr-8') : '';
+    return mergeClasses(base, spacing, this.iconClass);
   });
 
   constructor() {
@@ -54,7 +55,7 @@ export class IconDirective {
   private renderIcon(): void {
     const host = this.el.nativeElement;
 
-    if (!this.iconName()) {
+    if (!this.iconName) {
       this.destroyIcon();
       return;
     }
@@ -65,7 +66,7 @@ export class IconDirective {
       const iconEl = this.iconRef.location.nativeElement;
 
       this.renderer.setStyle(iconEl, 'position', 'absolute');
-      this.renderer.setStyle(iconEl, this.iconPosition() === 'left' ? 'left' : 'right', '8px');
+      this.renderer.setStyle(iconEl, this.iconPosition === 'left' ? 'left' : 'right', '8px');
       this.renderer.setStyle(iconEl, 'top', '50%');
       this.renderer.setStyle(iconEl, 'transform', 'translateY(-50%)');
       this.renderer.setStyle(iconEl, 'pointer-events', 'none');
@@ -73,14 +74,15 @@ export class IconDirective {
       this.renderer.appendChild(host, iconEl);
     }
 
-    // Update icon properties reactively
+    // Update icon properties
     const icon = this.iconRef.instance;
     if (icon) {
-      icon.name = this.iconName;
+      icon.name = this.iconName!;
+      icon.family = this.iconFamily;
       icon.size = this.iconSize;
       icon.color = this.iconColor;
       icon.strokeWidth = this.iconStrokeWidth;
-      icon.absoluteStrokeWidth = this.iconAbsoluteStrokeWidth;
+      icon.className = this.iconClass as string;
     }
   }
 

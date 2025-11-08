@@ -36,7 +36,7 @@ interface SelectHost {
   template: `
     <span class="absolute right-2 flex size-3.5 items-center justify-center">
       @if (isSelected()) {
-      <hia-icon name="Check" />
+      <hia-icon name="lucideCheck" />
       }
     </span>
     <ng-content></ng-content>

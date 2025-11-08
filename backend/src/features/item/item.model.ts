@@ -1,4 +1,3 @@
-// Re-export shared types for backward compatibility
 export type {
   Item,
   ItemWithRelations,

@@ -54,7 +54,7 @@ export class AlertDialogService {
       ...config,
       zOkText: config.zOkText || 'OK',
       zCancelText: null,
-      zIcon: config.zIcon || 'TriangleAlert',
+      zIcon: config.zIcon || 'lucideTriangleAlert',
       zType: config.zType || 'warning',
     };
     return this.create(warningConfig);
@@ -67,7 +67,7 @@ export class AlertDialogService {
       ...config,
       zOkText: config.zOkText || 'OK',
       zCancelText: null,
-      zIcon: config.zIcon || 'Info',
+      zIcon: config.zIcon || 'lucideInfo',
       zType: config.zType || 'default',
     };
     return this.create(infoConfig);

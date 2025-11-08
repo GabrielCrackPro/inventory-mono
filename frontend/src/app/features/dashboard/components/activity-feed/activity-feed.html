@@ -2,7 +2,7 @@
   <!-- Header with refresh button -->
   <div class="flex items-center justify-between mb-6">
     <div class="flex items-center gap-2">
-      <hia-icon name="History" [size]="16" class="text-muted-foreground" />
+      <hia-icon name="lucideHistory" [size]="16" class="text-muted-foreground" />
       <span class="text-sm font-medium text-muted-foreground">
         @if (hasMoreActivities() && !isExpanded()) { Showing {{ defaultVisibleActivities }} of
         {{ totalActivitiesCount() }} activities } @else { {{ totalActivitiesCount() }} activities }
@@ -11,7 +11,7 @@
     <z-button
       zType="ghost"
       zSize="sm"
-      iconName="RefreshCcw"
+      iconName="lucideRefreshCcw"
       [disabled]="isLoading()"
       [class]="'h-8 ' + (isRefreshing() ? 'animate-spin' : '')"
       (click)="refreshActivities()"
@@ -73,7 +73,7 @@
       class="absolute inset-0 bg-background/50 backdrop-blur-sm rounded-lg z-10 flex items-center justify-center"
     >
       <div class="flex items-center gap-2 text-sm text-muted-foreground">
-        <hia-icon name="RefreshCcw" [size]="16" class="animate-spin" />
+        <hia-icon name="lucideRefreshCcw" [size]="16" class="animate-spin" />
         Refreshing activities...
       </div>
     </div>
@@ -152,7 +152,7 @@
         class="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-lg transition-all duration-200"
       >
         <hia-icon
-          name="ChevronRight"
+          name="lucideChevronRight"
           [size]="16"
           class="transition-transform duration-200"
           [class.rotate-90]="isExpanded()"
@@ -169,14 +169,14 @@
   <!-- Enhanced empty state -->
   <div class="text-center py-12">
     <div class="w-16 h-16 rounded-full bg-muted/20 flex items-center justify-center mx-auto mb-4">
-      <hia-icon name="History" [size]="32" class="text-muted-foreground/50" />
+      <hia-icon name="lucideHistory" [size]="32" class="text-muted-foreground/50" />
     </div>
     <h3 class="text-lg font-semibold text-foreground mb-2">No Activity Yet</h3>
     <p class="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
       Your activity feed will show recent changes to items, rooms, and houses. Start by adding some
       items to see activity here.
     </p>
-    <z-button zType="default" zSize="sm" iconName="Plus" label="Add First Item" class="mx-auto" />
+    <z-button zType="default" zSize="sm" iconName="lucidePlus" label="Add First Item" class="mx-auto" />
   </div>
   }
 </z-card>

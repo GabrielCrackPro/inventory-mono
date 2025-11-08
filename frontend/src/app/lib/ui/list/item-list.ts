@@ -104,7 +104,7 @@ export interface ListItem {
             <!-- Last updated -->
             @if (isValidLastUpdated(item.lastUpdated)) {
             <div class="flex items-center gap-1 text-[11px] text-muted-foreground/70">
-              <hia-icon name="History" class="h-3.5 w-3.5" />
+              <hia-icon name="lucideHistory" class="h-3.5 w-3.5" />
               <span>Updated {{ formatLastUpdated(item.lastUpdated) }}</span>
             </div>
             }
@@ -132,20 +132,27 @@ export interface ListItem {
               <!-- Metadata chips -->
               <div class="ml-auto flex items-center gap-1 flex-wrap">
                 @if (item.metadata?.['quantity'] != null) {
-                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-muted/60 text-muted-foreground border border-border/40">
-                  <hia-icon name="Boxes" class="h-3.5 w-3.5" />
-                  <span>{{ item.metadata?.['quantity'] }}{{ item.metadata?.['unit'] ? ' ' + (item.metadata?.['unit'] || '') : '' }}</span>
+                <span
+                  class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-muted/60 text-muted-foreground border border-border/40"
+                >
+                  <hia-icon name="lucideBoxes" class="h-3.5 w-3.5" />
+                  <span
+                    >{{ item.metadata?.['quantity']
+                    }}{{ item.metadata?.['unit'] ? ' ' + (item.metadata?.['unit'] || '') : '' }}</span
+                  >
                 </span>
-                }
-                @if (item.metadata?.['room']) {
-                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-muted/60 text-muted-foreground border border-border/40">
-                  <hia-icon name="Warehouse" class="h-3.5 w-3.5" />
+                } @if (item.metadata?.['room']) {
+                <span
+                  class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-muted/60 text-muted-foreground border border-border/40"
+                >
+                  <hia-icon name="lucideWarehouse" class="h-3.5 w-3.5" />
                   <span>{{ item.metadata?.['room'] }}</span>
                 </span>
-                }
-                @if (item.metadata?.['category']) {
-                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-muted/60 text-muted-foreground border border-border/40">
-                  <hia-icon name="Tag" class="h-3.5 w-3.5" />
+                } @if (item.metadata?.['category']) {
+                <span
+                  class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-muted/60 text-muted-foreground border border-border/40"
+                >
+                  <hia-icon name="lucideTag" class="h-3.5 w-3.5" />
                   <span>{{ item.metadata?.['category'] }}</span>
                 </span>
                 }
@@ -156,7 +163,7 @@ export interface ListItem {
 
           <!-- Action indicator -->
           <div class="shrink-0 flex items-center">
-            <hia-icon name="ChevronRight" class="h-4 w-4 text-muted-foreground/40" />
+            <hia-icon name="lucideChevronRight" class="h-4 w-4 text-muted-foreground/40" />
           </div>
         </div>
         }
@@ -184,7 +191,7 @@ export class ItemListComponent {
   readonly itemTemplate = input<TemplateRef<{ $implicit: ListItem }>>();
   readonly emptyTemplate = input<TemplateRef<void>>();
   readonly emptyMessage = input<string>('No items found');
-  readonly emptyIcon = input<IconName>('Inbox');
+  readonly emptyIcon = input<IconName>('lucideInbox');
   readonly clickable = input<boolean>(true);
   readonly class = input<ClassValue>('');
 
@@ -284,7 +291,7 @@ export class ItemListComponent {
 
   protected readonly emptyIconContainerClasses = computed(() =>
     mergeClasses(
-      'w-20 h-20 rounded-full bg-gradient-to-br from-muted/40 to-muted/20 flex items-center justify-center mb-6',
+      'rounded-full bg-gradient-to-br from-muted/40 to-muted/20 flex items-center justify-center mb-6',
       'border border-border/20 shadow-sm'
     )
   );

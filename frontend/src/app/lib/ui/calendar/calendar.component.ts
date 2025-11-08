@@ -64,7 +64,7 @@ export type { ZardCalendarVariants };
           aria-label="Previous month"
           [class]="navButtonClasses()"
         >
-          <hia-icon name="ChevronLeft" />
+          <hia-icon name="lucideChevronLeft" />
         </button>
 
         <!-- Month and Year Selectors -->
@@ -105,7 +105,7 @@ export type { ZardCalendarVariants };
           aria-label="Next month"
           [class]="navButtonClasses()"
         >
-          <hia-icon name="ChevronRight" />
+          <hia-icon name="lucideChevronRight" />
         </button>
       </div>
 

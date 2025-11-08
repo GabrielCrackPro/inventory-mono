@@ -48,7 +48,7 @@ import { IconName } from '@core/config';
 
 const noopFun = () => void 0;
 export class ZardDialogOptions<T, U> {
-  zCancelIcon?: IconName;
+  zCancelIcon?: 'lucideX' | IconName;
   zCancelText?: string | null;
   zClosable?: boolean;
   zContent?: string | TemplateRef<T> | Type<T>;
@@ -59,7 +59,7 @@ export class ZardDialogOptions<T, U> {
   zMaskClosable?: boolean;
   zOkDestructive?: boolean;
   zOkDisabled?: boolean;
-  zOkIcon?: IconName;
+  zOkIcon?: 'lucideCheck' | IconName;
   zOkText?: string | null;
   zOnCancel?: EventEmitter<T> | OnClickCallback<T> = noopFun;
   zOnOk?: EventEmitter<T> | OnClickCallback<T> = noopFun;
@@ -85,7 +85,7 @@ export class ZardDialogOptions<T, U> {
           (click)="onCloseClick()"
           aria-label="Close dialog"
         >
-          <hia-icon name="X" [size]="16" />
+          <hia-icon name="lucideX" [size]="16" />
         </button>
         }
 
@@ -200,10 +200,12 @@ export class ZardDialogComponent<T, U> extends BasePortalOutlet {
     return this.host.nativeElement;
   }
 
+  // @ts-ignore
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
     if (this.portalOutlet()?.hasAttached()) {
       throw Error('Attempting to attach modal content after content is already attached');
     }
+    // @ts-ignore
     return this.portalOutlet()?.attachComponentPortal(portal);
   }
 
