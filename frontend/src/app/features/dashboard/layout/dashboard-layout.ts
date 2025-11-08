@@ -7,7 +7,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { RouterLinkWithHref, RouterOutlet } from '@angular/router';
-import { IconName } from '@core/config';
+import { commonIcons, IconName } from '@core/config';
 import { StorageService } from '@core/services';
 import { HeaderComponent } from '@features/layout';
 import { LayoutModule, SidebarGroupComponent, SidebarGroupLabelComponent } from '@ui/layout';
@@ -59,10 +59,10 @@ export class DashboardLayoutComponent {
   }
 
   items: MenuItem[] = [
-    { icon: 'lucideLayoutDashboard', label: 'Overview', to: '/' },
-    { icon: 'lucideBox', label: 'Items', to: 'items/list' },
-    { icon: 'lucideWarehouse', label: 'Rooms', to: 'rooms' },
-    { icon: 'lucideSettings', label: 'Settings', to: 'settings' },
+    { icon: commonIcons['dashboard'], label: 'Overview', to: '/' },
+    { icon: commonIcons['item'], label: 'Items', to: 'items/list' },
+    { icon: commonIcons['room'], label: 'Rooms', to: 'rooms' },
+    { icon: commonIcons['settings'], label: 'Settings', to: 'settings' },
   ];
 
   onCollapsedChange(collapsed: boolean) {

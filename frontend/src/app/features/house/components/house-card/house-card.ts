@@ -1,5 +1,6 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
+import { commonIcons } from '@core/config/icon.config';
 import { UserHouse } from '@features/house/models';
 import { ProfileService } from '@features/user';
 import { IconComponent, ZardButtonComponent } from '@ui/index';
@@ -11,6 +12,8 @@ import { IconComponent, ZardButtonComponent } from '@ui/index';
 })
 export class HouseCardComponent {
   private readonly _profileService = inject(ProfileService);
+  
+  readonly commonIcons = commonIcons;
 
   readonly house = input<UserHouse>();
   readonly houseChange = output<number>();

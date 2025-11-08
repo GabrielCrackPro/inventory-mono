@@ -27,6 +27,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 
+import { commonIcons } from '@core/config/icon.config';
 import { mergeClasses } from '@lib/utils/merge-classes';
 import { OnClickCallback } from '@shared/models';
 import { DialogService } from '@shared/services';
@@ -85,7 +86,7 @@ export class ZardDialogOptions<T, U> {
           (click)="onCloseClick()"
           aria-label="Close dialog"
         >
-          <hia-icon name="lucideX" [size]="16" />
+          <hia-icon [name]="commonIcons['close']" [size]="16" />
         </button>
         }
 
@@ -160,6 +161,8 @@ export class ZardDialogOptions<T, U> {
 export class ZardDialogComponent<T, U> extends BasePortalOutlet {
   private readonly host = inject(ElementRef<HTMLElement>);
   protected readonly config = inject(ZardDialogOptions<T, U>);
+  
+  readonly commonIcons = commonIcons;
 
   protected readonly classes = computed(() =>
     mergeClasses(dialogVariants({ size: this.config.zSize }), this.config.zCustomClasses)

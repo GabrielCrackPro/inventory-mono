@@ -1,6 +1,7 @@
 import { Overlay, OverlayModule, OverlayPositionBuilder, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { isPlatformBrowser } from '@angular/common';
+import { commonIcons } from '@core/config/icon.config';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -71,7 +72,7 @@ type OnChangeType = (value: string) => void;
         <span class="text-muted-foreground">{{ zPlaceholder() }}</span>
         }
       </span>
-      <hia-icon name="lucideChevronDown" [size]="20" class="opacity-50" />
+      <hia-icon [name]="commonIcons['down']" [size]="20" class="opacity-50" />
     </button>
 
     <ng-template #dropdownTemplate>
@@ -97,6 +98,8 @@ export class ZardSelectComponent
   private overlayPositionBuilder = inject(OverlayPositionBuilder);
   private viewContainerRef = inject(ViewContainerRef);
   private platformId = inject(PLATFORM_ID);
+  
+  readonly commonIcons = commonIcons;
 
   readonly dropdownTemplate = viewChild.required<TemplateRef<any>>('dropdownTemplate');
 

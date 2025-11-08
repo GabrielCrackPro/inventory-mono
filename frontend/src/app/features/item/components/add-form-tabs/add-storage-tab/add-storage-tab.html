@@ -2,7 +2,7 @@
   <z-card class="space-y-6" [@slideInUp]>
     <div class="flex items-center gap-3 mb-6">
       <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-        <hia-icon name="lucideWarehouse" class="h-5 w-5 text-primary" />
+        <hia-icon [name]="commonIcons['warehouse']" [size]="20" class="text-primary" />
       </div>
       <div>
         <h3 class="font-semibold">Storage Information</h3>
@@ -16,7 +16,7 @@
     @if (hasFormErrors()) {
     <div class="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
       <div class="flex items-start gap-2">
-        <hia-icon name="lucideTriangleAlert" class="h-4 w-4 text-destructive mt-0.5 shrink-0" />
+        <hia-icon [name]="commonIcons['warning']" [size]="16" class="text-destructive mt-0.5 shrink-0" />
         <div class="text-sm">
           <div class="font-medium text-destructive mb-1">Please fix the following issues:</div>
           <ul class="text-destructive/80 space-y-1">

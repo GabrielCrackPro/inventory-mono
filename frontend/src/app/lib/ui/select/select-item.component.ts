@@ -11,6 +11,7 @@ import {
 import { mergeClasses, transform } from '@lib/utils/merge-classes';
 import { selectItemVariants } from './select.variants';
 import { IconComponent } from '@ui/icon';
+import { commonIcons } from '@core/config/icon.config';
 
 // Interface to avoid circular dependency
 interface SelectHost {
@@ -36,7 +37,7 @@ interface SelectHost {
   template: `
     <span class="absolute right-2 flex size-3.5 items-center justify-center">
       @if (isSelected()) {
-      <hia-icon name="lucideCheck" />
+      <hia-icon [name]="commonIcons['save']" />
       }
     </span>
     <ng-content></ng-content>
@@ -46,6 +47,8 @@ export class ZardSelectItemComponent {
   readonly zValue = input.required<string>();
   readonly zDisabled = input(false, { transform });
   readonly class = input<string>('');
+  
+  readonly commonIcons = commonIcons;
 
   private select: SelectHost | null = null;
   readonly elementRef = inject(ElementRef);

@@ -14,7 +14,7 @@
   <div>
     @if (!isOrderDefault()) {
     <div class="flex items-center gap-2">
-      <hia-icon name="lucideTriangleAlert" [size]="12" color="var(--color-chart-3)" />
+      <hia-icon [name]="commonIcons['warning']" [size]="12" color="var(--color-chart-3)" />
       <p class="text-chart-3">Order has been modified from default</p>
     </div>
     }

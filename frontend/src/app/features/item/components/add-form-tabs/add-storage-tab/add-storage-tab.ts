@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { commonIcons } from '@core/config/icon.config';
 import { ZardCardComponent } from '@ui/card';
 import { IconComponent } from '@ui/icon';
 
@@ -56,6 +57,8 @@ export class AddStorageTabComponent implements OnInit {
   private readonly formService = inject(ItemFormService);
   private readonly _houseService = inject(HouseService);
   private readonly _houseContext = inject(HouseContextService);
+  
+  readonly commonIcons = commonIcons;
 
   private _rooms = signal<any[]>([]);
 

@@ -15,6 +15,9 @@ import { IconName } from '@core/config/icon.config';
       [class]="className"
     ></ng-icon>
   `,
+  host: {
+    class: 'inline-flex items-center justify-center shrink-0',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IconComponent {

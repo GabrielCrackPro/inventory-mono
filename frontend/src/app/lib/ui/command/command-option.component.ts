@@ -43,7 +43,7 @@ import { IconName } from '@core/config';
       <hia-icon
         [name]="zIcon()!"
         [size]="16"
-        class="mr-2 shrink-0 flex items-center justify-center"
+        class="mr-2 shrink-0"
       />
       }
       <span class="flex-1">{{ zLabel() }}</span>

@@ -4,6 +4,7 @@ import {
   computed,
   ElementRef,
   forwardRef,
+  inject,
   input,
   model,
   signal,
@@ -11,6 +12,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { commonIcons } from '@core/config/icon.config';
 import { mergeClasses } from '@lib/utils/merge-classes';
 import type { ClassValue } from 'clsx';
 import { ZardCalendarComponent } from '../calendar/calendar.component';
@@ -57,7 +59,7 @@ import { ZardPopoverDirective } from '../popover/popover.component';
         readonly
       />
       <hia-icon
-        name="lucideCalendar"
+        [name]="commonIcons['calendar']"
         class="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none"
         [size]="14"
       />
@@ -78,6 +80,8 @@ import { ZardPopoverDirective } from '../popover/popover.component';
 })
 export class ZardDatePickerComponent implements ControlValueAccessor {
   private readonly dateInput = viewChild.required<ElementRef<HTMLInputElement>>('dateInput');
+  
+  readonly commonIcons = commonIcons;
 
   readonly class = input<ClassValue>('');
   readonly placeholder = input<string>('Select date...');

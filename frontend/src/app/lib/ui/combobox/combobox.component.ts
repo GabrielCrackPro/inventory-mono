@@ -14,6 +14,7 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ClassValue } from 'clsx';
+import { commonIcons } from '@core/config/icon.config';
 
 import { ZardCommandOptionGroupComponent } from '../command/command-option-group.component';
 import { ZardPopoverComponent, ZardPopoverDirective } from '../popover/popover.component';
@@ -99,7 +100,7 @@ export interface ZardComboboxGroup {
               >
                 {{ option.label }}
                 @if (option.value === getCurrentValue()) {
-                <hia-icon name="lucideCheck" class="ml-auto" />
+                <hia-icon [name]="commonIcons['save']" class="ml-auto" />
                 }
               </z-command-option>
               }
@@ -114,7 +115,7 @@ export interface ZardComboboxGroup {
             >
               {{ option.label }}
               @if (option.value === getCurrentValue()) {
-              <hia-icon name="lucideCheck" class="ml-auto" />
+              <hia-icon [name]="commonIcons['save']" class="ml-auto" />
               }
             </z-command-option>
             } } } } @else if (options().length > 0) { @for (option of options(); track option.value)
@@ -128,7 +129,7 @@ export interface ZardComboboxGroup {
             >
               {{ option.label }}
               @if (option.value === getCurrentValue()) {
-              <hia-icon name="lucideCheck" class="ml-auto" />
+              <hia-icon [name]="commonIcons['save']" class="ml-auto" />
               }
             </z-command-option>
             } }
@@ -157,6 +158,8 @@ export class ZardComboboxComponent implements ControlValueAccessor {
   readonly emptyText = input<string>('No results found.');
   readonly disabled = input<boolean>(false);
   readonly searchable = input<boolean>(true);
+  
+  readonly commonIcons = commonIcons;
   readonly value = input<string | null>(null);
   readonly options = input<ZardComboboxOption[]>([]);
   readonly groups = input<ZardComboboxGroup[]>([]);

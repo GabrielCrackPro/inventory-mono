@@ -9,6 +9,7 @@ import {
   PLATFORM_ID,
   TemplateRef,
 } from '@angular/core';
+import { commonIcons } from '@core/config/icon.config';
 import {
   ZardAlertDialogComponent,
   ZardAlertDialogOptions,
@@ -54,7 +55,7 @@ export class AlertDialogService {
       ...config,
       zOkText: config.zOkText || 'OK',
       zCancelText: null,
-      zIcon: config.zIcon || 'lucideTriangleAlert',
+      zIcon: config.zIcon || commonIcons['warning'],
       zType: config.zType || 'warning',
     };
     return this.create(warningConfig);
@@ -67,7 +68,7 @@ export class AlertDialogService {
       ...config,
       zOkText: config.zOkText || 'OK',
       zCancelText: null,
-      zIcon: config.zIcon || 'lucideInfo',
+      zIcon: config.zIcon || commonIcons['info'],
       zType: config.zType || 'default',
     };
     return this.create(infoConfig);
@@ -118,6 +119,7 @@ export class AlertDialogService {
 
     const containerPortal = new ComponentPortal<ZardAlertDialogComponent<T>>(
       ZardAlertDialogComponent,
+      // @ts-ignore
       config.zViewContainerRef,
       injector
     );

@@ -21,7 +21,7 @@
           <span class="inline-flex items-center gap-1">
             {{ col.header }}
             @if (col.sortable && sortKey() === col.key) {
-            <hia-icon [name]="sortDir() === 'asc' ? 'ChevronUp' : 'ChevronDown'" [size]="10" />
+            <hia-icon [name]="sortIcon()" [size]="10" />
             }
           </span>
           }

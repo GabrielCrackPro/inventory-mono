@@ -10,6 +10,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { commonIcons } from '@core/config/icon.config';
 import type { ClassValue } from 'clsx';
 
 import { checkboxLabelVariants, checkboxVariants, ZardCheckboxVariants } from './checkbox.variants';
@@ -49,7 +50,7 @@ type OnChangeType = (value: any) => void;
           name="checkbox"
         />
         <hia-icon
-          name="lucideCheck"
+          [name]="commonIcons['save']"
           color="var(--primary-foreground)"
           [size]="10"
           [class]="
@@ -58,7 +59,7 @@ type OnChangeType = (value: any) => void;
           "
         />
         <hia-icon
-          name="lucideMinus"
+          [name]="'lucideMinus'"
           [size]="10"
           [class]="
             'absolute flex items-center justify-center text-primary-foreground top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-opacity ' +
@@ -83,6 +84,8 @@ type OnChangeType = (value: any) => void;
 })
 export class ZardCheckboxComponent implements ControlValueAccessor {
   private cdr = inject(ChangeDetectorRef);
+  
+  readonly commonIcons = commonIcons;
 
   readonly checkChange = output<boolean>();
   readonly class = input<ClassValue>('');

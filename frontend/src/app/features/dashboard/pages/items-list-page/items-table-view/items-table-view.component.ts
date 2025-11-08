@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { TableCol } from '@features/dashboard/models';
 import { Item } from '@features/item';
 import { ZardTableModule } from '@ui/table';
 import { RouterLink } from '@angular/router';
 import { IconComponent } from '@ui/icon';
 import { ZardCheckboxComponent } from '@ui/checkbox';
+import { commonIcons } from '@core/config';
 
 @Component({
   selector: 'hia-items-table-view',
@@ -20,6 +21,10 @@ export class ItemsTableViewComponent {
   sortKey = input<any>();
   sortDir = input<'asc' | 'desc'>();
   selectedIds = input<string[]>([]);
+
+  readonly sortIcon = computed(() => {
+    return this.sortDir() === 'asc' ? commonIcons['up'] : commonIcons['down'];
+  });
 
   readonly onSort = output<any>();
   readonly toggleSelect = output<{ id: string; selected: boolean }>();

@@ -7,7 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { IconName } from '@core/config';
+import { IconName, commonIcons } from '@core/config';
 import {
   ActivityFeed,
   DashboardData,
@@ -73,6 +73,8 @@ export class HomeComponent implements OnInit {
   private readonly _houseService = inject(HouseService);
   private readonly _dialogService = inject(DialogService);
   private readonly _exportService = inject(DashboardExportService);
+
+  readonly commonIcons = commonIcons;
 
   private readonly _dashboardData = signal<DashboardData>({
     activities: [],
@@ -249,10 +251,10 @@ export class HomeComponent implements OnInit {
     lowStock?: number;
   }): DashboardStat[] {
     const statsMap: Record<string, { icon: IconName; value: number }> = {
-      Items: { icon: 'lucideBox', value: items },
-      Rooms: { icon: 'lucideWarehouse', value: rooms },
-      Categories: { icon: 'lucideList', value: categories },
-      'Low Stock': { icon: 'lucideTriangleAlert', value: lowStock },
+      Items: { icon: commonIcons['item'], value: items },
+      Rooms: { icon: commonIcons['room'], value: rooms },
+      Categories: { icon: commonIcons['category'], value: categories },
+      'Low Stock': { icon: commonIcons['warning'], value: lowStock },
     };
 
     return Object.entries(statsMap).map(([title, { icon, value }]) => ({

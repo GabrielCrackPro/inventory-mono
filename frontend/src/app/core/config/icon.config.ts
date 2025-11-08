@@ -21,4 +21,62 @@ export const iconProviders = [
   provideIcons(allIcons),
 ];
 
+export const commonIcons: Record<string, IconName> = {
+  // Core entities
+  dashboard: 'matDashboard',
+  item: 'lucideBox',
+  house: 'lucideHouse',
+  room: 'lucideBed',
+  category: 'lucideTag',
+  user: 'lucideUser',
+
+  // Actions
+  add: 'lucidePlus',
+  edit: 'lucidePencil',
+  delete: 'lucideTrash',
+  save: 'lucideCheck',
+  cancel: 'lucideX',
+  refresh: 'lucideRefreshCcw',
+  download: 'lucideDownload',
+  upload: 'lucideUpload',
+  search: 'lucideSearch',
+  filter: 'lucideFilter',
+  settings: 'lucideSettings',
+
+  // Navigation
+  back: 'lucideArrowLeft',
+  forward: 'lucideArrowRight',
+  up: 'lucideChevronUp',
+  down: 'lucideChevronDown',
+  left: 'lucideChevronLeft',
+  right: 'lucideChevronRight',
+
+  // Status & feedback
+  success: 'lucideCircleCheck',
+  warning: 'lucideTriangleAlert',
+  error: 'lucideCircleX',
+  info: 'lucideInfo',
+  loading: 'lucideLoaderCircle',
+
+  // UI elements
+  menu: 'lucideMenu',
+  close: 'lucideX',
+  expand: 'lucideChevronDown',
+  collapse: 'lucideChevronUp',
+  calendar: 'lucideCalendar',
+  history: 'lucideHistory',
+
+  // Inventory specific
+  warehouse: 'lucideWarehouse',
+  boxes: 'lucideBoxes',
+  quantity: 'lucideHash',
+
+  // List operations
+  selectAll: 'lucideListChecks',
+  deselectAll: 'lucideListX',
+
+  // House operations
+  addHouse: 'lucideHousePlus',
+};
+
 export type IconName = keyof typeof allIcons;

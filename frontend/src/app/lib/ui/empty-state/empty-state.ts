@@ -21,7 +21,7 @@ import { IconComponent } from '../icon';
   template: `
     <div [class]="containerClasses()">
       <div [class]="iconContainerClasses()">
-        <hia-icon [name]="icon()" [family]="iconFamily()" [class]="iconClasses()" />
+        <hia-icon [name]="icon()" [family]="iconFamily()" [size]="iconSizeValue()" class="text-muted-foreground" />
       </div>
 
       <div class="space-y-2 text-center">
@@ -72,12 +72,8 @@ export class EmptyStateComponent {
     });
   });
 
-  protected readonly iconClasses = computed(() => {
+  protected readonly iconSizeValue = computed(() => {
     const size = this.iconSize();
-    return mergeClasses('text-muted-foreground', {
-      'h-6 w-6': size === 'sm',
-      'h-8 w-8': size === 'md',
-      'h-10 w-10': size === 'lg',
-    });
+    return size === 'sm' ? 24 : size === 'md' ? 32 : 40;
   });
 }

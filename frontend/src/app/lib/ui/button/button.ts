@@ -11,7 +11,7 @@ import { mergeClasses, transform } from '@lib/utils';
 import type { ClassValue } from 'clsx';
 import { IconComponent } from '../icon';
 import { buttonVariants, ZardButtonVariants } from './button-variants';
-import { IconName } from '@core/config';
+import { IconName, commonIcons } from '@core/config/icon.config';
 
 @Component({
   selector: 'z-button, button[z-button], a[z-button]',
@@ -29,7 +29,7 @@ import { IconName } from '@core/config';
     >
       @if (zLoading()) {
       <hia-icon
-        name="lucideLoaderCircle"
+        [name]="commonIcons['loading']"
         [class]="'animate-spin ' + (iconClasses() || '')"
         [size]="iconSize()"
         [color]="iconColor()"
@@ -63,6 +63,8 @@ import { IconName } from '@core/config';
 })
 export class ZardButtonComponent {
   private readonly elementRef = inject(ElementRef);
+  
+  readonly commonIcons = commonIcons;
 
   readonly zType = input<ZardButtonVariants['zType']>('default');
   readonly zSize = input<ZardButtonVariants['zSize']>('default');

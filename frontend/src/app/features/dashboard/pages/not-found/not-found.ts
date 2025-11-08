@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { commonIcons } from '@core/config/icon.config';
 import { IconComponent } from '@ui/icon';
 import { ZardButtonComponent } from '@ui/button';
 import { ZardCardComponent } from '@ui/card';
@@ -14,6 +15,8 @@ import { Location } from '@angular/common';
 })
 export class NotFoundComponent {
   private readonly _router = inject(Router);
+  
+  readonly commonIcons = commonIcons;
 
   quickActions = [
     {

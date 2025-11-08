@@ -14,13 +14,13 @@ type IconSet = 'lucide' | 'mat' | 'tabler' | 'mat-outline' | 'svg';
       [name]="name()"
       [family]="iconSet()"
       [size]="size()"
-      [color]="color() ?? 'var(--color-primary)'"
+      [color]="color()"
       [strokeWidth]="strokeWidth()"
       [class]="iconClass"
     />
   `,
   host: {
-    class: 'inline-flex items-center justify-center',
+    class: 'inline-flex items-center justify-center shrink-0',
     '[class.text-primary]': 'color() === "primary"',
     '[class.text-destructive]': 'color() === "destructive"',
     '[class.text-muted-foreground]': 'color() === "muted"',
@@ -29,7 +29,7 @@ type IconSet = 'lucide' | 'mat' | 'tabler' | 'mat-outline' | 'svg';
 export class IconComponent implements OnChanges {
   readonly name = input<IconName | string>('');
   readonly size = input<number>(14);
-  readonly color = input<'primary' | 'destructive' | 'muted' | string>();
+  readonly color = input<'primary' | 'destructive' | 'muted' | string>('primary');
   readonly class = input<string>();
   readonly strokeWidth = input<number | string>(2);
   readonly opacity70 = input<boolean>(false);

@@ -7,7 +7,7 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { IconName } from '@core/config';
+import { IconName, commonIcons } from '@core/config';
 import { ActivityItem } from '@features/item';
 import { ActivityType, UserActivity } from '@shared/models';
 import { ZardButtonComponent } from '@ui/button';
@@ -38,6 +38,7 @@ export class ActivityFeed {
   readonly activities = input<UserActivity[]>([]);
   readonly loading = input<boolean>(false);
   readonly refresh = output<void>();
+  readonly commonIcons = commonIcons;
   readonly activityClick = output<EnhancedActivityItem>();
 
   private readonly _enhancedActivities = signal<EnhancedActivityItem[]>([]);

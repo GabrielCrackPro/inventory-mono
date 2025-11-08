@@ -200,7 +200,7 @@ export class ZardTabComponent {
           [class]="zTabsPosition() === 'top' ? 'mb-4' : 'mt-4'"
           (click)="scrollNav('left')"
         >
-          <hia-icon name="lucideChevronLeft" class="h-4 w-4" />
+          <hia-icon name="lucideChevronLeft" [size]="16" />
         </button>
         } @else {
         <button
@@ -208,7 +208,7 @@ export class ZardTabComponent {
           [class]="zTabsPosition() === 'left' ? 'mr-4' : 'ml-4'"
           (click)="scrollNav('up')"
         >
-          <hia-icon name="lucideChevronUp" class="h-4 w-4" />
+          <hia-icon name="lucideChevronUp" [size]="16" />
         </button>
         } }
 
@@ -241,7 +241,7 @@ export class ZardTabComponent {
           [class]="zTabsPosition() === 'top' ? 'mb-4' : 'mt-4'"
           (click)="scrollNav('right')"
         >
-          <hia-icon name="lucideChevronRight" class="h-4 w-4" />
+          <hia-icon name="lucideChevronRight" [size]="16" />
         </button>
         } @else {
         <button
@@ -249,7 +249,7 @@ export class ZardTabComponent {
           [class]="zTabsPosition() === 'left' ? 'mr-4' : 'ml-4'"
           (click)="scrollNav('down')"
         >
-          <hia-icon name="lucideChevronDown" class="h-4 w-4" />
+          <hia-icon name="lucideChevronDown" [size]="16" />
         </button>
         } }
       </div>

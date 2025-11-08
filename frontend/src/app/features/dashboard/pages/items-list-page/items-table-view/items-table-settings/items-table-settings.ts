@@ -1,5 +1,6 @@
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { commonIcons } from '@core/config/icon.config';
 import { TableCol } from '@features/dashboard';
 import { ProfileService } from '@features/user';
 import { Z_MODAL_DATA } from '@shared/services';
@@ -17,6 +18,8 @@ export class ItemsTableSettingsComponent {
 
   data = inject(Z_MODAL_DATA);
   columns = computed<TableCol[]>(() => this.data.columns as TableCol[]);
+  
+  readonly commonIcons = commonIcons;
 
   private visibility = signal<Record<string, boolean>>({});
   order = signal<string[]>([]);

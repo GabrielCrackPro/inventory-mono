@@ -16,6 +16,7 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ClassValue } from 'clsx';
+import { commonIcons } from '@core/config/icon.config';
 import { Subject, switchMap, takeUntil, timer } from 'rxjs';
 
 import { mergeClasses } from '@lib/utils/merge-classes';
@@ -32,7 +33,7 @@ import { commandInputVariants } from './command.variants';
   encapsulation: ViewEncapsulation.None,
   template: `
     <div class="flex items-center border-b px-3" cmdk-input-wrapper="">
-      <hia-icon name="lucideSearch" [size]="14" class="mr-2 shrink-0 opacity-50" />
+      <hia-icon [name]="commonIcons['search']" [size]="14" class="mr-2 shrink-0 opacity-50" />
       <input
         #searchInput
         [class]="classes()"
@@ -63,6 +64,8 @@ import { commandInputVariants } from './command.variants';
 export class ZardCommandInputComponent implements ControlValueAccessor, OnInit, OnDestroy {
   private readonly commandComponent = inject(ZardCommandComponent, { optional: true });
   readonly searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
+  
+  readonly commonIcons = commonIcons;
 
   readonly placeholder = input<string>('Type a command or search...');
   readonly class = input<ClassValue>('');

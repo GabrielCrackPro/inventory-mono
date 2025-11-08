@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { commonIcons } from '@core/config/icon.config';
 import {
   AddDetailsTabComponent,
   AddGeneralTabComponent,
@@ -47,6 +48,7 @@ export class AddItemComponent {
   private readonly router = inject(Router);
 
   readonly formService = inject(ItemFormService);
+  readonly commonIcons = commonIcons;
 
   readonly isSubmitting = signal(false);
   readonly currentStep = signal(0);

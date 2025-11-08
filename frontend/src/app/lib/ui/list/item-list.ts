@@ -12,6 +12,7 @@ import type { ClassValue } from 'clsx';
 import { ZardStringTemplateOutletDirective } from '../core/directives/string-template-outlet/string-template-outlet';
 import { IconComponent } from '../icon';
 import { IconName } from '@core/config';
+import { commonIcons } from '@core/config/icon.config';
 
 export type ItemStatus = 'normal' | 'low-stock' | 'out-of-stock' | 'new' | 'updated';
 export type BadgeVariant =
@@ -104,7 +105,7 @@ export interface ListItem {
             <!-- Last updated -->
             @if (isValidLastUpdated(item.lastUpdated)) {
             <div class="flex items-center gap-1 text-[11px] text-muted-foreground/70">
-              <hia-icon name="lucideHistory" class="h-3.5 w-3.5" />
+              <hia-icon [name]="commonIcons['history']" [size]="14" />
               <span>Updated {{ formatLastUpdated(item.lastUpdated) }}</span>
             </div>
             }
@@ -135,7 +136,7 @@ export interface ListItem {
                 <span
                   class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-muted/60 text-muted-foreground border border-border/40"
                 >
-                  <hia-icon name="lucideBoxes" class="h-3.5 w-3.5" />
+                  <hia-icon [name]="commonIcons['boxes']" [size]="14" />
                   <span
                     >{{ item.metadata?.['quantity']
                     }}{{ item.metadata?.['unit'] ? ' ' + (item.metadata?.['unit'] || '') : '' }}</span
@@ -145,14 +146,14 @@ export interface ListItem {
                 <span
                   class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-muted/60 text-muted-foreground border border-border/40"
                 >
-                  <hia-icon name="lucideWarehouse" class="h-3.5 w-3.5" />
+                  <hia-icon [name]="commonIcons['warehouse']" [size]="14" />
                   <span>{{ item.metadata?.['room'] }}</span>
                 </span>
                 } @if (item.metadata?.['category']) {
                 <span
                   class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-muted/60 text-muted-foreground border border-border/40"
                 >
-                  <hia-icon name="lucideTag" class="h-3.5 w-3.5" />
+                  <hia-icon [name]="commonIcons['category']" [size]="14" />
                   <span>{{ item.metadata?.['category'] }}</span>
                 </span>
                 }
@@ -163,7 +164,7 @@ export interface ListItem {
 
           <!-- Action indicator -->
           <div class="shrink-0 flex items-center">
-            <hia-icon name="lucideChevronRight" class="h-4 w-4 text-muted-foreground/40" />
+            <hia-icon [name]="commonIcons['right']" [size]="16" class="text-muted-foreground/40" />
           </div>
         </div>
         }
@@ -174,7 +175,7 @@ export interface ListItem {
       <div [class]="emptyStateClasses()">
         <div class="flex flex-col items-center justify-center py-16">
           <div [class]="emptyIconContainerClasses()">
-            <hia-icon [name]="emptyIcon()" class="h-10 w-10 text-muted-foreground/30" />
+            <hia-icon [name]="emptyIcon()" [size]="40" class="text-muted-foreground/30" />
           </div>
           <h3 class="font-semibold text-foreground mb-2 text-lg">{{ emptyMessage() }}</h3>
           <p class="text-sm text-muted-foreground text-center max-w-sm leading-relaxed">
@@ -194,6 +195,8 @@ export class ItemListComponent {
   readonly emptyIcon = input<IconName>('lucideInbox');
   readonly clickable = input<boolean>(true);
   readonly class = input<ClassValue>('');
+  
+  readonly commonIcons = commonIcons;
 
   readonly onItemClick = output<ListItem>();
 

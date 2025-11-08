@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, inject } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ReactiveFormsModule } from '@angular/forms';
+import { commonIcons } from '@core/config/icon.config';
 import { ItemFormService } from '@features/item/services/item-form';
 import { ZardCardComponent } from '@ui/card';
 import { IconComponent } from '@ui/icon';
@@ -38,6 +39,8 @@ import { ZardInputDirective } from '@ui/input';
 export class AddDetailsTabComponent {
   itemForm = input<any>();
   private readonly formService = inject(ItemFormService);
+  
+  readonly commonIcons = commonIcons;
 
   get form() {
     return this.formService.itemForm;

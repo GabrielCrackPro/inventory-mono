@@ -26,6 +26,7 @@ import { ZardSelectComponent } from '../select/select.component';
 import { mergeClasses } from '@lib/utils/merge-classes';
 import { ZardButtonComponent } from '@ui/button';
 import { IconComponent } from '@ui/icon';
+import { commonIcons } from '@core/config/icon.config';
 
 export interface CalendarDay {
   date: Date;
@@ -64,7 +65,7 @@ export type { ZardCalendarVariants };
           aria-label="Previous month"
           [class]="navButtonClasses()"
         >
-          <hia-icon name="lucideChevronLeft" />
+          <hia-icon [name]="commonIcons['left']" />
         </button>
 
         <!-- Month and Year Selectors -->
@@ -105,7 +106,7 @@ export type { ZardCalendarVariants };
           aria-label="Next month"
           [class]="navButtonClasses()"
         >
-          <hia-icon name="lucideChevronRight" />
+          <hia-icon [name]="commonIcons['right']" />
         </button>
       </div>
 
@@ -143,6 +144,8 @@ export type { ZardCalendarVariants };
 export class ZardCalendarComponent {
   private readonly calendarContainer =
     viewChild.required<ElementRef<HTMLElement>>('calendarContainer');
+  
+  readonly commonIcons = commonIcons;
 
   // Public method to reset navigation (useful for date-picker)
   resetNavigation(): void {

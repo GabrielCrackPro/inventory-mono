@@ -7,6 +7,7 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { commonIcons } from '@core/config/icon.config';
 import { UserHouse } from '@features/house/models';
 import { HouseService } from '@features/house/services';
 import { IconComponent } from '@ui/icon';
@@ -21,6 +22,8 @@ import { HouseContextService } from '@features/house/services/house-context';
 export class HouseSwitcherComponent implements OnInit {
   private readonly _houseService = inject(HouseService);
   private readonly _houseContext = inject(HouseContextService);
+  
+  readonly commonIcons = commonIcons;
 
   onClick = output<void>();
 

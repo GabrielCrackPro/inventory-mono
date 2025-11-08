@@ -2,7 +2,7 @@
   <!-- Header with refresh button -->
   <div class="flex items-center justify-between mb-6">
     <div class="flex items-center gap-2">
-      <hia-icon name="lucideHistory" [size]="16" class="text-muted-foreground" />
+      <hia-icon [name]="commonIcons['history']" [size]="16" class="text-muted-foreground" />
       <span class="text-sm font-medium text-muted-foreground">
         @if (hasMoreActivities() && !isExpanded()) { Showing {{ defaultVisibleActivities }} of
         {{ totalActivitiesCount() }} activities } @else { {{ totalActivitiesCount() }} activities }

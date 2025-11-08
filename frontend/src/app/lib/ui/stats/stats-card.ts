@@ -31,7 +31,7 @@ import { IconName } from '@core/config';
       <div class="flex items-start justify-between space-y-0 pb-2">
         <h3 class="text-sm font-medium tracking-tight">{{ title() }}</h3>
         <div [class]="iconContainerClasses()">
-          <hia-icon [name]="icon()" class="h-4 w-4" />
+          <hia-icon [name]="icon()" [size]="16" />
         </div>
       </div>
       <div class="space-y-2">
@@ -41,7 +41,11 @@ import { IconName } from '@core/config';
           <span [class]="trendBadgeClasses()">
             <hia-icon
               [name]="
-                trend() === 'up' ? 'TrendingUp' : trend() === 'down' ? 'TrendingDown' : 'Minus'
+                trend() === 'up'
+                  ? 'lucideTrendingUp'
+                  : trend() === 'down'
+                  ? 'lucideTrendingDown'
+                  : 'lucideMinus'
               "
               [size]="14"
               class="opacity-90"
