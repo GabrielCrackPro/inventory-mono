@@ -95,13 +95,13 @@
   </div>
 
   <!-- Main Content Grid -->
-  <div class="grid gap-8 lg:grid-cols-12">
+  <div class="grid gap-8 lg:grid-cols-12 lg:items-start">
     <!-- Recent Items -->
     <div class="lg:col-span-8 animate-fade-in-left animate-stagger-2">
       <z-card
         zTitle="Recent Items"
         zDescription="Items you've added recently"
-        class="h-fit overflow-hidden transform transition-all duration-300 hover:shadow-lg"
+        class="h-full overflow-hidden transform transition-all duration-300 hover:shadow-lg"
       >
         @if (isLoading()) {
         <div class="space-y-2">
@@ -127,7 +127,7 @@
             emptyMessage="No items added yet"
             emptyIcon="lucideBox"
             (onItemClick)="handleItemClick($event)"
-            class="max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+            class="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
           />
         </div>
         } @if (recentItems().length > 0) {
@@ -145,14 +145,14 @@
     </div>
 
     <!-- Sidebar -->
-    <div class="lg:col-span-4 space-y-6 animate-fade-in-right animate-stagger-3">
+    <div class="lg:col-span-4 flex flex-col gap-6 animate-fade-in-right animate-stagger-3">
       <!-- Low Stock Alert -->
       <z-card
         zTitle="Stock Alerts"
         [zDescription]="
           lowStockItems().length > 0 ? 'Items that need attention' : 'All items well stocked'
         "
-        class="transform transition-all duration-300 hover:shadow-lg"
+        class="flex-1 transform transition-all duration-300 hover:shadow-lg"
       >
         @if (lowStockItems().length > 0) {
         <div class="animate-fade-in-up">
@@ -161,7 +161,7 @@
             emptyMessage="No stock alerts"
             emptyIcon="lucideCircleCheck"
             (onItemClick)="handleItemClick($event)"
-            class="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+            class="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
           />
           <div class="mt-4 pt-4 border-t border-border/50">
             <z-button
@@ -194,6 +194,7 @@
           [loading]="loadingState().isLoading"
           (refresh)="refreshData()"
           (activityClick)="handleActivityClick($event)"
+          (viewAllActivities)="handleViewAllActivities()"
           class="transform transition-all duration-300 hover:shadow-lg"
         />
       </div>

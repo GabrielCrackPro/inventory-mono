@@ -12,6 +12,7 @@ import type { ClassValue } from 'clsx';
 import { ZardStringTemplateOutletDirective } from '../core/directives/string-template-outlet/string-template-outlet';
 import { IconComponent } from '../icon';
 import { IconName } from '@core/config';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import { commonIcons } from '@core/config/icon.config';
 
 export type ItemStatus = 'normal' | 'low-stock' | 'out-of-stock' | 'new' | 'updated';
@@ -41,7 +42,7 @@ export interface ListItem {
 @Component({
   selector: 'hia-item-list',
   standalone: true,
-  imports: [IconComponent, ZardStringTemplateOutletDirective],
+  imports: [IconComponent, ZardStringTemplateOutletDirective, TitleCasePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   template: `
@@ -75,7 +76,7 @@ export interface ListItem {
           }
 
           <!-- Content area -->
-          <div class="flex-1 min-w-0 space-y-2">
+          <div class="flex-1 min-w-0 space-y-2.5">
             <!-- Title and badges row -->
             <div class="flex items-center gap-2 flex-wrap">
               <h3 [class]="getTitleClasses(item)">{{ item.title }}</h3>
@@ -110,51 +111,48 @@ export interface ListItem {
             </div>
             }
 
-            <!-- Tags and metadata row -->
-            @if (item.tags?.length || item.lastUpdated) {
-            <div class="flex items-center justify-between gap-2 pt-1">
+            <!-- Tags and metadata -->
+            @if (item.tags?.length || item.metadata) {
+            <div class="pt-1 space-y-2">
               <!-- Tags -->
               @if (item.tags?.length) {
-              <div class="flex gap-1 flex-wrap">
-                @for (tag of item.tags?.slice(0, 3) || []; track tag) {
+              <div class="flex gap-1.5 flex-wrap">
+                @for (tag of item.tags?.slice(0, 2) || []; track tag) {
                 <span
-                  class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-muted/60 text-muted-foreground border border-border/40"
+                  class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-muted/60 text-muted-foreground border border-border/40"
                 >
                   {{ tag }}
                 </span>
-                } @if ((item.tags?.length || 0) > 3) {
-                <span class="text-xs text-muted-foreground/60"
-                  >+{{ (item.tags?.length || 0) - 3 }} more</span
+                } @if ((item.tags?.length || 0) > 2) {
+                <span class="text-xs text-muted-foreground/60 self-center"
+                  >+{{ (item.tags?.length || 0) - 2 }} more</span
                 >
                 }
               </div>
               }
 
-              <!-- Metadata chips -->
-              <div class="ml-auto flex items-center gap-1 flex-wrap">
+              <!-- Metadata chips - flexible layout -->
+              <div class="flex flex-wrap gap-2">
                 @if (item.metadata?.['quantity'] != null) {
                 <span
-                  class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-muted/60 text-muted-foreground border border-border/40"
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-secondary/80 text-secondary-foreground border border-border/30 shadow-sm"
                 >
-                  <hia-icon [name]="commonIcons['boxes']" [size]="14" />
-                  <span
-                    >{{ item.metadata?.['quantity']
-                    }}{{ item.metadata?.['unit'] ? ' ' + (item.metadata?.['unit'] || '') : '' }}</span
-                  >
+                  <hia-icon [name]="commonIcons['boxes']" [size]="12" />
+                  <span>{{ item.metadata?.['quantity'] }}{{ item.metadata?.['unit'] ? ' ' + (item.metadata?.['unit'] || '') : '' }}</span>
                 </span>
                 } @if (item.metadata?.['room']) {
                 <span
-                  class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-muted/60 text-muted-foreground border border-border/40"
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200/60 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800/40 shadow-sm"
                 >
-                  <hia-icon [name]="commonIcons['warehouse']" [size]="14" />
-                  <span>{{ item.metadata?.['room'] }}</span>
+                  <hia-icon [name]="commonIcons['room']" [size]="12" />
+                  <span>{{ item.metadata?.['room']?.name || item.metadata?.['room'] }}</span>
                 </span>
                 } @if (item.metadata?.['category']) {
                 <span
-                  class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-muted/60 text-muted-foreground border border-border/40"
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200/60 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800/40 shadow-sm"
                 >
-                  <hia-icon [name]="commonIcons['category']" [size]="14" />
-                  <span>{{ item.metadata?.['category'] }}</span>
+                  <hia-icon [name]="commonIcons['category']" [size]="12" />
+                  <span>{{ (item.metadata?.['category']?.name || item.metadata?.['category']) | titlecase }}</span>
                 </span>
                 }
               </div>
@@ -195,30 +193,33 @@ export class ItemListComponent {
   readonly emptyIcon = input<IconName>('lucideInbox');
   readonly clickable = input<boolean>(true);
   readonly class = input<ClassValue>('');
-  
+
   readonly commonIcons = commonIcons;
 
   readonly onItemClick = output<ListItem>();
 
-  protected readonly containerClasses = computed(() => mergeClasses('space-y-3', this.class()));
+  protected readonly containerClasses = computed(() => mergeClasses('space-y-4', this.class()));
 
   protected getItemClasses(item: ListItem): string {
     return mergeClasses(
-      'group relative p-3 border rounded-2xl transition-colors duration-200 ease-out overflow-hidden',
-      'bg-gradient-to-br from-card/95 to-card/85 backdrop-blur-sm',
+      'group relative p-5 border rounded-2xl transition-all duration-300 ease-out overflow-hidden',
+      'bg-gradient-to-br from-card/98 to-card/92 backdrop-blur-sm',
+      'shadow-sm hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20',
+      'hover:scale-[1.02] hover:-translate-y-1 min-h-[120px]',
       // Status-based styling
       {
-        'border-border/50': !item.status || item.status === 'normal',
-        'border-orange-200/60 bg-gradient-to-br from-orange-50/80 to-card/85 dark:border-orange-900/40 dark:from-orange-950/20':
+        'border-border/40 hover:border-border/60': !item.status || item.status === 'normal',
+        'border-orange-200/70 bg-gradient-to-br from-orange-50/90 to-orange-25/50 dark:border-orange-800/50 dark:from-orange-950/30 hover:border-orange-300/80 dark:hover:border-orange-700/60':
           item.status === 'low-stock',
-        'border-destructive/30 bg-gradient-to-br from-destructive/5 to-card/85':
+        'border-destructive/40 bg-gradient-to-br from-destructive/8 to-destructive/3 hover:border-destructive/50':
           item.status === 'out-of-stock',
-        'border-green-200/60 bg-gradient-to-br from-green-50/80 to-card/85 dark:border-green-900/40 dark:from-green-950/20':
+        'border-green-200/70 bg-gradient-to-br from-green-50/90 to-green-25/50 dark:border-green-800/50 dark:from-green-950/30 hover:border-green-300/80 dark:hover:border-green-700/60':
           item.status === 'new',
       },
       // Interactive states
       {
-        'cursor-pointer': this.clickable(),
+        'cursor-pointer hover:bg-gradient-to-br hover:from-card/100 hover:to-card/95':
+          this.clickable(),
         'cursor-default': !this.clickable(),
       }
     );
@@ -235,8 +236,8 @@ export class ItemListComponent {
 
   protected getIconContainerClasses(item: ListItem): string {
     return mergeClasses(
-      'relative w-14 h-14 rounded-2xl flex items-center justify-center shrink-0',
-      'border shadow-sm',
+      'relative w-16 h-16 rounded-2xl flex items-center justify-center shrink-0',
+      'border shadow-md group-hover:shadow-lg transition-all duration-300',
       // Status-based icon container styling
       {
         'bg-gradient-to-br from-primary/15 to-primary/5 border-primary/15':

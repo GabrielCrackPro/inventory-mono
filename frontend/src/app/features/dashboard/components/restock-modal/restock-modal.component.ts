@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TitleCasePipe } from '@angular/common';
 import { forkJoin, map } from 'rxjs';
 
 import { commonIcons } from '@core/config/icon.config';
@@ -26,7 +27,7 @@ interface RestockItem extends LowStockItem {
 @Component({
   selector: 'hia-restock-modal',
   standalone: true,
-  imports: [FormsModule, ZardQuantityInputComponent, ZardButtonComponent, IconComponent],
+  imports: [FormsModule, ZardQuantityInputComponent, ZardButtonComponent, IconComponent, TitleCasePipe],
   templateUrl: './restock-modal.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -40,22 +40,19 @@ export class ActivityFeed {
   readonly refresh = output<void>();
   readonly commonIcons = commonIcons;
   readonly activityClick = output<EnhancedActivityItem>();
+  readonly viewAllActivities = output<void>();
 
   private readonly _enhancedActivities = signal<EnhancedActivityItem[]>([]);
   private readonly _refreshing = signal<boolean>(false);
   private readonly _expanded = signal<boolean>(false);
 
-  private readonly DEFAULT_VISIBLE_ACTIVITIES = 3;
+  private readonly DEFAULT_VISIBLE_ACTIVITIES = 5;
 
   readonly groupedActivities = computed(() =>
     this._groupActivitiesByDate(this.visibleActivities())
   );
   readonly hasActivities = computed(() => this._enhancedActivities().length > 0);
-  readonly totalActivitiesCount = computed(() =>
-    this.hasActivities()
-      ? this.groupedActivities().reduce((sum, group) => sum + group.activities.length, 0)
-      : 0
-  );
+  readonly totalActivitiesCount = computed(() => this._enhancedActivities().length);
   readonly isRefreshing = computed(() => this._refreshing());
   readonly isLoading = computed(() => this.loading() || this._refreshing());
   readonly isExpanded = computed(() => this._expanded());
@@ -97,6 +94,10 @@ export class ActivityFeed {
 
   toggleExpanded() {
     this._expanded.set(!this._expanded());
+  }
+
+  onViewAllActivities() {
+    this.viewAllActivities.emit();
   }
 
   private _mapActivitiesToEnhancedItems(activities: UserActivity[]): EnhancedActivityItem[] {

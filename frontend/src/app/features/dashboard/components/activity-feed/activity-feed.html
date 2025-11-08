@@ -8,15 +8,26 @@
         {{ totalActivitiesCount() }} activities } @else { {{ totalActivitiesCount() }} activities }
       </span>
     </div>
-    <z-button
-      zType="ghost"
-      zSize="sm"
-      iconName="lucideRefreshCcw"
-      [disabled]="isLoading()"
-      [class]="'h-8 ' + (isRefreshing() ? 'animate-spin' : '')"
-      (click)="refreshActivities()"
-      title="Refresh activities"
-    />
+    <div class="flex items-center gap-2">
+      <z-button
+        zType="text"
+        zSize="sm"
+        iconName="lucideTrendingUp"
+        [disabled]="isLoading()"
+        (click)="onViewAllActivities()"
+        title="View all activities"
+        class="h-8"
+      />
+      <z-button
+        zType="text"
+        zSize="sm"
+        iconName="lucideRefreshCcw"
+        [disabled]="isLoading()"
+        [class]="'h-8 ' + (isRefreshing() ? 'animate-spin' : '')"
+        (click)="refreshActivities()"
+        title="Refresh activities"
+      />
+    </div>
   </div>
 
   <!-- Loading skeleton -->
@@ -176,7 +187,13 @@
       Your activity feed will show recent changes to items, rooms, and houses. Start by adding some
       items to see activity here.
     </p>
-    <z-button zType="default" zSize="sm" iconName="lucidePlus" label="Add First Item" class="mx-auto" />
+    <z-button
+      zType="default"
+      zSize="sm"
+      iconName="lucidePlus"
+      label="Add First Item"
+      class="mx-auto"
+    />
   </div>
   }
 </z-card>

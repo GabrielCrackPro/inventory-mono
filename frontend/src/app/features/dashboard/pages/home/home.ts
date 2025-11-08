@@ -214,7 +214,7 @@ export class HomeComponent implements OnInit {
       return {
         id: item.id,
         title: item.name,
-        subtitle: `${item.room.name} • ${item.category.name}`,
+        subtitle: undefined,
         icon: item.icon,
         badge: `${item.quantity}`,
         badgeVariant: getBadgeVariant(item.quantity),
@@ -222,7 +222,12 @@ export class HomeComponent implements OnInit {
         isNew: isRecent,
         lastUpdated: addedDate,
         tags: ['Recent'],
-        metadata: { addedDate: item.addedDate, originalQuantity: item.quantity },
+        metadata: { 
+          addedDate: item.addedDate, 
+          originalQuantity: item.quantity,
+          room: item.room,
+          category: item.category
+        },
       } as ListItem;
     })
   );
@@ -264,6 +269,12 @@ export class HomeComponent implements OnInit {
     console.log('Activity clicked:', activity);
   }
 
+  handleViewAllActivities(): void {
+    console.log('Navigate to full activity page');
+    // TODO: Navigate to the full activity page when it's created
+    // this._router.navigate(['/activities']);
+  }
+
   lowStockItemsList = computed((): ListItem[] =>
     this.lowStockItems().map((item) => {
       const getStockStatus = (quantity: number) => {
@@ -282,9 +293,7 @@ export class HomeComponent implements OnInit {
       return {
         id: item.id,
         title: item.name,
-        subtitle: `${item.room?.name || 'Unknown Room'} • ${
-          item.category?.name || 'Uncategorized'
-        }`,
+        subtitle: undefined,
         description: `Only ${item.quantity} left in stock`,
         icon: 'lucideTriangleAlert',
         badge: `${item.quantity}`,
