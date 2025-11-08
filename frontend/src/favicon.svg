@@ -1,0 +1,85 @@
+<svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @media (prefers-color-scheme: light) {
+      .logo-bg { fill: url(#logoGradientLight); filter: url(#shadowLight); }
+      .logo-inner { fill: url(#innerGradientLight); }
+      .logo-box { fill: url(#boxGradientLight); }
+      .logo-detail { fill: #3B82F6; }
+      .logo-grid-bg { fill: #FFFFFF; }
+      .logo-grid { fill: #FFFFFF; }
+    }
+    @media (prefers-color-scheme: dark) {
+      .logo-bg { fill: url(#logoGradientDark); filter: url(#shadowDark); }
+      .logo-inner { fill: url(#innerGradientDark); }
+      .logo-box { fill: url(#boxGradientDark); }
+      .logo-detail { fill: #60A5FA; }
+      .logo-grid-bg { fill: #E2E8F0; }
+      .logo-grid { fill: #F1F5F9; }
+    }
+  </style>
+  <defs>
+    <!-- Light theme gradients -->
+    <linearGradient id="logoGradientLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2563EB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1D4ED8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="innerGradientLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0.05" />
+    </linearGradient>
+    <linearGradient id="boxGradientLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.95" />
+      <stop offset="100%" style="stop-color:#F8FAFC;stop-opacity:0.85" />
+    </linearGradient>
+    <filter id="shadowLight" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+    
+    <!-- Dark theme gradients -->
+    <linearGradient id="logoGradientDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2563EB;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="innerGradientDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.1" />
+    </linearGradient>
+    <linearGradient id="boxGradientDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F1F5F9;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#E2E8F0;stop-opacity:0.8" />
+    </linearGradient>
+    <filter id="shadowDark" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container -->
+  <rect x="2" y="2" width="36" height="36" rx="8" class="logo-bg" />
+  
+  <!-- Inner highlight -->
+  <rect x="3" y="3" width="34" height="34" rx="7" class="logo-inner" />
+  
+  <!-- Inventory boxes -->
+  <rect x="11" y="13" width="9" height="7" rx="2" class="logo-box" opacity="0.4" transform="rotate(-3 15.5 16.5)" />
+  <rect x="13" y="15" width="9" height="7" rx="2" class="logo-box" opacity="0.7" />
+  <rect x="15" y="17" width="9" height="7" rx="2" class="logo-box" />
+  
+  <!-- Box details -->
+  <rect x="17" y="19" width="5" height="0.8" rx="0.4" class="logo-detail" opacity="0.7" />
+  <rect x="17" y="21" width="3" height="0.8" rx="0.4" class="logo-detail" opacity="0.7" />
+  <rect x="17" y="23" width="4" height="0.8" rx="0.4" class="logo-detail" opacity="0.7" />
+  
+  <!-- Dashboard grid -->
+  <circle cx="28" cy="12" r="3" class="logo-grid-bg" opacity="0.15" />
+  <rect x="26.5" y="10.5" width="1" height="1" rx="0.2" class="logo-grid" opacity="0.9" />
+  <rect x="28" y="10.5" width="1" height="1" rx="0.2" class="logo-grid" opacity="0.9" />
+  <rect x="29.5" y="10.5" width="1" height="1" rx="0.2" class="logo-grid" opacity="0.9" />
+  <rect x="26.5" y="12" width="1" height="1" rx="0.2" class="logo-grid" opacity="0.9" />
+  <rect x="28" y="12" width="1" height="1" rx="0.2" class="logo-grid" opacity="0.9" />
+  <rect x="29.5" y="12" width="1" height="1" rx="0.2" class="logo-grid" opacity="0.9" />
+  <rect x="26.5" y="13.5" width="1" height="1" rx="0.2" class="logo-grid" opacity="0.9" />
+  <rect x="28" y="13.5" width="1" height="1" rx="0.2" class="logo-grid" opacity="0.9" />
+  <rect x="29.5" y="13.5" width="1" height="1" rx="0.2" class="logo-grid" opacity="0.9" />
+</svg>

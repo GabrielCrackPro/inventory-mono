@@ -6,6 +6,7 @@ import { HouseSelectorComponent, HouseSwitcherComponent, UserHouse } from '@feat
 import { ProfileService } from '@features/user';
 import { AuthUser } from '@shared/models';
 import { AlertDialogService, DialogService } from '@shared/services';
+import { LogoComponent } from '@shared/components';
 import { ZHeaderComponent } from '@ui/layout';
 import { ZardMenuModule } from '@ui/menu';
 import { ThemeSwitcherComponent } from '../theme-switcher';
@@ -18,6 +19,7 @@ import { HouseContextService } from '@features/house/services/house-context';
     ThemeSwitcherComponent,
     HouseSwitcherComponent,
     ProfileMenuComponent,
+    LogoComponent,
     ZardMenuModule,
   ],
   templateUrl: './header.html',

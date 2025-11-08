@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { LogoComponent } from '@shared/components';
 import { ZardButtonComponent } from '@ui/button';
 import { ZardCardComponent } from '@ui/card';
 import { IconComponent } from '@ui/icon';
@@ -21,7 +22,7 @@ export interface AuthLayoutConfig {
 
 @Component({
   selector: 'hia-auth-layout',
-  imports: [ZardCardComponent, ZardButtonComponent, IconComponent, RouterLink],
+  imports: [ZardCardComponent, ZardButtonComponent, IconComponent, LogoComponent, RouterLink],
   templateUrl: './auth-layout.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

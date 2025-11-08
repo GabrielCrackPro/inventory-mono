@@ -10,6 +10,7 @@ import { RouterLinkWithHref, RouterOutlet } from '@angular/router';
 import { commonIcons, IconName } from '@core/config';
 import { StorageService } from '@core/services';
 import { HeaderComponent } from '@features/layout';
+import { LogoComponent } from '@shared/components';
 import { LayoutModule, SidebarGroupComponent, SidebarGroupLabelComponent } from '@ui/layout';
 import { ZardMenuModule } from '@ui/menu';
 import { NavItemComponent } from '@ui/navigation';
@@ -27,6 +28,7 @@ interface MenuItem {
     ZardMenuModule,
     RouterOutlet,
     HeaderComponent,
+    LogoComponent,
     NavItemComponent,
     SidebarGroupComponent,
     SidebarGroupLabelComponent,

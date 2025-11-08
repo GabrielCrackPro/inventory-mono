@@ -6,14 +6,9 @@
   <div class="hidden lg:flex lg:flex-1 lg:flex-col lg:justify-center lg:px-10 xl:px-14">
     <div class="mx-auto max-w-md animate-fade-in-up">
       <!-- Brand Logo -->
-      <div class="flex items-center space-x-3 mb-8">
-        <div class="flex items-center justify-center w-12 h-12 bg-primary rounded-xl shadow-lg">
-          <hia-icon name="lucideHouse" [size]="24" class="text-primary-foreground" />
-        </div>
-        <div>
-          <h2 class="text-2xl font-bold text-foreground">InventoryApp</h2>
-          <p class="text-sm text-muted-foreground">Smart Inventory Management</p>
-        </div>
+      <div class="mb-8">
+        <hia-logo [size]="48" variant="default" />
+        <p class="text-sm text-muted-foreground mt-2">Smart Inventory Management</p>
       </div>
 
       <!-- Features List -->
@@ -62,15 +57,7 @@
     <div class="mx-auto w-full max-w-md animate-fade-in-up">
       <!-- Mobile Brand Header -->
       <div class="text-center mb-8 lg:hidden">
-        <div
-          class="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mb-4 shadow-sm"
-        >
-          <hia-icon [name]="config().icon" [size]="32" class="text-primary" />
-        </div>
-        <div class="flex items-center justify-center space-x-2 mb-2">
-          <hia-icon name="lucideHouse" [size]="20" class="text-primary" />
-          <span class="text-lg font-bold text-foreground">InventoryApp</span>
-        </div>
+        <hia-logo [size]="40" variant="compact" class="justify-center" />
       </div>
 
       <!-- Page Header -->

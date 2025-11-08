@@ -29,6 +29,7 @@ export const commonIcons: Record<string, IconName> = {
   room: 'lucideBed',
   category: 'lucideTag',
   user: 'lucideUser',
+  logo: 'lucideBox', // Fallback for when logo component isn't available
 
   // Actions
   add: 'lucidePlus',
