@@ -1,0 +1,141 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="text-center">
+    <hia-icon [name]="commonIcons['item']" [size]="48" class="text-primary mx-auto mb-4" />
+    <h2 class="text-xl font-semibold mb-2">Restock Low Stock Items</h2>
+    <p class="text-muted-foreground">Update quantities for items that are running low</p>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+  <div class="flex items-center justify-center py-8">
+    <hia-icon
+      [name]="commonIcons['loading']"
+      [size]="32"
+      class="animate-spin text-muted-foreground"
+    />
+    <span class="ml-2 text-muted-foreground">Loading low stock items...</span>
+  </div>
+  }
+
+  <!-- Empty State -->
+  @else if (lowStockItems().length === 0) {
+  <div class="text-center py-8">
+    <hia-icon [name]="commonIcons['success']" [size]="48" class="text-green-600 mx-auto mb-4" />
+    <h3 class="text-lg font-medium mb-2">All items are well stocked!</h3>
+    <p class="text-muted-foreground">No items are currently running low on stock.</p>
+  </div>
+  }
+
+  <!-- Items List -->
+  @else {
+  <div class="space-y-4 max-h-96 overflow-y-auto">
+    @for (item of lowStockItems(); track item.id) {
+    <div class="border rounded-lg p-4 space-y-3">
+      <!-- Item Header -->
+      <div class="flex items-start justify-between">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-1">
+            <h4 class="font-medium">{{ item.name }}</h4>
+            <hia-icon
+              [name]="getStockStatusIcon(getStockStatus(item))"
+              [size]="16"
+              [class]="getStockStatusColor(getStockStatus(item))"
+            />
+          </div>
+          <div class="text-sm text-muted-foreground">
+            {{ item.room?.name || 'Unknown Room' }} • {{ item.category?.name || 'Uncategorized' }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Current vs New Quantity -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+        <!-- Current Stock -->
+        <div class="text-center">
+          <div class="text-xs text-muted-foreground mb-1">Current Stock</div>
+          <div class="flex items-center justify-center gap-1">
+            <span
+              class="text-lg font-semibold"
+              [class]="
+                item.quantity === 0
+                  ? 'text-red-600'
+                  : item.quantity <= item.minStock
+                  ? 'text-yellow-600'
+                  : ''
+              "
+            >
+              {{ item.quantity }}
+            </span>
+            <span class="text-sm text-muted-foreground">{{ item.unit }}</span>
+          </div>
+        </div>
+
+        <!-- Quantity Input -->
+        <div class="text-center">
+          <div class="text-xs text-muted-foreground mb-1">New Stock</div>
+          <z-quantity-input
+            [min]="0"
+            [max]="9999"
+            [step]="1"
+            [(ngModel)]="item.newQuantity"
+            [zSize]="'default'"
+            (valueChange)="onQuantityChange(item.id, $event)"
+            class="w-full max-w-32 mx-auto"
+          />
+        </div>
+
+        <!-- Change Indicator -->
+        <div class="text-center">
+          <div class="text-xs text-muted-foreground mb-1">Change</div>
+          @if (item.newQuantity !== item.quantity) {
+          <div class="flex items-center justify-center gap-1">
+            @if (item.newQuantity > item.quantity) {
+            <hia-icon [name]="commonIcons['up']" [size]="14" class="text-green-600" />
+            <span class="text-sm font-medium text-green-600">
+              +{{ item.newQuantity - item.quantity }}
+            </span>
+            } @else {
+            <hia-icon [name]="commonIcons['down']" [size]="14" class="text-red-600" />
+            <span class="text-sm font-medium text-red-600">
+              {{ item.newQuantity - item.quantity }}
+            </span>
+            }
+          </div>
+          } @else {
+          <span class="text-sm text-muted-foreground">No change</span>
+          }
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Actions -->
+  <div class="flex items-center justify-between pt-4 border-t">
+    <div class="text-sm text-muted-foreground">
+      @if (hasChanges()) {
+      {{ getChangedItemsCount() }}
+      item(s) will be updated } @else { No changes made }
+    </div>
+
+    <div class="flex gap-2">
+      <z-button
+        zType="outline"
+        label="Reset"
+        [iconName]="commonIcons['cancel']"
+        [disabled]="!hasChanges() || isSaving()"
+        (click)="onCancel()"
+      />
+      <z-button
+        zType="default"
+        label="Save Changes"
+        [iconName]="commonIcons['save']"
+        [disabled]="!hasChanges()"
+        [zLoading]="isSaving()"
+        (click)="onSave()"
+      />
+    </div>
+  </div>
+  }
+</div>

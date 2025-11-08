@@ -19,6 +19,7 @@ export * from './list';
 export * from './menu';
 export * from './navigation';
 export * from './popover';
+export * from './quantity-input';
 export * from './radio';
 export * from './segmented';
 export * from './select';

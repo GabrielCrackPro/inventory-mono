@@ -23,13 +23,13 @@ export const iconProviders = [
 
 export const commonIcons: Record<string, IconName> = {
   // Core entities
-  dashboard: 'matDashboard',
+  dashboard: 'lucideLayoutDashboard',
   item: 'lucideBox',
   house: 'lucideHouse',
   room: 'lucideBed',
   category: 'lucideTag',
   user: 'lucideUser',
-  logo: 'lucideBox', // Fallback for when logo component isn't available
+  logo: 'lucideBox',
 
   // Actions
   add: 'lucidePlus',

@@ -16,6 +16,7 @@ import {
   DashboardService,
   HomeSkeleton,
 } from '@features/dashboard';
+import { RestockModalComponent } from '@features/dashboard/components/restock-modal';
 import { HouseService } from '@features/house';
 import { HouseContextService } from '@features/house/services';
 import { ItemService } from '@features/item';
@@ -189,10 +190,26 @@ export class HomeComponent implements OnInit {
   }
 
   // Transform recent items for the item list component
+  // This computed property automatically updates when recentItems() changes after restocking
   recentItemsList = computed((): ListItem[] =>
     this.recentItems().map((item) => {
       const addedDate = new Date(item.addedDate);
       const isRecent = new Date().getTime() - addedDate.getTime() < 24 * 60 * 60 * 1000; // Less than 24 hours
+
+      // Determine stock status based on quantity
+      const getStockStatus = (quantity: number) => {
+        if (quantity === 0) return 'out-of-stock';
+        if (quantity <= 2) return 'low-stock';
+        return 'normal';
+      };
+
+      // Determine badge variant based on quantity
+      const getBadgeVariant = (quantity: number) => {
+        if (quantity === 0) return 'destructive';
+        if (quantity <= 2) return 'warning';
+        if (quantity <= 5) return 'default';
+        return 'success';
+      };
 
       return {
         id: item.id,
@@ -200,43 +217,83 @@ export class HomeComponent implements OnInit {
         subtitle: `${item.room.name} • ${item.category.name}`,
         icon: item.icon,
         badge: `${item.quantity}`,
-        badgeVariant: item.quantity > 10 ? 'success' : item.quantity > 5 ? 'default' : 'warning',
-        status: item.quantity <= 2 ? 'low-stock' : item.quantity === 0 ? 'out-of-stock' : 'normal',
+        badgeVariant: getBadgeVariant(item.quantity),
+        status: getStockStatus(item.quantity),
         isNew: isRecent,
         lastUpdated: addedDate,
         tags: ['Recent'],
-        metadata: { addedDate: item.addedDate },
+        metadata: { addedDate: item.addedDate, originalQuantity: item.quantity },
       } as ListItem;
     })
   );
 
+  handleRestockClick(): void {
+    const component = RestockModalComponent;
+    const dialogRef = this._dialogService.create({
+      zContent: component,
+      zData: {
+        lowStockItems: this.lowStockItems(),
+      },
+      zOkText: 'Save Changes',
+      zOkIcon: 'lucideSave',
+      zCancelText: 'Close',
+      zWidth: 'lg',
+      zHideFooter: true,
+      zOnOk: (cmp: RestockModalComponent) => {
+        cmp.onOk();
+        return false;
+      },
+      zOnCancel: (cmp: RestockModalComponent) => {
+        cmp.onCancel();
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.success) {
+        this._loadDashboardData();
+        this._loadCounters();
+      }
+    });
+  }
+
   handleItemClick(item: ListItem): void {
     console.log('Item clicked:', item);
-    // TODO: Navigate to item details or open edit dialog
   }
 
   handleActivityClick(activity: any): void {
     console.log('Activity clicked:', activity);
-    // TODO: Navigate to related item/room/house or show activity details
   }
 
-  // Transform low stock items for the item list component
   lowStockItemsList = computed((): ListItem[] =>
-    this.lowStockItems().map(
-      (item) =>
-        ({
-          id: item.id,
-          title: item.name,
-          subtitle: `${item.room.name}`,
-          description: `Only ${item.quantity} left in stock`,
-          icon: 'lucideTriangleAlert',
-          badge: `${item.quantity}`,
-          badgeVariant: item.quantity === 0 ? 'destructive' : 'warning',
-          status: item.quantity === 0 ? 'out-of-stock' : 'low-stock',
-          tags: ['Low Stock'],
-          metadata: { quantity: item.quantity },
-        } as ListItem)
-    )
+    this.lowStockItems().map((item) => {
+      const getStockStatus = (quantity: number) => {
+        if (quantity === 0) return 'out-of-stock';
+        if (quantity <= 2) return 'low-stock';
+        return 'normal';
+      };
+
+      const getBadgeVariant = (quantity: number) => {
+        if (quantity === 0) return 'destructive';
+        if (quantity <= 2) return 'warning';
+        if (quantity <= 5) return 'default';
+        return 'success';
+      };
+
+      return {
+        id: item.id,
+        title: item.name,
+        subtitle: `${item.room?.name || 'Unknown Room'} • ${
+          item.category?.name || 'Uncategorized'
+        }`,
+        description: `Only ${item.quantity} left in stock`,
+        icon: 'lucideTriangleAlert',
+        badge: `${item.quantity}`,
+        badgeVariant: getBadgeVariant(item.quantity),
+        status: getStockStatus(item.quantity),
+        tags: ['Low Stock'],
+        metadata: { quantity: item.quantity, room: item.room, category: item.category },
+      } as ListItem;
+    })
   );
 
   private _buildStatCards({

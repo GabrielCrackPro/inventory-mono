@@ -60,7 +60,6 @@ export interface Item {
   icon?: IconName;
 }
 
-// Form data interface for creating/updating items
 export interface ItemFormData {
   // General Info
   name: string;
@@ -79,22 +78,21 @@ export interface ItemFormData {
   minStock: number;
 
   // Purchase Info
-  purchaseDate: string; // Form uses string, converted to Date in service
+  purchaseDate: string;
   price: number;
   supplier: string;
   warranty: string;
 
   // Additional Details
-  tags: string; // Form uses comma-separated string, converted to array in service
+  tags: string;
   notes: string;
 
   // Sharing & Access
   isShared: boolean;
-  sharedWith: string; // Form uses comma-separated string, converted to array in service
+  sharedWith: string;
   visibility: ItemVisibility;
 }
 
-// Existing interfaces for backward compatibility
 export interface RecentItem {
   id: string;
   name: string;
@@ -110,6 +108,8 @@ export interface LowStockItem {
   name: string;
   room: any;
   quantity: number;
+  category: any;
+  unit: ItemUnit;
 }
 
 export interface ActivityItem {
@@ -237,6 +237,8 @@ export class ItemHelpers {
         name: item.name,
         room: item.room,
         quantity: item.quantity,
+        category: item.category,
+        unit: item.unit,
       };
     }
     return null;
