@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 import { PrismaService } from '../../prisma';
-import { MailService, UnauthorizedException } from '../../shared';
+import { UnauthorizedException, MailService } from '../../shared';
 import { ActivityService } from '../activity/activity.service';
 import { Role, UserService } from '../user';
 
@@ -48,6 +48,75 @@ export class AuthService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...result } = user;
     return result as AuthUser;
+  }
+
+  async requestPasswordReset(email: string) {
+    const user = await this.usersService.findByEmail(email);
+    // Always respond success to avoid user enumeration
+    if (!user) return { ok: true };
+
+    const raw = randomUUID();
+    const tokenHash = await bcrypt.hash(raw, 10);
+    const expiresAt = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
+
+    // Persist token
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    await this.prisma.passwordResetToken.create({
+      data: {
+        tokenHash,
+        userId: user.id,
+        expiresAt,
+      },
+    });
+
+    const publicBase =
+      process.env.RESET_LINK_BASE ||
+      'http://localhost:4200/auth/reset-password?token=';
+    const tokenToSend = `${user.id}.${raw}`;
+    const link = `${publicBase}${encodeURIComponent(tokenToSend)}`;
+
+    await this.mail
+      .sendPasswordResetEmail(user.email, { name: user.name, link })
+      .catch(() => undefined);
+
+    return { ok: true };
+  }
+
+  private async verifyAndConsumePasswordResetToken(token: string) {
+    const [userIdStr, raw] = token.split('.');
+    const userId = Number(userIdStr);
+    if (!userId || !raw) throw new BadRequestException('Invalid token');
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const tokens = await this.prisma.passwordResetToken.findMany({
+      where: { userId, usedAt: null, expiresAt: { gt: new Date() } },
+      orderBy: { createdAt: 'desc' },
+    });
+    for (const t of tokens) {
+      if (await bcrypt.compare(raw, t.tokenHash)) {
+        // mark used
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        await this.prisma.passwordResetToken.update({
+          where: { id: t.id },
+          data: { usedAt: new Date() },
+        });
+        return userId;
+      }
+    }
+    throw new BadRequestException('Invalid or expired token');
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const userId = await this.verifyAndConsumePasswordResetToken(token);
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { password: hashed },
+    });
+    return { ok: true };
   }
 
   async register(name: string, email: string, password: string) {

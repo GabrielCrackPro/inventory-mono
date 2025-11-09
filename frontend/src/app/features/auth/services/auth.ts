@@ -72,6 +72,25 @@ export class AuthService {
   }
 
   /**
+   * Requests a password reset email to be sent to the user.
+   */
+  forgotPassword(email: string) {
+    return this._apiService.post<{ ok: boolean }, { email: string }>('forgotPassword', {
+      email,
+    });
+  }
+
+  /**
+   * Resets the password using a token from the email link.
+   */
+  resetPassword(token: string, password: string) {
+    return this._apiService.post<{ ok: boolean }, { token: string; password: string }>('resetPassword', {
+      token,
+      password,
+    });
+  }
+
+  /**
    * Checks if the user is authenticated (delegates to TokenService).
    */
   isAuthenticated(): boolean {

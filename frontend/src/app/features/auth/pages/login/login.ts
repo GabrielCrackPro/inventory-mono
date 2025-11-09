@@ -53,11 +53,7 @@ export class LoginComponent {
   }
 
   onForgotPassword(): void {
-    // TODO: Implement forgot password functionality
-    this._toastService.info({
-      title: 'Forgot Password',
-      message: 'Forgot password functionality will be implemented soon.',
-    });
+    this._router.navigate(['/auth/reset-password']);
   }
 
   private _handleLogin(response: LoginResponse) {

@@ -18,6 +18,14 @@ export const authRoutes: Routes = [
         loadComponent: () =>
           import('@features/auth/pages/register/register').then((m) => m.RegisterComponent),
       }),
+      createRoute({
+        title: 'Reset Password',
+        path: 'reset-password',
+        loadComponent: () =>
+          import('@features/auth/pages/reset-password/reset-password').then(
+            (m) => m.ResetPasswordComponent
+          ),
+      }),
     ],
   }),
 ];

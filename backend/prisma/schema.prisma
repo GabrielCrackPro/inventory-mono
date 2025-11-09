@@ -61,6 +61,7 @@ model User {
   refreshTokens RefreshToken[]
   ownedRooms    Room[]         @relation("RoomOwner")
   sharedRooms   RoomAccess[]
+  resetTokens   PasswordResetToken[]
 }
 
 model Room {
@@ -174,6 +175,19 @@ model RefreshToken {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  tokenHash String
+  userId    Int
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model Activity {

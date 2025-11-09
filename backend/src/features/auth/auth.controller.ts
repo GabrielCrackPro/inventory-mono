@@ -7,6 +7,8 @@ import {
   RefreshDto,
   RefreshResponseDto,
   RegisterDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
 } from './auth.dto';
 import { JwtAuthGuard } from '../../shared';
 import { AuthService } from './auth.service';
@@ -50,6 +52,26 @@ export class AuthController {
   })
   async refresh(@Body() body: RefreshDto) {
     return this.authService.refresh(body.userId, body.refreshToken);
+  }
+
+  @Post('forgot-password')
+  @ApiDocs({
+    summary: 'Request a password reset email',
+    bodyType: ForgotPasswordDto,
+    responses: [{ status: 200, description: 'If the email exists, a reset email will be sent' }],
+  })
+  async forgotPassword(@Body() body: ForgotPasswordDto) {
+    return this.authService.requestPasswordReset(body.email);
+  }
+
+  @Post('reset-password')
+  @ApiDocs({
+    summary: 'Reset password using token sent by email',
+    bodyType: ResetPasswordDto,
+    responses: [{ status: 200, description: 'Password reset successful' }],
+  })
+  async resetPassword(@Body() body: ResetPasswordDto) {
+    return this.authService.resetPassword(body.token, body.password);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -8,6 +8,8 @@ export interface ApiEndpoints {
   register: string;
   login: string;
   logout: string;
+  forgotPassword: string;
+  resetPassword: string;
   users: string;
   items: string;
   lowStockItems: string;
@@ -31,6 +33,8 @@ export class ApiService {
     register: 'auth/register',
     login: 'auth/login',
     logout: 'auth/logout',
+    forgotPassword: 'auth/forgot-password',
+    resetPassword: 'auth/reset-password',
     users: 'users',
     items: 'items',
     lowStockItems: 'items/low-stock',

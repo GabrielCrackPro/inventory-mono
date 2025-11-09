@@ -93,4 +93,21 @@ export class RefreshResponseDto implements IRefreshResponseDto {
   jti: string;
 }
 
+export class ForgotPasswordDto {
+  @ApiProperty({ example: 'user@example.com' })
+  @IsEmail()
+  email: string;
+}
+
+export class ResetPasswordDto {
+  @ApiProperty({ example: 'token-from-email' })
+  @IsString()
+  token: string;
+
+  @ApiProperty({ example: 'newStrongPassword' })
+  @IsString()
+  @MinLength(6)
+  password: string;
+}
+
 export default {};

@@ -1,0 +1,26 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
+  <z-form-field>
+    <label z-form-label>Email Address</label>
+    <z-form-control>
+      <input
+        z-input
+        type="email"
+        placeholder="Enter your email address"
+        formControlName="email"
+        [zStatus]="emailValid ? null : 'error'"
+        autocomplete="email"
+      />
+    </z-form-control>
+    @if (!emailValid) {
+    <z-form-message zType="error">{{ emailErrorMessage }}</z-form-message>
+    }
+  </z-form-field>
+
+  <z-button
+    type="submit"
+    [zLoading]="isLoading()"
+    [disabled]="disabled"
+    label="Send reset link"
+    class="w-full"
+  />
+</form>
