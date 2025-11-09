@@ -50,6 +50,8 @@ export class PurgeService {
             oldRefresh?.count ?? 0
           })`,
         );
+      } else {
+        this.logger.log('Purge ran — nothing to prune');
       }
     } catch (e) {
       this.logger.warn(
