@@ -164,6 +164,23 @@ export class AuthService {
     // Always respond success to avoid user enumeration
     if (!user) return { ok: true };
 
+    // Invalidate existing active tokens and purge expired ones for this user
+    try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      await this.prisma.passwordResetToken.updateMany({
+        where: { userId: user.id, usedAt: null },
+        data: { usedAt: new Date() },
+      });
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      await this.prisma.passwordResetToken.deleteMany({
+        where: { userId: user.id, expiresAt: { lt: new Date() } },
+      });
+    } catch (e) {
+      void e;
+    }
+
     const raw = randomUUID();
     const tokenHash = await bcrypt.hash(raw, 10);
     const expiresAt = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
@@ -225,6 +242,16 @@ export class AuthService {
       where: { id: userId },
       data: { password: hashed },
     });
+    // After resetting the password, remove any other active tokens for this user
+    try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      await this.prisma.passwordResetToken.deleteMany({
+        where: { userId, usedAt: null },
+      });
+    } catch (e) {
+      void e;
+    }
     return { ok: true };
   }
 

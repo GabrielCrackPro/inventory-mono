@@ -190,6 +190,7 @@ model PasswordResetToken {
 
   @@index([userId])
   @@index([expiresAt])
+  @@index([tokenHash])
 }
 
 model EmailVerificationCode {

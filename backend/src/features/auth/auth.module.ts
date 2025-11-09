@@ -4,11 +4,12 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from '../user';
 import { ActivityModule } from '../activity/activity.module';
 import { PrismaModule } from 'src/prisma';
+import { PurgeService } from './purge.service';
 
 @Module({
   imports: [UsersModule, forwardRef(() => ActivityModule), PrismaModule],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, PurgeService],
   exports: [AuthService],
 })
 export class AuthModule {}
