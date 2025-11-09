@@ -12,7 +12,14 @@ export class ProfileService {
   private readonly _apiService = inject(ApiService);
 
   getProfile() {
-    return this._storageService.getItem<AuthUser>('profile');
+    const p = this._storageService.getItem<AuthUser>('profile');
+    if (!p) return p;
+    if (typeof (p as any).emailVerified === 'undefined') {
+      const normalized = { ...p, emailVerified: false } as AuthUser;
+      this._storageService.setItem('profile', normalized);
+      return normalized;
+    }
+    return p;
   }
 
   getActivities() {
@@ -24,7 +31,9 @@ export class ProfileService {
   }
 
   updateProfile(profile: Partial<AuthUser>) {
-    this._storageService.setItem('profile', profile);
+    const current = this.getProfile();
+    const merged = { ...(current ?? {}), ...profile } as AuthUser;
+    this._storageService.setItem('profile', merged);
   }
 
   savePreferences(prefs: Record<string, any>) {
@@ -48,6 +57,17 @@ export class ProfileService {
       ...this.getProfile(),
       stats: newStats,
     });
+  }
+
+  /**
+   * Fetches the latest profile from the API and persists it to storage.
+   */
+  refreshProfileFromServer() {
+    const current = this.getProfile();
+    if (!current) return undefined as any;
+    return this._apiService.getOne<AuthUser>('users', current.id).pipe(
+      tap((fresh) => this._storageService.setItem('profile', fresh))
+    );
   }
 
   clearProfile() {

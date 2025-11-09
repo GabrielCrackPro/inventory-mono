@@ -14,6 +14,7 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  emailVerified: boolean;
   preferences?: Record<string, any>;
   createdAt: Date;
   updatedAt: Date;

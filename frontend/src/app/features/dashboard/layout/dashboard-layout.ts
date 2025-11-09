@@ -14,6 +14,7 @@ import { LogoComponent } from '@shared/components';
 import { LayoutModule, SidebarGroupComponent, SidebarGroupLabelComponent } from '@ui/layout';
 import { ZardMenuModule } from '@ui/menu';
 import { NavItemComponent } from '@ui/navigation';
+import { DashboardAlertsComponent } from '../components';
 
 interface MenuItem {
   icon: IconName;
@@ -32,6 +33,7 @@ interface MenuItem {
     NavItemComponent,
     SidebarGroupComponent,
     SidebarGroupLabelComponent,
+    DashboardAlertsComponent,
     RouterLinkWithHref,
   ],
   templateUrl: './dashboard-layout.html',

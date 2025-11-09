@@ -91,6 +91,25 @@ export class AuthService {
   }
 
   /**
+   * Verifies the user's email using a 6-digit code.
+   */
+  verifyEmail(email: string, code: string) {
+    return this._apiService.post<{ ok: boolean }, { email: string; code: string }>('verifyEmail', {
+      email,
+      code,
+    });
+  }
+
+  /**
+   * Resends the email verification code to the given email.
+   */
+  resendVerification(email: string) {
+    return this._apiService.post<{ ok: boolean }, { email: string }>('resendVerification', {
+      email,
+    });
+  }
+
+  /**
    * Checks if the user is authenticated (delegates to TokenService).
    */
   isAuthenticated(): boolean {

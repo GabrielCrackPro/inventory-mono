@@ -1,0 +1,16 @@
+<div class="space-y-3">
+  @if (showEmailNotVerified()) {
+  <z-alert
+    zTitle="Verify your email"
+    zDescription="Your email address is not verified. Some features may be limited until you verify it."
+    zType="warning"
+    zAppearance="outline"
+    class="flex items-start gap-3 p-4 rounded-lg border"
+  >
+    <div class="flex flex-wrap items-center gap-3">
+      <z-button zType="link" zSize="sm" label="Verify now" (click)="goToVerify()" />
+      <z-button zSize="sm" label="Resend code" (click)="onResend()" [disabled]="isResending()" />
+    </div>
+  </z-alert>
+  }
+</div>

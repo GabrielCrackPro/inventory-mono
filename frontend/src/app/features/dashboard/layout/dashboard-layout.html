@@ -13,8 +13,8 @@
     >
       <!-- Logo Section -->
       <div class="px-4 py-6 border-b border-border/50">
-        <hia-logo 
-          [size]="32" 
+        <hia-logo
+          [size]="32"
           [variant]="sidebarCollapsed() ? 'icon-only' : 'compact'"
           [showText]="!sidebarCollapsed()"
         />
@@ -78,6 +78,7 @@
     <!-- Main Content -->
     <main class="flex-1 overflow-auto bg-background">
       <div class="mx-auto max-w-7xl p-6">
+        <hia-dashboard-alerts />
         <router-outlet />
       </div>
     </main>

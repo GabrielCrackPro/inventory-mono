@@ -50,6 +50,115 @@ export class AuthService {
     return result as AuthUser;
   }
 
+  // Email verification (OTP)
+  private otpExpiryMinutes() {
+    const v = Number(process.env.OTP_EXP_MINUTES ?? 10);
+    return Number.isFinite(v) && v > 0 ? v : 10;
+  }
+
+  private otpMaxAttempts() {
+    const v = Number(process.env.OTP_MAX_ATTEMPTS ?? 5);
+    return Number.isFinite(v) && v > 0 ? v : 5;
+  }
+
+  private generateOtp(): string {
+    const n = Math.floor(Math.random() * 1000000);
+    return n.toString().padStart(6, '0');
+  }
+
+  async sendVerificationCode(email: string) {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) return { ok: true };
+
+    const code = this.generateOtp();
+    const codeHash = await bcrypt.hash(code, 10);
+    const expiresAt = new Date(
+      Date.now() + this.otpExpiryMinutes() * 60 * 1000,
+    );
+
+    // @ts-ignore
+    await this.prisma.emailVerificationCode.create({
+      data: { userId: user.id, codeHash, expiresAt },
+    });
+
+    await this.mail
+      .sendEmailVerificationEmail(user.email, {
+        name: user.name,
+        code,
+        expiresMinutes: this.otpExpiryMinutes(),
+      })
+      .catch(() => undefined);
+
+    return { ok: true };
+  }
+
+  async verifyEmail(email: string, code: string) {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) throw new BadRequestException('Invalid email or code');
+
+    if (user['emailVerified']) return { ok: true };
+
+    // @ts-ignore
+    const codes = await this.prisma.emailVerificationCode.findMany({
+      where: { userId: user.id, usedAt: null, expiresAt: { gt: new Date() } },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    });
+
+    for (const c of codes) {
+      if (await bcrypt.compare(code, c.codeHash)) {
+        // mark used and set user verified
+        // @ts-ignore
+        await this.prisma.emailVerificationCode.update({
+          where: { id: c.id },
+          data: { usedAt: new Date() },
+        });
+        await this.prisma.user.update({
+          where: { id: user.id },
+          data: { emailVerified: true },
+        });
+        // Send welcome email after verifying email
+        this.mail
+          .sendWelcomeEmail(user.email, { name: user.name })
+          .catch(() => undefined);
+        return { ok: true };
+      }
+    }
+
+    // Increment attempts on the latest code (if any) and enforce limit
+    const latest = codes[0];
+    if (latest) {
+      const attempts = (latest.attempts ?? 0) + 1;
+      // @ts-ignore
+      await this.prisma.emailVerificationCode.update({
+        where: { id: latest.id },
+        data: { attempts },
+      });
+      if (attempts >= this.otpMaxAttempts()) {
+        // Mark as used to invalidate further attempts on this code
+        // @ts-ignore
+        await this.prisma.emailVerificationCode.update({
+          where: { id: latest.id },
+          data: { usedAt: new Date() },
+        });
+      }
+    }
+
+    throw new BadRequestException('Invalid or expired code');
+  }
+
+  async resendVerification(email: string) {
+    // Optionally, invalidate existing active codes
+    const user = await this.usersService.findByEmail(email);
+    if (!user) return { ok: true };
+    // @ts-ignore
+    await this.prisma.emailVerificationCode.updateMany({
+      where: { userId: user.id, usedAt: null },
+      data: { usedAt: new Date() },
+    });
+    return this.sendVerificationCode(email);
+  }
+
   async requestPasswordReset(email: string) {
     const user = await this.usersService.findByEmail(email);
     // Always respond success to avoid user enumeration
@@ -164,7 +273,8 @@ export class AuthService {
       { roomId: defaultRoom.id, houseId: defaultHouse.id, isDefaultRoom: true },
     );
 
-    this.mail.sendWelcomeEmail(email, { name }).catch(() => undefined);
+    // Send email verification OTP
+    await this.sendVerificationCode(email);
 
     return user;
   }

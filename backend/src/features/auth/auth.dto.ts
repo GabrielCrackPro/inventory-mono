@@ -46,6 +46,23 @@ export class LoginDto implements ILoginDto {
   password: string;
 }
 
+export class VerifyEmailDto {
+  @ApiProperty({ example: 'user@example.com' })
+  @IsEmail()
+  email: string;
+
+  @ApiProperty({ example: '123456', description: '6-digit numeric OTP code' })
+  @IsString()
+  @MinLength(6)
+  code: string;
+}
+
+export class ResendVerificationDto {
+  @ApiProperty({ example: 'user@example.com' })
+  @IsEmail()
+  email: string;
+}
+
 export class RefreshDto implements IRefreshDto {
   @ApiProperty({ example: 1 })
   @IsInt()

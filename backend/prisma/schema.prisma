@@ -52,6 +52,7 @@ model User {
   password      String
   role          Role           @default(MEMBER)
   preferences   Json?
+  emailVerified Boolean        @default(false)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   activities    Activity[]
@@ -62,6 +63,7 @@ model User {
   ownedRooms    Room[]         @relation("RoomOwner")
   sharedRooms   RoomAccess[]
   resetTokens   PasswordResetToken[]
+  emailCodes    EmailVerificationCode[]
 }
 
 model Room {
@@ -183,6 +185,20 @@ model PasswordResetToken {
   userId    Int
   expiresAt DateTime
   usedAt    DateTime?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model EmailVerificationCode {
+  id        Int      @id @default(autoincrement())
+  codeHash  String
+  userId    Int
+  expiresAt DateTime
+  usedAt    DateTime?
+  attempts  Int      @default(0)
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 

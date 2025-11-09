@@ -13,6 +13,10 @@ import {
   passwordResetTemplate,
   passwordResetText,
 } from './templates/password-reset';
+import {
+  emailVerificationTemplate,
+  emailVerificationText,
+} from './templates/email-verification';
 
 @Injectable()
 export class MailService {
@@ -143,6 +147,24 @@ export class MailService {
     const subject = 'Reset your password';
     const html = passwordResetTemplate({ name: opts.name, link: opts.link });
     const text = passwordResetText({ name: opts.name, link: opts.link });
+    return this.sendEmail({ to, subject, html, text });
+  }
+
+  async sendEmailVerificationEmail(
+    to: string,
+    opts: { name?: string; code: string; expiresMinutes?: number },
+  ) {
+    const subject = 'Verify your email';
+    const html = emailVerificationTemplate({
+      name: opts.name,
+      code: opts.code,
+      expiresMinutes: opts.expiresMinutes,
+    });
+    const text = emailVerificationText({
+      name: opts.name,
+      code: opts.code,
+      expiresMinutes: opts.expiresMinutes,
+    });
     return this.sendEmail({ to, subject, html, text });
   }
 }

@@ -1,0 +1,53 @@
+<hia-auth-layout [config]="layoutConfig">
+  <form class="space-y-6" (ngSubmit)="onSubmit()" [formGroup]="form">
+    <z-form-field>
+      <label z-form-label>Email</label>
+      <z-form-control>
+        <div class="flex items-center gap-2 text-sm text-muted-foreground">
+          <hia-icon name="lucideMail" [size]="16" />
+          <span>{{ email() || 'No email provided' }}</span>
+        </div>
+      </z-form-control>
+    </z-form-field>
+
+    <z-form-field>
+      <label z-form-label>Verification code</label>
+      <z-form-control>
+        <div
+          class="flex justify-center gap-2 sm:gap-3"
+          formArrayName="digits"
+          (paste)="onOtpPaste($event)"
+        >
+          @for (i of [0,1,2,3,4,5]; track i) {
+          <z-form-field class="w-12 sm:w-14">
+            <z-form-control>
+              <input
+                #otpInput
+                z-input
+                [formControlName]="i"
+                type="text"
+                inputmode="numeric"
+                pattern="\\d*"
+                maxlength="1"
+                class="h-12 w-full sm:h-14 text-center text-lg sm:text-xl rounded-md sm:rounded-lg bg-background/40 border border-input hover:bg-background/60 focus:outline-none focus-visible:ring focus-visible:ring-input"
+                (input)="onOtpInput($event, i)"
+                (keydown)="onOtpKeydown($event, i)"
+              />
+            </z-form-control>
+          </z-form-field>
+          }
+        </div>
+      </z-form-control>
+    </z-form-field>
+    <div class="flex items-center gap-2">
+      <z-button
+        type="submit"
+        class="w-full"
+        label="Verify email"
+        iconName="lucideMailCheck"
+        [zLoading]="isLoading()"
+      />
+      <z-button label="Resend code" zType="link" (click)="onResend()" [disabled]="isResending()" />
+    </div>
+  </form>
+</hia-auth-layout>

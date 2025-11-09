@@ -1,16 +1,17 @@
-import { Body, Controller, Post, UseGuards, Request } from '@nestjs/common';
-import { ApiDocs } from '../../shared';
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { ApiDocs, JwtAuthGuard } from '../../shared';
 import { GetUser } from './auth.decorator';
 import {
   AuthResponseDto,
+  ForgotPasswordDto,
   LoginDto,
   RefreshDto,
   RefreshResponseDto,
   RegisterDto,
-  ForgotPasswordDto,
+  ResendVerificationDto,
   ResetPasswordDto,
+  VerifyEmailDto,
 } from './auth.dto';
-import { JwtAuthGuard } from '../../shared';
 import { AuthService } from './auth.service';
 
 @ApiDocs({ tags: ['auth'], bearer: true })
@@ -58,7 +59,12 @@ export class AuthController {
   @ApiDocs({
     summary: 'Request a password reset email',
     bodyType: ForgotPasswordDto,
-    responses: [{ status: 200, description: 'If the email exists, a reset email will be sent' }],
+    responses: [
+      {
+        status: 200,
+        description: 'If the email exists, a reset email will be sent',
+      },
+    ],
   })
   async forgotPassword(@Body() body: ForgotPasswordDto) {
     return this.authService.requestPasswordReset(body.email);
@@ -72,6 +78,28 @@ export class AuthController {
   })
   async resetPassword(@Body() body: ResetPasswordDto) {
     return this.authService.resetPassword(body.token, body.password);
+  }
+
+  @Post('verify-email')
+  @ApiDocs({
+    summary: 'Verify user email using 6-digit code sent via email',
+    bodyType: VerifyEmailDto,
+    responses: [{ status: 200, description: 'Email verified' }],
+  })
+  async verifyEmail(@Body() body: VerifyEmailDto) {
+    return this.authService.verifyEmail(body.email, body.code);
+  }
+
+  @Post('resend-verification')
+  @ApiDocs({
+    summary: 'Resend email verification code',
+    bodyType: ResendVerificationDto,
+    responses: [
+      { status: 200, description: 'Verification code sent if email exists' },
+    ],
+  })
+  async resendVerification(@Body() body: ResendVerificationDto) {
+    return this.authService.resendVerification(body.email);
   }
 
   @UseGuards(JwtAuthGuard)

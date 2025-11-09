@@ -10,6 +10,8 @@ export interface ApiEndpoints {
   logout: string;
   forgotPassword: string;
   resetPassword: string;
+  verifyEmail: string;
+  resendVerification: string;
   users: string;
   items: string;
   lowStockItems: string;
@@ -35,6 +37,8 @@ export class ApiService {
     logout: 'auth/logout',
     forgotPassword: 'auth/forgot-password',
     resetPassword: 'auth/reset-password',
+    verifyEmail: 'auth/verify-email',
+    resendVerification: 'auth/resend-verification',
     users: 'users',
     items: 'items',
     lowStockItems: 'items/low-stock',

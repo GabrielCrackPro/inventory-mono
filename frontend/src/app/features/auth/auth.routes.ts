@@ -26,6 +26,14 @@ export const authRoutes: Routes = [
             (m) => m.ResetPasswordComponent
           ),
       }),
+      createRoute({
+        title: 'Verify Email',
+        path: 'verify-email',
+        loadComponent: () =>
+          import('@features/auth/pages/verify-email/verify-email').then(
+            (m) => m.VerifyEmailComponent
+          ),
+      }),
     ],
   }),
 ];

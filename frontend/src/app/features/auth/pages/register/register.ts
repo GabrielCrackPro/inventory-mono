@@ -40,9 +40,9 @@ export class RegisterComponent {
       next: () => {
         this._toastService.success({
           title: 'Account Created',
-          message: 'Welcome! Your account has been created successfully.',
+          message: 'We sent you a verification code. Please verify your email to continue.',
         });
-        this._router.navigate(['/auth/login']);
+        this._router.navigate(['/auth/verify-email'], { queryParams: { email: formData.email } });
       },
       error: (error) => {
         this._toastService.error({
