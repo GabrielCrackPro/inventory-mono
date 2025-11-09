@@ -8,7 +8,8 @@ import {
   signal,
 } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { RouterService } from '@core/services';
 import { commonIcons } from '@core/config/icon.config';
 import {
   AddDetailsTabComponent,
@@ -46,7 +47,7 @@ export class AddItemComponent implements OnInit {
   private readonly alertDialogService = inject(AlertDialogService);
   private readonly profileService = inject(ProfileService);
   private readonly cdr = inject(ChangeDetectorRef);
-  private readonly router = inject(Router);
+  private readonly router = inject(RouterService);
   private readonly route = inject(ActivatedRoute);
 
   readonly formService = inject(ItemFormService);
@@ -227,7 +228,7 @@ export class AddItemComponent implements OnInit {
   }
 
   goBack(): void {
-    history.back();
+    this.router.goBack();
   }
 
   getFieldError(fieldName: string): string | null {

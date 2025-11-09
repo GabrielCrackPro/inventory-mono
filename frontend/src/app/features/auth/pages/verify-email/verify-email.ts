@@ -15,7 +15,8 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { RouterService } from '@core/services';
 import { AuthLayoutComponent, AuthLayoutConfig } from '@features/auth/components';
 import { ProfileService } from '@features/user/services/profile';
 import { AuthService } from '@features/auth/services';
@@ -38,7 +39,7 @@ import { IconComponent } from '@ui/icon';
 })
 export class VerifyEmailComponent {
   private readonly _route = inject(ActivatedRoute);
-  private readonly _router = inject(Router);
+  private readonly _router = inject(RouterService);
   private readonly _fb = inject(FormBuilder);
   private readonly _auth = inject(AuthService);
   private readonly _toast = inject(ToastService);
@@ -130,7 +131,7 @@ export class VerifyEmailComponent {
               if (this._returnUrl) {
                 this._router.navigateByUrl(this._returnUrl);
               } else {
-                this._router.navigate(['/auth/login']);
+                this._router.goToLogin();
               }
             },
           });
@@ -139,7 +140,7 @@ export class VerifyEmailComponent {
           if (this._returnUrl) {
             this._router.navigateByUrl(this._returnUrl);
           } else {
-            this._router.navigate(['/auth/login']);
+            this._router.goToLogin();
           }
         }
       },

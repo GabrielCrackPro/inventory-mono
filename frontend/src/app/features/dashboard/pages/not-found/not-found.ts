@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { RouterService } from '@core/services';
 import { commonIcons } from '@core/config/icon.config';
 import { IconComponent } from '@ui/icon';
 import { ZardButtonComponent } from '@ui/button';
 import { ZardCardComponent } from '@ui/card';
-import { Location } from '@angular/common';
 
 @Component({
   selector: 'hia-not-found',
@@ -14,7 +13,7 @@ import { Location } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotFoundComponent {
-  private readonly _router = inject(Router);
+  private readonly _router = inject(RouterService);
   
   readonly commonIcons = commonIcons;
 
@@ -54,11 +53,11 @@ export class NotFoundComponent {
   }
 
   goBack(): void {
-    window.history.back();
+    this._router.goBack();
   }
 
   goHome(): void {
-    this._router.navigate(['/dashboard']);
+    this._router.goToDashboard();
   }
 
   refresh() {

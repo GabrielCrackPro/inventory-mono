@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { RouterService } from '@core/services';
 import {
   AuthLayoutComponent,
   AuthLayoutConfig,
@@ -19,7 +20,7 @@ import { ToastService } from '@shared/services';
 })
 export class ResetPasswordComponent {
   private readonly _route = inject(ActivatedRoute);
-  private readonly _router = inject(Router);
+  private readonly _router = inject(RouterService);
   private readonly _authService = inject(AuthService);
   private readonly _toastService = inject(ToastService);
 
@@ -69,7 +70,7 @@ export class ResetPasswordComponent {
     this._authService.resetPassword(t, password).subscribe({
       next: () => {
         this._toastService.success({ title: 'Password Updated', message: 'You can now log in.' });
-        this._router.navigate(['/auth/login']);
+        this._router.goToLogin();
       },
       error: (err) => {
         this._toastService.error({

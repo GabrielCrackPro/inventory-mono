@@ -6,7 +6,8 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { RouterService } from '@core/services';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { finalize } from 'rxjs';
 
@@ -33,7 +34,7 @@ import { ShareModalComponent } from '@features/dashboard/components';
 })
 export class ItemDetailPageComponent implements OnInit {
   private readonly _route = inject(ActivatedRoute);
-  private readonly _router = inject(Router);
+  private readonly _router = inject(RouterService);
   private readonly _itemService = inject(ItemService);
   private readonly _toastService = inject(ToastService);
   private _dialogService = inject(DialogService);

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { RouterService } from '@core/services';
 import { AuthService } from '@features/auth/services';
 import {
   AuthLayoutComponent,
@@ -18,7 +18,7 @@ import { ToastService } from '@shared/services';
 export class RegisterComponent {
   private readonly _authService = inject(AuthService);
   private readonly _toastService = inject(ToastService);
-  private readonly _router = inject(Router);
+  private readonly _router = inject(RouterService);
 
   readonly layoutConfig: AuthLayoutConfig = {
     title: 'Create your account',
@@ -42,7 +42,7 @@ export class RegisterComponent {
           title: 'Account Created',
           message: 'We sent you a verification code. Please verify your email to continue.',
         });
-        this._router.navigate(['/auth/verify-email'], { queryParams: { email: formData.email } });
+        this._router.goToVerifyEmail(formData.email);
       },
       error: (error) => {
         this._toastService.error({

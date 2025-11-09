@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { RouterService } from '@core/services';
 import { AuthService } from '@features/auth/services';
 import { ProfileService } from '@features/user/services/profile';
 import { ToastService } from '@shared/services';
@@ -16,7 +16,7 @@ export class DashboardAlertsComponent {
   private readonly _profile = inject(ProfileService);
   private readonly _auth = inject(AuthService);
   private readonly _toast = inject(ToastService);
-  private readonly _router = inject(Router);
+  private readonly _router = inject(RouterService);
 
   readonly profile = computed(() => this._profile.getProfile());
 
@@ -51,8 +51,6 @@ export class DashboardAlertsComponent {
 
   goToVerify() {
     const email = this.profile()?.email;
-    this._router.navigate(['/auth/verify-email'], {
-      queryParams: email ? { email, returnUrl: '/dashboard' } : { returnUrl: '/dashboard' },
-    });
+    this._router.goToVerifyEmail(email ?? undefined, '/dashboard');
   }
 }

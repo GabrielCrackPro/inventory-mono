@@ -1,13 +1,12 @@
 import type { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { TokenService } from '@core/services';
+import { RouterService, TokenService } from '@core/services';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenService = inject(TokenService);
-  const router = inject(Router);
+  const router = inject(RouterService);
 
   const token = tokenService.getAccessToken();
   const refreshToken = tokenService.getRefreshToken();
@@ -28,11 +27,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
       // If unauthorized, clear tokens and redirect to login
       if (status === 401) {
         tokenService.clearTokens();
-        try {
-          router.navigate(['/auth/login']);
-        } catch (e) {
-          // navigation may fail during some phases; ignore
-        }
+        router.safeNavigate(['/auth/login']);
       }
 
       return throwError(() => err);

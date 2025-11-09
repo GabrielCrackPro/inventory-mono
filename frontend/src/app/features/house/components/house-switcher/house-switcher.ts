@@ -22,7 +22,7 @@ import { HouseContextService } from '@features/house/services/house-context';
 export class HouseSwitcherComponent implements OnInit {
   private readonly _houseService = inject(HouseService);
   private readonly _houseContext = inject(HouseContextService);
-  
+
   readonly commonIcons = commonIcons;
 
   onClick = output<void>();
@@ -37,20 +37,9 @@ export class HouseSwitcherComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoading.set(true);
-    this._houseService.getSelectedHouse()?.subscribe({
-      next: (data) => {
-        this.selectedHouse.set(data);
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.isLoading.set(false);
-      },
-    });
-
-    // Refresh selected house when context changes
-    this._houseContext.selectedHouseChanged$.subscribe(() => {
-      this.isLoading.set(true);
-      this._houseService.getSelectedHouse()?.subscribe({
+    const selected$ = this._houseService.getSelectedHouse();
+    if (selected$) {
+      selected$.subscribe({
         next: (data) => {
           this.selectedHouse.set(data);
           this.isLoading.set(false);
@@ -59,6 +48,29 @@ export class HouseSwitcherComponent implements OnInit {
           this.isLoading.set(false);
         },
       });
+    } else {
+      this.selectedHouse.set(null);
+      this.isLoading.set(false);
+    }
+
+    // Refresh selected house when context changes
+    this._houseContext.selectedHouseChanged$.subscribe(() => {
+      this.isLoading.set(true);
+      const refreshed$ = this._houseService.getSelectedHouse();
+      if (refreshed$) {
+        refreshed$.subscribe({
+          next: (data) => {
+            this.selectedHouse.set(data);
+            this.isLoading.set(false);
+          },
+          error: () => {
+            this.isLoading.set(false);
+          },
+        });
+      } else {
+        this.selectedHouse.set(null);
+        this.isLoading.set(false);
+      }
     });
   }
 

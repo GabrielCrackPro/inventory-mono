@@ -1,6 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { StorageService, TokenService } from '@core/services';
+import { StorageService, TokenService, RouterService } from '@core/services';
 import { ApiService } from '@core/services';
 import { tap } from 'rxjs';
 import {
@@ -18,7 +17,7 @@ export class AuthService {
   private readonly _apiService = inject(ApiService);
   private readonly _tokenService = inject(TokenService);
   private readonly _storageService = inject(StorageService);
-  private readonly _router = inject(Router);
+  private readonly _router = inject(RouterService);
 
   /**
    * Registers a new user to the system.
@@ -121,6 +120,6 @@ export class AuthService {
    */
   logoutLocal() {
     this._storageService.clear();
-    this._router.navigate(['/auth/login']);
+    this._router.goToLogin();
   }
 }

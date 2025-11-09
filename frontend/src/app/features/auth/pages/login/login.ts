@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { RouterService } from '@core/services';
 import {
   AuthLayoutComponent,
   AuthLayoutConfig,
@@ -21,7 +22,7 @@ import { ToastService } from '@shared/services';
 export class LoginComponent {
   private readonly _authService = inject(AuthService);
   private readonly _toastService = inject(ToastService);
-  private readonly _router = inject(Router);
+  private readonly _router = inject(RouterService);
   private readonly _route = inject(ActivatedRoute);
   private readonly _profileService = inject(ProfileService);
 
@@ -74,7 +75,7 @@ export class LoginComponent {
     if (returnUrl && returnUrl.startsWith('/')) {
       this._router.navigateByUrl(returnUrl);
     } else {
-      this._router.navigate(['/dashboard']);
+      this._router.goToDashboard();
     }
   }
 }
