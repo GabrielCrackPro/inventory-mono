@@ -1,17 +1,17 @@
+import { ActivityType, RoomType } from '@inventory/shared';
 import {
   BadRequestException,
-  Injectable,
   Inject,
+  Injectable,
   forwardRef,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ActivityType, RoomType, UserRole } from '@inventory/shared';
 import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 import { PrismaService } from '../../prisma';
-import { UnauthorizedException } from '../../shared';
-import { Role, UserService } from '../user';
+import { MailService, UnauthorizedException } from '../../shared';
 import { ActivityService } from '../activity/activity.service';
+import { Role, UserService } from '../user';
 
 export type AuthUser = {
   id: number;
@@ -35,6 +35,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     @Inject(forwardRef(() => ActivityService))
     private readonly activityService: ActivityService,
+    private readonly mail: MailService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<AuthUser> {
@@ -93,6 +94,8 @@ export class AuthService {
       `Created default room "${defaultRoom.name}" during user registration`,
       { roomId: defaultRoom.id, houseId: defaultHouse.id, isDefaultRoom: true },
     );
+
+    this.mail.sendWelcomeEmail(email, { name }).catch(() => undefined);
 
     return user;
   }
