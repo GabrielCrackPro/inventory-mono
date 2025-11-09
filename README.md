@@ -61,7 +61,7 @@ inventory-dashboard/
 
 - **Docker** - Containerization
 - **Docker Compose** - Multi-container orchestration
-- **npm Workspaces** - Monorepo management
+- **pnpm Workspaces** - Monorepo management
 
 ## 🛠️ Development Setup
 
@@ -69,7 +69,7 @@ inventory-dashboard/
 
 - Node.js 20+
 - Docker and Docker Compose
-- npm or yarn
+- pnpm
 
 ### Quick Start with Docker (Recommended)
 
@@ -83,7 +83,7 @@ inventory-dashboard/
 2. **Start development environment**
 
    ```bash
-   npm run docker:dev
+   pnpm -w run docker:dev
    ```
 
    This will start:
@@ -102,13 +102,13 @@ inventory-dashboard/
 1. **Install dependencies**
 
    ```bash
-   npm run install:all
+   pnpm install
    ```
 
 2. **Build shared package**
 
    ```bash
-   npm run build:shared
+   pnpm -w run build:shared
    ```
 
 3. **Start PostgreSQL** (using Docker)
@@ -124,7 +124,7 @@ inventory-dashboard/
 
 4. **Start development servers**
    ```bash
-   npm run dev
+   pnpm -w run dev
    ```
 
 ## 📦 Available Scripts
@@ -133,44 +133,57 @@ inventory-dashboard/
 
 ```bash
 # Install all dependencies
-npm run install:all
+pnpm install
 
 # Build all packages
-npm run build
+pnpm -w run build
 
 # Start all services in development mode
-npm run dev
+pnpm -w run dev
 
 # Docker commands
-npm run docker:dev    # Start development environment
-npm run docker:prod   # Start production environment
-npm run docker:down   # Stop all containers
+pnpm -w run docker:dev    # Start development environment
+pnpm -w run docker:prod   # Start production environment
+pnpm -w run docker:down   # Stop all containers
 
 # Maintenance
-npm run clean         # Clean all build artifacts
-npm run lint          # Lint all packages
-npm run test          # Run all tests
+pnpm -w run clean         # Clean all build artifacts
+pnpm -w run lint          # Lint all packages
+pnpm -w run test          # Run all tests
 ```
 
 ### Package-Specific Commands
 
 ```bash
 # Shared package
-npm run build:shared
-npm run dev:shared
+pnpm -w run build:shared
+pnpm -w run dev:shared
 
 # Backend
-npm run dev:backend
-npm run build:backend
+pnpm --filter backend run start:dev
+pnpm --filter backend run build
 
 # Frontend
-npm run dev:frontend
-npm run build:frontend
+pnpm --filter frontend run start
+pnpm --filter frontend run build
 ```
 
 ## 🗄️ Database
 
 The application uses PostgreSQL with Prisma ORM. Database migrations are automatically applied when the backend starts.
+
+### Prisma workflow (backend)
+
+```bash
+# Generate Prisma Client after schema edits
+pnpm --filter backend exec prisma generate
+
+# Create and apply a new migration
+pnpm --filter backend exec prisma migrate dev --name <migration_name>
+
+# Open Prisma Studio
+pnpm --filter backend exec prisma studio
+```
 
 ### Database Schema
 
@@ -264,13 +277,13 @@ export class AuthService {
 
 ```bash
 # Run all tests
-npm run test
+pnpm -w run test
 
 # Backend tests
-npm run test --workspace=backend
+pnpm --filter backend run test
 
 # Frontend tests
-npm run test --workspace=frontend
+pnpm --filter frontend run test
 ```
 
 ## 📝 API Documentation
@@ -285,8 +298,8 @@ The backend automatically generates Swagger documentation available at:
 ### Production Build
 
 ```bash
-npm run build
-npm run docker:prod
+pnpm -w run build
+pnpm -w run docker:prod
 ```
 
 ### Environment Setup
@@ -296,6 +309,12 @@ npm run docker:prod
 3. Configure reverse proxy (nginx/Traefik)
 4. Set up database backups
 5. Configure monitoring and logging
+
+## 📚 Additional Documentation
+
+- Migration Guide: ./MIGRATION_GUIDE.md
+- Docker README: ./README-Docker.md
+- Frontend Animations Guide: ./frontend/docs/animations-guide.md
 
 ## 🤝 Contributing
 
@@ -335,18 +354,18 @@ lsof -i :5432
 
 ```bash
 # Reset Docker environment
-npm run docker:down
+pnpm -w run docker:down
 docker system prune -f
-npm run docker:dev
+pnpm -w run docker:dev
 ```
 
 **Shared package not updating:**
 
 ```bash
 # Rebuild shared package
-npm run build:shared
+pnpm -w run build:shared
 # Restart development servers
-npm run dev
+pnpm -w run dev
 ```
 
 **Database connection issues:**
@@ -359,6 +378,13 @@ docker-compose down -v
 docker-compose up -d
 ```
 
+## 🧩 pnpm Workspaces Tips
+
+- Target a workspace: `pnpm --filter backend <command>`
+- Run a script in a workspace: `pnpm --filter frontend run start`
+- Execute binaries in a workspace: `pnpm --filter backend exec prisma studio`
+- Prune store if needed: `pnpm store prune`
+
 ## 📞 Support
 
 For support and questions:
@@ -366,3 +392,4 @@ For support and questions:
 - Create an issue in the repository
 - Check the documentation in each package
 - Review the troubleshooting section above
+
