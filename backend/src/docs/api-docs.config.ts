@@ -15,6 +15,13 @@ const createDocs = (app: INestApplication<any>) => {
 };
 
 export const loadDocs = (app: INestApplication<any>) => {
+  app
+    .getHttpAdapter()
+    .getInstance()
+    .get('/api', (_req: any, res: any) => {
+      res.redirect('/api/docs');
+    });
+
   return app.use(
     '/api/docs',
     apiReference({

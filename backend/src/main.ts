@@ -1,43 +1,17 @@
-import { ValidationPipe, BadRequestException } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { loadDocs } from './docs';
-import {
-  CustomLogger,
-  LoggingInterceptor,
-  ValidationExceptionFilter,
-} from './shared';
+import { applyAppConfig, createLogger, getAppPort } from './config';
 
 async function bootstrap() {
-  const logger = new CustomLogger('Bootstrap');
+  const logger = createLogger();
 
   const app = await NestFactory.create(AppModule, {
     logger: logger,
   });
 
-  const port = process.env.PORT ?? 3000;
+  const port = getAppPort();
 
-  loadDocs(app);
-
-  app.useLogger(logger);
-  app.enableCors();
-  app.useGlobalInterceptors(new LoggingInterceptor());
-  app.useGlobalFilters(new ValidationExceptionFilter());
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-      exceptionFactory: (errors) => {
-        const result = errors.map((error) => ({
-          property: error.property,
-          value: error.value,
-          constraints: error.constraints,
-        }));
-        return new BadRequestException(result);
-      },
-    }),
-  );
+  applyAppConfig(app, logger);
 
   await app.listen(port, () => {
     logger.success(`🚀 App running on port ${port}...`);
