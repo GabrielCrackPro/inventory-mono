@@ -27,7 +27,10 @@ export class ProfileService {
   }
 
   getStats() {
-    return this.getProfile()!.stats;
+    const defaults = { items: 0, rooms: 0, categories: 0, lowStockItems: 0 } as any;
+    const p = this.getProfile();
+    if (!p || !p.stats) return defaults;
+    return { ...defaults, ...p.stats };
   }
 
   updateProfile(profile: Partial<AuthUser>) {
