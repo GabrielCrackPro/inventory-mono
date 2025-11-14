@@ -26,6 +26,13 @@ export class HouseCardComponent {
     return this.selectedHouseId() === house.id;
   });
 
+  isOwner = computed(() => {
+    const h = this.house();
+    const uid = this._profileService.getProfile()?.id;
+    if (!h || uid == null) return false;
+    return (h as any).ownerId === uid;
+  });
+
   itemCount = computed(() => this.house()?.items?.length || 0);
   roomCount = computed(() => this.house()?.rooms?.length || 0);
 

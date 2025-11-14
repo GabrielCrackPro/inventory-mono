@@ -14,6 +14,12 @@ export const routes: Routes = [
     loadChildren: () => import('@features/auth').then((m) => m.authRoutes),
   }),
 
+  createRoute({
+    title: 'Accept Invite',
+    path: 'accept-invite',
+    loadComponent: () => import('@features/invite/accept-invite').then((m) => m.AcceptInvitePageComponent),
+  }),
+
   createProtectedRoute({
     title: 'Dashboard',
     path: 'dashboard',

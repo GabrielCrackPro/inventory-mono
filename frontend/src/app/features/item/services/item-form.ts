@@ -155,7 +155,7 @@ export class ItemFormService {
         // Sharing & Access
         isShared: [false],
         sharedWith: [''],
-        visibility: ['private'],
+        visibility: ['household'],
       },
       {
         validators: [FormValidators.minStockLessThanQuantity()],
@@ -341,7 +341,7 @@ export class ItemFormService {
       price: 0,
       condition: 'NEW',
       isShared: false,
-      visibility: 'private',
+      visibility: 'household',
     });
   }
 

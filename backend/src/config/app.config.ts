@@ -23,9 +23,19 @@ export const applyAppConfig = (
   logger: CustomLogger,
 ) => {
   app.useLogger(logger);
-  app.enableCors();
+  app.enableCors({
+    origin: [
+      'http://localhost:4200',
+      'http://localhost:5173',
+      'http://127.0.0.1:4200',
+      'http://127.0.0.1:5173',
+    ],
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: false,
+    optionsSuccessStatus: 204,
+  });
   app.useGlobalInterceptors(new LoggingInterceptor());
-  // Enable HTTP response caching globally (applies to GET by default)
   app.useGlobalInterceptors(app.get(CustomCacheInterceptor));
   app.useGlobalFilters(new ValidationExceptionFilter());
   app.useGlobalPipes(

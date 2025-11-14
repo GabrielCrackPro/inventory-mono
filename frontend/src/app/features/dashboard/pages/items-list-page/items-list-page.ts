@@ -13,6 +13,7 @@ import { HouseContextService } from '@features/house/services/house-context';
 import { ProfileService } from '@features/user';
 import { buildItemColumns, sortItems } from '@lib/utils';
 import { AlertDialogService, DialogService, LoadingService } from '@shared/services';
+import { PermissionService } from '@core/services/permission';
 import { ItemsGridViewComponent } from './items-grid-view';
 import { ItemsTableSettingsComponent, ItemsTableViewComponent } from './items-table-view';
 import { ItemListPageSkeletonComponent } from './item-list-page-skeleton';
@@ -52,6 +53,7 @@ export class ItemsListPageComponent implements OnInit {
   private readonly _alertDialogService = inject(AlertDialogService);
   private readonly _loadingService = inject(LoadingService);
   private readonly _houseContext = inject(HouseContextService);
+  private readonly _permission = inject(PermissionService);
 
   private _items = signal<Item[]>([]);
   private hiddenCols = signal<Set<string>>(new Set());
@@ -70,6 +72,9 @@ export class ItemsListPageComponent implements OnInit {
   viewMode = computed<ViewMode>(() => this.defaultView());
   sortKey = signal<TableColSortKey>('updatedAt');
   sortDir = signal<'asc' | 'desc'>('desc');
+
+  // Permissions
+  canCreateItem = computed(() => this._permission.can('item:create'));
 
   ngOnInit(): void {
     this.reloadItems();
@@ -125,14 +130,18 @@ export class ItemsListPageComponent implements OnInit {
 
   tableActions = computed<
     { label: string; icon: IconName; iconClasses: string; action: () => void }[]
-  >(() => [
-    {
-      label: '',
-      icon: 'lucideTrash',
-      iconClasses: 'text-destructive',
-      action: () => this.handleDelete(),
-    },
-  ]);
+  >(() => {
+    const canDelete = this._permission.can('item:delete');
+    if (!canDelete) return [];
+    return [
+      {
+        label: '',
+        icon: 'lucideTrash',
+        iconClasses: 'text-destructive',
+        action: () => this.handleDelete(),
+      },
+    ];
+  });
 
   readonly columns = computed<(TableCol | null)[]>(() => {
     const hidden = this.hiddenCols();

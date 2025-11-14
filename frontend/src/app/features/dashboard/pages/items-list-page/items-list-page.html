@@ -22,7 +22,9 @@
       <z-card class="w-full max-w-5xl mx-auto p-12 min-h-96 flex items-center justify-center">
         <div class="flex flex-col gap-3">
           <z-empty zIcon="lucideBox" [zIconSize]="40" zDescription="No items yet" />
+          @if (canCreateItem()) {
           <z-button [label]="'Add Item'" iconName="lucidePlus" routerLink="items/new" />
+          }
         </div>
       </z-card>
     </div>

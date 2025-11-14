@@ -2,6 +2,24 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model HouseInvite {
+  id         Int       @id @default(autoincrement())
+  houseId    Int
+  email      String
+  inviterId  Int
+  permission PermissionLevel
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime @default(now())
+  house      House    @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  inviter    User     @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@index([houseId])
+  @@index([email])
+  @@index([expiresAt])
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -64,6 +82,7 @@ model User {
   sharedRooms   RoomAccess[]
   resetTokens   PasswordResetToken[]
   emailCodes    EmailVerificationCode[]
+  invitesSent   HouseInvite[]
 }
 
 model Room {
@@ -148,6 +167,7 @@ model House {
   sharedWith HouseAccess[]
   items      Item[]
   rooms      Room[]
+  invites    HouseInvite[]
 }
 
 model HouseAccess {

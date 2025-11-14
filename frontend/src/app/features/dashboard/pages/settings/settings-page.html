@@ -1,0 +1,100 @@
+<div class="max-w-5xl mx-auto p-6 space-y-6">
+  <z-card zTitle="Settings" zDescription="Manage your account and workspace settings.">
+    <div class="space-y-8">
+      <section>
+        <h2 class="text-lg font-semibold mb-2">Permissions</h2>
+        <p class="text-sm text-muted-foreground mb-4">
+          Admins can manage user roles for this workspace.
+        </p>
+        @if (!isAdmin()) {
+        <div class="text-sm text-muted-foreground">You do not have access to manage roles.</div>
+        } @else {
+        <!-- Invite form -->
+        <form class="flex flex-wrap items-end gap-3 mb-4" [formGroup]="inviteForm" (ngSubmit)="onInviteSubmit()">
+          <div class="flex-1 min-w-64">
+            <label class="block text-sm font-medium mb-1">Email</label>
+            <input
+              type="email"
+              class="w-full px-3 py-2 rounded-md border bg-background"
+              formControlName="email"
+              placeholder="user@example.com"
+            />
+          </div>
+
+          <div class="w-44">
+            <label class="block text-sm font-medium mb-1">Permission</label>
+            <z-select
+              [zValue]="inviteForm.get('permission')?.value || 'VIEW'"
+              (zSelectionChange)="onInvitePermissionChange($event)"
+            >
+              <z-select-item [zValue]="'VIEW'">View</z-select-item>
+              <z-select-item [zValue]="'EDIT'">Edit</z-select-item>
+              <z-select-item [zValue]="'ADMIN'">Admin</z-select-item>
+            </z-select>
+          </div>
+
+          <div>
+            <button
+              class="px-4 py-2 rounded-md bg-primary text-primary-foreground"
+              type="submit"
+              [disabled]="isSaving() || inviteForm.invalid"
+            >
+              Invite
+            </button>
+          </div>
+        </form>
+        <table z-table class="w-full">
+          <thead z-table-header>
+            <tr z-table-row>
+              <th z-table-head class="w-16">ID</th>
+              <th z-table-head>Name</th>
+              <th z-table-head>Email</th>
+              <th z-table-head class="w-48">Permission</th>
+              <th z-table-head class="w-28">Actions</th>
+            </tr>
+          </thead>
+          <tbody z-table-body>
+            @for (m of members(); track m.userId) {
+            <tr z-table-row>
+              <td z-table-cell>{{ m.user.id }}</td>
+              <td z-table-cell>{{ m.user.name }}</td>
+              <td z-table-cell>{{ m.user.email }}</td>
+              <td z-table-cell>
+                <div class="max-w-44">
+                  <z-select
+                    [zPlaceholder]="'Select permission'"
+                    [zValue]="m.permission"
+                    (zSelectionChange)="onPermissionChange(m.userId, $event)"
+                    [class]="'w-full'"
+                    [zDisabled]="!isAdmin()"
+                  >
+                    <z-select-item [zValue]="'VIEW'">View</z-select-item>
+                    <z-select-item [zValue]="'EDIT'">Edit</z-select-item>
+                    <z-select-item [zValue]="'ADMIN'">Admin</z-select-item>
+                  </z-select>
+                </div>
+              </td>
+              <td z-table-cell>
+                <button
+                  class="text-sm text-destructive underline disabled:opacity-50"
+                  (click)="onRevoke(m.userId)"
+                  [disabled]="!isAdmin()"
+                >
+                  Revoke
+                </button>
+              </td>
+            </tr>
+            } @empty {
+            <tr z-table-row>
+              <td z-table-cell colspan="5" class="text-center text-muted-foreground">
+                No members found
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+        }
+      </section>
+    </div>
+  </z-card>
+</div>

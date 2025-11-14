@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { canEditItemGuard } from '@features/item/guards/item-edit.guard';
 import { createProtectedRoute, createRoute } from '@lib/utils';
 
 export const dashboardRoutes: Routes = [
@@ -25,11 +26,17 @@ export const dashboardRoutes: Routes = [
         title: 'Edit Item',
         path: 'items/edit/:id',
         loadComponent: () => import('./pages').then((m) => m.AddItemComponent),
+        canActivate: [canEditItemGuard],
       }),
       createRoute({
         title: 'Add Item',
         path: 'items/new',
         loadComponent: () => import('./pages').then((m) => m.AddItemComponent),
+      }),
+      createRoute({
+        title: 'Settings',
+        path: 'settings',
+        loadComponent: () => import('./pages').then((m) => m.SettingsPageComponent),
       }),
     ],
   }),

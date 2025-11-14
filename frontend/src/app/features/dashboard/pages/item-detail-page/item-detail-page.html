@@ -50,8 +50,12 @@
       <!-- Action Buttons -->
       <div class="flex gap-2">
         <z-button label="Share" iconName="lucideShare2" zType="outline" (click)="onShare()" />
-        <z-button label="Edit" iconName="lucideEdit" zType="outline" (click)="onEdit()" />
-        <z-button label="Delete" iconName="lucideTrash" zType="destructive" (click)="onDelete()" />
+        @if (canEdit()) {
+          <z-button label="Edit" iconName="lucideEdit" zType="outline" (click)="onEdit()" />
+        }
+        @if (canDelete()) {
+          <z-button label="Delete" iconName="lucideTrash" zType="destructive" (click)="onDelete()" />
+        }
       </div>
     </div>
 
@@ -75,6 +79,23 @@
         <hia-icon [name]="commonIcons['boxes']" [size]="14" />
         {{ item()!.quantity }} {{ item()!.unit }}
       </span>
+
+      <!-- Effective Access Chip -->
+      @if (access()) {
+      <span
+        class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border"
+        [class]="
+          access()!.canAdmin
+            ? 'bg-green-100 text-green-800 border-green-200/60 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800/40'
+            : access()!.canEdit
+            ? 'bg-blue-100 text-blue-800 border-blue-200/60 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800/40'
+            : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300'
+        "
+      >
+        <hia-icon [name]="access()!.canAdmin ? commonIcons['success'] : access()!.canEdit ? commonIcons['edit'] : commonIcons['info']" [size]="12" />
+        <span>{{ access()!.level || 'NO ACCESS' }}</span>
+      </span>
+      }
 
       <!-- Room Chip -->
       @if (item()!.room?.name) {
@@ -232,16 +253,9 @@
         <div>
           <h4 class="text-sm font-medium text-muted-foreground mb-1">Visibility</h4>
           <span
-            [class]="
-              'inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ' +
-              (item()!.visibility === 'public'
-                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                : item()!.visibility === 'household'
-                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
-                : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300')
-            "
+            [class]="'inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ' + getVisibilityClass()"
           >
-            {{ item()!.visibility | titlecase }}
+            {{ getVisibilityLabel() }}
           </span>
         </div>
 

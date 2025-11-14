@@ -68,14 +68,12 @@ export class RoomService {
   }
 
   async findAllForUserInHouse(userId: number, houseId: number) {
-    // Validate house access
+    // Validate house access (owner or member via house access)
     await this.validateHouseAccess(houseId, userId);
 
+    // Once house access is validated, return all rooms in the house (membership grants read access)
     return this.prisma.room.findMany({
-      where: {
-        houseId,
-        OR: [{ ownerId: userId }, { sharedWith: { some: { userId } } }],
-      },
+      where: { houseId },
       include: { items: true },
     });
   }
@@ -192,15 +190,26 @@ export class RoomService {
   }
 
   private async validateHouseAccess(houseId: number, userId: number) {
+    // First ensure the house exists
     const house = await findOrThrow(
-      this.prisma.house.findFirst({
-        where: {
-          id: houseId,
-          OR: [{ ownerId: userId }, { sharedWith: { some: { userId } } }],
-        },
+      this.prisma.house.findUnique({
+        where: { id: houseId },
+        select: { id: true, ownerId: true },
       }),
       'House not found or access denied',
     );
+
+    if (house.ownerId === userId) return house;
+
+    // Check explicit house access membership
+    const membership = await this.prisma.houseAccess.findUnique({
+      where: { houseId_userId: { houseId, userId } },
+      select: { permission: true },
+    });
+
+    if (!membership) {
+      throw new ForbiddenException('House not found or access denied');
+    }
     return house;
   }
 

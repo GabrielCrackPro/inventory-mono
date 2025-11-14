@@ -21,6 +21,8 @@ export interface ApiEndpoints {
   stats: string;
   activeHouseRooms: string;
   deleteMultipleItems: string;
+  access: string;
+  invites: string;
 }
 
 @Injectable({
@@ -48,6 +50,8 @@ export class ApiService {
     stats: 'activities/stadistics',
     activeHouseRooms: 'rooms/house',
     deleteMultipleItems: 'items/delete-multiple',
+    access: 'access',
+    invites: 'invites',
   };
 
   /**
@@ -113,6 +117,13 @@ export class ApiService {
   }
 
   /**
+   * Performs a POST request to endpoint with an extra path, e.g. houses/{id}/share
+   */
+  postTo<T, B>(endpoint: keyof ApiEndpoints, extraPath: string | number, body?: B): Observable<T> {
+    return this.http.post<T>(this._buildUrl(endpoint, extraPath), body).pipe(catchError(this._handleError));
+  }
+
+  /**
    * Patches a single item of type T at the specified API endpoint.
    *
    * @param endpoint - The key of the API endpoint to request.
@@ -135,5 +146,12 @@ export class ApiService {
    */
   delete<T>(endpoint: keyof ApiEndpoints, id: string | number): Observable<T> {
     return this.http.delete<T>(this._buildUrl(endpoint, id)).pipe(catchError(this._handleError));
+  }
+
+  /**
+   * Performs a DELETE to endpoint with arbitrary extra path, e.g. houses/{id}/access/{userId}
+   */
+  deletePath<T>(endpoint: keyof ApiEndpoints, extraPath: string | number): Observable<T> {
+    return this.http.delete<T>(this._buildUrl(endpoint, extraPath)).pipe(catchError(this._handleError));
   }
 }

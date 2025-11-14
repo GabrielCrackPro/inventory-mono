@@ -65,6 +65,10 @@ export class UsersController {
     if (user.role !== UserRole.ADMIN && user.id !== id) {
       return this.usersService.findOne(id);
     }
+    // Only ADMIN can change roles
+    if (user.role !== UserRole.ADMIN && typeof dto.role !== 'undefined') {
+      delete (dto as any).role;
+    }
     return this.usersService.update(id, dto);
   }
 

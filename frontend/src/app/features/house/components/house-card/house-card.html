@@ -88,17 +88,17 @@
             <p class="text-sm font-medium text-foreground">{{ itemCount() }}</p>
             <p class="text-xs text-muted-foreground">Items</p>
           </div>
-          <!-- Delete Button -->
-          @if (!isSelected()) {
-          <div>
-            <z-button
-              zType="text"
-              zSize="sm"
-              [iconName]="commonIcons['delete']"
-              iconColor="var(--destructive)"
-              (click)="onDelete($event)"
-            />
-          </div>
+          <!-- Delete Button (owner only) -->
+          @if (isOwner() && !isSelected()) {
+            <div>
+              <z-button
+                zType="text"
+                zSize="sm"
+                [iconName]="commonIcons['delete']"
+                iconColor="var(--destructive)"
+                (click)="onDelete($event)"
+              />
+            </div>
           }
         </div>
       </div>

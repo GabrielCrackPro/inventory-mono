@@ -127,4 +127,20 @@ export class HouseService {
       where: { houseId, userId: targetUserId },
     });
   }
+
+  async listAccess(houseId: number) {
+    const accesses = await this.prisma.houseAccess.findMany({
+      where: { houseId },
+      select: {
+        userId: true,
+        permission: true,
+        user: { select: { id: true, name: true, email: true } },
+      },
+    });
+    return accesses.map((a) => ({
+      userId: a.userId,
+      permission: a.permission,
+      user: a.user,
+    }));
+  }
 }

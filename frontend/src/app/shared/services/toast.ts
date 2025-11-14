@@ -84,7 +84,7 @@ export class ToastService {
       position = 'top-right',
       action,
       dismissible = true,
-      duration = 2000,
+      duration = 3000,
       closable = true,
     } = options;
 

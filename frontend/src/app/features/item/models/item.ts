@@ -170,7 +170,7 @@ export class ItemHelpers {
             .map((email) => email.trim())
             .filter((email) => email.length > 0)
         : [],
-      visibility: formData.visibility || 'private',
+      visibility: (formData.visibility === 'household' ? 'shared' : formData.visibility) || 'private',
     };
   }
 
@@ -208,7 +208,7 @@ export class ItemHelpers {
       // Sharing & Access
       isShared: item.isShared,
       sharedWith: item.sharedWith.join(', '),
-      visibility: item.visibility,
+      visibility: (item.visibility as any) === 'shared' ? ('household' as any) : (item.visibility as any),
     };
   }
 

@@ -19,7 +19,7 @@
             <label
               class="flex items-center gap-3 p-3 border border-border rounded-lg cursor-pointer hover:bg-accent/50 transition-colors"
             >
-              <z-radio value="private" formControlName="visibility" />
+              <z-radio [name]="'visibility'" value="private" formControlName="visibility" />
               <div class="flex-1">
                 <div class="font-medium">Private</div>
                 <div class="text-sm text-muted-foreground">Only you can see this item</div>
@@ -29,7 +29,7 @@
             <label
               class="flex items-center gap-3 p-3 border border-border rounded-lg cursor-pointer hover:bg-accent/50 transition-colors"
             >
-              <z-radio value="household" formControlName="visibility" />
+              <z-radio [name]="'visibility'" value="household" formControlName="visibility" />
               <div class="flex-1">
                 <div class="font-medium">Household</div>
                 <div class="text-sm text-muted-foreground">Visible to household members</div>
@@ -39,7 +39,7 @@
             <label
               class="flex items-center gap-3 p-3 border border-border rounded-lg cursor-pointer hover:bg-accent/50 transition-colors"
             >
-              <z-radio value="public" formControlName="visibility" />
+              <z-radio [name]="'visibility'" value="public" formControlName="visibility" />
               <div class="flex-1">
                 <div class="font-medium">Public</div>
                 <div class="text-sm text-muted-foreground">

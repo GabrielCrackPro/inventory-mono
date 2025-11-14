@@ -1,0 +1,61 @@
+<div class="max-w-xl mx-auto p-6">
+  <z-card zTitle="Accept Invite">
+    @if (loading()) {
+      <div class="py-8 text-center text-muted-foreground">Loading…</div>
+    } @else if (error()) {
+      <div class="py-8 text-center text-destructive">{{ error() }}</div>
+    } @else if (invite()) {
+      <div class="space-y-4">
+        <p>
+          You have been invited to join
+          <strong>{{ invite()!.house.name }}</strong>
+          with
+          <strong>{{ invite()!.permission | titlecase }}</strong>
+          permissions.
+        </p>
+        <p>
+          Invite sent to:
+          <strong>{{ invite()!.email }}</strong>
+        </p>
+        @if (invite()!.expiresAt) {
+          <p class="text-xs text-muted-foreground">
+            Expires: {{ invite()!.expiresAt | date: 'medium' }}
+          </p>
+        }
+
+        @if (invite()!.expired) {
+          <div class="text-destructive">This invite has expired.</div>
+        } @else if (invite()!.usedAt) {
+          <div class="text-muted-foreground">This invite has already been used.</div>
+        } @else {
+          @if (!isAuthed()) {
+            <div class="space-y-2">
+              <p class="text-sm text-muted-foreground">
+                Please log in or register to accept this invite.
+              </p>
+              <div class="flex gap-2">
+                <z-button
+                  zType="secondary"
+                  [routerLink]="['/auth/login']"
+                  [queryParams]="{ returnUrl: '/accept-invite?token=' + token() }"
+                  label="Login"
+                />
+                <z-button
+                  zType="secondary"
+                  [routerLink]="['/auth/register']"
+                  [queryParams]="{ returnUrl: '/accept-invite?token=' + token() }"
+                  label="Register"
+                />
+              </div>
+            </div>
+          } @else {
+            <div class="flex gap-2">
+              <z-button (click)="onAccept()" [disabled]="accepting()" label="Accept" />
+              <z-button zType="outline" [routerLink]="['/dashboard']" label="Cancel" />
+            </div>
+          }
+        }
+      </div>
+    }
+  </z-card>
+</div>

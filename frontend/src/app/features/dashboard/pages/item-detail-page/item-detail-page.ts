@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { RouterService } from '@core/services';
+import { AccessService, EffectiveAccess } from '@core/services/access';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { finalize } from 'rxjs';
 
@@ -39,16 +40,22 @@ export class ItemDetailPageComponent implements OnInit {
   private readonly _toastService = inject(ToastService);
   private _dialogService = inject(DialogService);
   private readonly _alertDialogService = inject(AlertDialogService);
+  private readonly _accessService = inject(AccessService);
 
   readonly commonIcons = commonIcons;
 
   private readonly _item = signal<Item | null>(null);
   private readonly _loading = signal(true);
   private readonly _error = signal<string | null>(null);
+  private readonly _access = signal<EffectiveAccess | null>(null);
 
   readonly item = computed(() => this._item());
   readonly loading = computed(() => this._loading());
   readonly error = computed(() => this._error());
+  readonly access = computed(() => this._access());
+
+  readonly canEdit = computed(() => !!this._access()?.canEdit);
+  readonly canDelete = computed(() => !!this._access()?.canAdmin);
 
   readonly stockStatus = computed(() => {
     const item = this._item();
@@ -58,6 +65,24 @@ export class ItemDetailPageComponent implements OnInit {
     if (item.quantity <= item.minStock) return 'low-stock';
     return 'normal';
   });
+
+  getVisibilityLabel(): string {
+    const v = String(this._item()?.visibility || 'private');
+    if (v === 'shared') return 'Household';
+    if (v === 'public') return 'Public';
+    return 'Private';
+  }
+
+  getVisibilityClass(): string {
+    const v = String(this._item()?.visibility || 'private');
+    if (v === 'public') {
+      return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
+    }
+    if (v === 'shared') {
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+    }
+    return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300';
+  }
 
   readonly stockStatusConfig = computed(() => {
     const status = this.stockStatus();
@@ -105,6 +130,14 @@ export class ItemDetailPageComponent implements OnInit {
       .subscribe({
         next: (item: Item) => {
           this._item.set(item);
+          // Fetch effective access for this item
+          const numericId = Number(item.id);
+          if (!Number.isNaN(numericId)) {
+            this._accessService.getItemAccess(numericId).subscribe({
+              next: (acc) => this._access.set(acc),
+              error: () => this._access.set({ level: null, canRead: true, canEdit: false, canAdmin: false }),
+            });
+          }
         },
         error: (error: any) => {
           console.error('Failed to load item:', error);

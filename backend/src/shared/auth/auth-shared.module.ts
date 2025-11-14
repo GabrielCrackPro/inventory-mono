@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { PrismaModule } from '../../prisma';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { RolesGuard } from './roles.guard';
+import { PermissionsGuard } from './permissions.guard';
 import { JwtStrategy } from './jwt-strategy';
 
 @Global()
@@ -16,7 +17,14 @@ import { JwtStrategy } from './jwt-strategy';
       signOptions: { expiresIn: (process.env.JWT_EXPIRES_IN || '1d') as any },
     }),
   ],
-  providers: [JwtAuthGuard, RolesGuard, JwtStrategy],
-  exports: [JwtAuthGuard, RolesGuard, JwtStrategy, JwtModule, PassportModule],
+  providers: [JwtAuthGuard, RolesGuard, PermissionsGuard, JwtStrategy],
+  exports: [
+    JwtAuthGuard,
+    RolesGuard,
+    PermissionsGuard,
+    JwtStrategy,
+    JwtModule,
+    PassportModule,
+  ],
 })
 export class AuthSharedModule {}

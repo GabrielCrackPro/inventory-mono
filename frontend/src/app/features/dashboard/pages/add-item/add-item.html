@@ -1,4 +1,12 @@
 <div class="max-w-4xl mx-auto p-6 space-y-6">
+  @if (!canCreateItem()) {
+  <z-alert
+    zTitle="Insufficient permissions"
+    zDescription="You do not have permission to create items."
+    zType="warning"
+    zAppearance="outline"
+  ></z-alert>
+  }
   <!-- Header -->
   <div class="flex items-center justify-between">
     <div>
@@ -84,7 +92,7 @@
           [iconName]="isEditMode() ? commonIcons['edit'] : commonIcons['add']"
           type="submit"
           [zLoading]="isSubmitting()"
-          [disabled]="!completionSummary().isMinimumComplete || isSubmitting()"
+          [disabled]="!canCreateItem() || !completionSummary().isMinimumComplete || isSubmitting()"
         />
       </div>
     </div>

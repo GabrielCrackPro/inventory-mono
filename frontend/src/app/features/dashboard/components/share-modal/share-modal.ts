@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { commonIcons } from '@core/config/icon.config';
+import { AccessService, EffectiveAccess } from '@core/services/access';
 import { Item } from '@features/item';
 import { ItemHelpers } from '@features/item/models/item';
 import { ItemService } from '@features/item/services/item';
@@ -39,6 +40,7 @@ export class ShareModalComponent {
   private readonly _dialogRef = inject(ZardDialogRef);
   private readonly _fb = inject(FormBuilder);
   private readonly _itemService = inject(ItemService);
+  private readonly _accessService = inject(AccessService);
 
   readonly commonIcons = commonIcons;
   readonly data = inject(Z_MODAL_DATA) as { item: Item };
@@ -49,13 +51,31 @@ export class ShareModalComponent {
   });
 
   form = this._fb.group({
-    visibility: [this.data.item.visibility, Validators.required],
+    visibility: [String(this.data.item.visibility) === 'shared' ? ('household' as any) : (this.data.item.visibility as any), Validators.required],
     isShared: [this.data.item.isShared],
     sharedWith: [this.data.item.sharedWith?.join(', ') ?? ''],
   });
 
   isSaving = false;
   readonly isCopied = signal(false);
+  readonly access = signal<EffectiveAccess | null>(null);
+  readonly canEdit = computed(() => !!this.access()?.canEdit);
+
+  constructor() {
+    const idNum = Number(this.data.item.id);
+    if (!Number.isNaN(idNum)) {
+      this._accessService.getItemAccess(idNum).subscribe({
+        next: (acc) => {
+          this.access.set(acc);
+          if (!acc?.canEdit) this.form.disable({ emitEvent: false });
+        },
+        error: () => {
+          this.access.set({ level: null, canRead: true, canEdit: false, canAdmin: false });
+          this.form.disable({ emitEvent: false });
+        },
+      });
+    }
+  }
 
   copyLink(): void {
     const url = this.shareUrl();
@@ -108,6 +128,10 @@ export class ShareModalComponent {
 
   onOk(): boolean | void {
     if (this.isSaving) return false as any;
+    if (!this.canEdit()) {
+      this._toastService.error({ title: 'Insufficient permissions', message: 'You cannot modify sharing for this item.' });
+      return false as any;
+    }
     const raw = this.form.getRawValue();
     const sharedWith = (raw.sharedWith || '')
       .split(',')
@@ -115,15 +139,16 @@ export class ShareModalComponent {
       .filter((s) => !!s);
 
     const item = this.data.item;
+    const currentVisibilityUi = String(item.visibility) === 'shared' ? 'household' : (item.visibility as any);
     const noChange =
-      item.visibility === raw.visibility &&
+      currentVisibilityUi === raw.visibility &&
       item.isShared === !!raw.isShared &&
       JSON.stringify(item.sharedWith || []) === JSON.stringify(sharedWith);
     if (noChange) return;
 
     this.isSaving = true;
     const formData = ItemHelpers.itemToFormData(item);
-    formData.visibility = raw.visibility as any;
+    formData.visibility = (raw.visibility === 'household' ? ('shared' as any) : (raw.visibility as any));
     formData.isShared = !!raw.isShared;
     formData.sharedWith = sharedWith.join(', ');
 

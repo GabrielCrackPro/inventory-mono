@@ -10,6 +10,7 @@ import {
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RouterService } from '@core/services';
+import { PermissionService } from '@core/services/permission';
 import { commonIcons } from '@core/config/icon.config';
 import {
   AddDetailsTabComponent,
@@ -23,6 +24,7 @@ import {
 import { ProfileService } from '@features/user';
 import { AlertDialogService, ToastService } from '@shared/services';
 import { ZardButtonComponent } from '@ui/button';
+import { ZardAlertComponent } from '@ui/alert';
 import { ZardTabComponent, ZardTabGroupComponent } from '@ui/tabs';
 
 @Component({
@@ -31,6 +33,7 @@ import { ZardTabComponent, ZardTabGroupComponent } from '@ui/tabs';
     ZardTabGroupComponent,
     ZardTabComponent,
     ZardButtonComponent,
+    ZardAlertComponent,
     ReactiveFormsModule,
     AddGeneralTabComponent,
     AddStorageTabComponent,
@@ -46,6 +49,7 @@ export class AddItemComponent implements OnInit {
   private readonly toastService = inject(ToastService);
   private readonly alertDialogService = inject(AlertDialogService);
   private readonly profileService = inject(ProfileService);
+  private readonly permission = inject(PermissionService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly router = inject(RouterService);
   private readonly route = inject(ActivatedRoute);
@@ -77,6 +81,8 @@ export class AddItemComponent implements OnInit {
       : 'Add items to your inventory with detailed information'
   );
   readonly submitButtonText = computed(() => (this.isEditMode() ? 'Update Item' : 'Add Item'));
+
+  readonly canCreateItem = computed(() => this.permission.can('item:create'));
 
   constructor() {
     this.formService.itemForm.valueChanges.subscribe(() => {
@@ -135,6 +141,13 @@ export class AddItemComponent implements OnInit {
   }
 
   onSubmit(): void {
+    if (!this.canCreateItem()) {
+      this.toastService.error({
+        title: 'Permission required',
+        message: 'You do not have permission to create items.',
+      });
+      return;
+    }
     if (this.formService.isFormValid()) {
       this.isSubmitting.set(true);
       const formData = this.formService.getFormData();

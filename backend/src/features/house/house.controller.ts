@@ -21,12 +21,16 @@ import {
   UpdateHouseDto,
 } from './house.dto';
 import { HouseService } from './house.service';
+import { InviteService } from '../invite/invite.service';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiDocs({ tags: ['houses'], bearer: true })
 @Controller('api/houses')
 export class HouseController {
-  constructor(private readonly houseService: HouseService) {}
+  constructor(
+    private readonly houseService: HouseService,
+    private readonly inviteService: InviteService,
+  ) {}
 
   @Get()
   @ApiDocs({
@@ -143,5 +147,38 @@ export class HouseController {
     @GetUser() user: JwtUser,
   ) {
     return this.houseService.revokeAccess(id, targetUserId, user.id);
+  }
+
+  @Post(':id/invite')
+  @ApiDocs({
+    summary: 'Invite a user to a house by email',
+    responses: [{ status: 200, description: 'Invite sent' }],
+  })
+  async invite(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: { email: string; permission: 'VIEW' | 'EDIT' | 'ADMIN' },
+    @GetUser() user: JwtUser,
+  ) {
+    // Only owner/admin should be able to invite; enforced via InviteService using ownership rule
+    return this.inviteService.createHouseInvite({
+      houseId: id,
+      inviterId: user.id,
+      email: dto.email,
+      permission: dto.permission,
+    });
+  }
+
+  @Get(':id/access')
+  @ApiDocs({
+    summary: 'List access entries for a house',
+    responses: [
+      {
+        status: 200,
+        description: 'List of access entries',
+      },
+    ],
+  })
+  async listAccess(@Param('id', ParseIntPipe) id: number) {
+    return this.houseService.listAccess(id);
   }
 }

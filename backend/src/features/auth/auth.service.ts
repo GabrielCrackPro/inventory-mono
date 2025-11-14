@@ -76,7 +76,6 @@ export class AuthService {
       Date.now() + this.otpExpiryMinutes() * 60 * 1000,
     );
 
-    // @ts-ignore
     await this.prisma.emailVerificationCode.create({
       data: { userId: user.id, codeHash, expiresAt },
     });
@@ -98,7 +97,6 @@ export class AuthService {
 
     if (user['emailVerified']) return { ok: true };
 
-    // @ts-ignore
     const codes = await this.prisma.emailVerificationCode.findMany({
       where: { userId: user.id, usedAt: null, expiresAt: { gt: new Date() } },
       orderBy: { createdAt: 'desc' },
@@ -108,7 +106,6 @@ export class AuthService {
     for (const c of codes) {
       if (await bcrypt.compare(code, c.codeHash)) {
         // mark used and set user verified
-        // @ts-ignore
         await this.prisma.emailVerificationCode.update({
           where: { id: c.id },
           data: { usedAt: new Date() },
@@ -129,14 +126,12 @@ export class AuthService {
     const latest = codes[0];
     if (latest) {
       const attempts = (latest.attempts ?? 0) + 1;
-      // @ts-ignore
       await this.prisma.emailVerificationCode.update({
         where: { id: latest.id },
         data: { attempts },
       });
       if (attempts >= this.otpMaxAttempts()) {
         // Mark as used to invalidate further attempts on this code
-        // @ts-ignore
         await this.prisma.emailVerificationCode.update({
           where: { id: latest.id },
           data: { usedAt: new Date() },
@@ -151,7 +146,6 @@ export class AuthService {
     // Optionally, invalidate existing active codes
     const user = await this.usersService.findByEmail(email);
     if (!user) return { ok: true };
-    // @ts-ignore
     await this.prisma.emailVerificationCode.updateMany({
       where: { userId: user.id, usedAt: null },
       data: { usedAt: new Date() },
@@ -166,14 +160,10 @@ export class AuthService {
 
     // Invalidate existing active tokens and purge expired ones for this user
     try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       await this.prisma.passwordResetToken.updateMany({
         where: { userId: user.id, usedAt: null },
         data: { usedAt: new Date() },
       });
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       await this.prisma.passwordResetToken.deleteMany({
         where: { userId: user.id, expiresAt: { lt: new Date() } },
       });
@@ -186,8 +176,6 @@ export class AuthService {
     const expiresAt = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
 
     // Persist token
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     await this.prisma.passwordResetToken.create({
       data: {
         tokenHash,
@@ -214,8 +202,6 @@ export class AuthService {
     const userId = Number(userIdStr);
     if (!userId || !raw) throw new BadRequestException('Invalid token');
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const tokens = await this.prisma.passwordResetToken.findMany({
       where: { userId, usedAt: null, expiresAt: { gt: new Date() } },
       orderBy: { createdAt: 'desc' },
@@ -223,8 +209,6 @@ export class AuthService {
     for (const t of tokens) {
       if (await bcrypt.compare(raw, t.tokenHash)) {
         // mark used
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         await this.prisma.passwordResetToken.update({
           where: { id: t.id },
           data: { usedAt: new Date() },
@@ -244,8 +228,6 @@ export class AuthService {
     });
     // After resetting the password, remove any other active tokens for this user
     try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       await this.prisma.passwordResetToken.deleteMany({
         where: { userId, usedAt: null },
       });
@@ -312,8 +294,6 @@ export class AuthService {
     expiresAt?: Date,
   ) {
     const tokenHash = await bcrypt.hash(refreshToken, 10);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore -- generated after `prisma generate`
     return this.prisma.refreshToken.create({
       data: { tokenHash, userId, expiresAt },
     });
@@ -324,8 +304,6 @@ export class AuthService {
     refreshToken: string,
   ) {
     // Use Prisma delegate to fetch tokens and compare hashes
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const tokens = await this.prisma.refreshToken.findMany({
       where: { userId },
     });
@@ -469,8 +447,6 @@ export class AuthService {
     if (tokenRecord.expiresAt && tokenRecord.expiresAt < new Date()) {
       // token expired, remove it and reject
       try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         await this.prisma.refreshToken.delete({
           where: {
             id: tokenRecord.id,
@@ -490,8 +466,6 @@ export class AuthService {
 
     // delete old token by id (Prisma delegate)
     try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       await this.prisma.refreshToken.delete({
         where: {
           id: tokenRecord.id,
@@ -559,8 +533,6 @@ export class AuthService {
     userAgent?: string,
   ) {
     try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       const result = await this.prisma.revokedToken.create({
         data: {
           jti,
@@ -586,8 +558,6 @@ export class AuthService {
       // Prisma unique constraint error code
       if (err?.code === 'P2002') {
         try {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           const found = await this.prisma.revokedToken.findUnique({
             where: {
               jti,

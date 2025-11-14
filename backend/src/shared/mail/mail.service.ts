@@ -17,6 +17,7 @@ import {
   emailVerificationTemplate,
   emailVerificationText,
 } from './templates/email-verification';
+import { inviteTemplate, inviteText } from './templates/invite';
 
 @Injectable()
 export class MailService {
@@ -83,6 +84,26 @@ export class MailService {
     const subject = 'Welcome to Inventory';
     const html = welcomeTemplate({ name: opts.name });
     const text = welcomeText({ name: opts.name });
+    return this.sendEmail({ to, subject, html, text });
+  }
+
+  async sendHouseInviteEmail(
+    to: string | string[],
+    opts: { inviter: string; house: string; link: string; permission: string },
+  ) {
+    const subject = `You're invited to a house (${opts.permission})`;
+    const html = inviteTemplate({
+      inviter: opts.inviter,
+      house: opts.house,
+      permission: opts.permission,
+      link: opts.link,
+    });
+    const text = inviteText({
+      inviter: opts.inviter,
+      house: opts.house,
+      permission: opts.permission,
+      link: opts.link,
+    });
     return this.sendEmail({ to, subject, html, text });
   }
 

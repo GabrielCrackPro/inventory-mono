@@ -140,7 +140,23 @@ export class ItemService {
 
   async findAllForUser(userId: number, houseId?: number) {
     return this.prisma.item.findMany({
-      where: { userId, ...(houseId ? { houseId } : {}) },
+      where: {
+        ...(houseId ? { houseId } : {}),
+        OR: [
+          { userId },
+          {
+            AND: [
+              { visibility: ItemVisibility.SHARED },
+              {
+                OR: [
+                  { house: { ownerId: userId } },
+                  { house: { sharedWith: { some: { userId } } } },
+                ],
+              },
+            ],
+          },
+        ],
+      },
       include: { room: true, category: true, user: true },
     });
   }
@@ -159,6 +175,42 @@ export class ItemService {
   }
 
   /**
+   * Retrieve an item only if the user is allowed to view it.
+   * Allowed when:
+   * - user is the owner, or
+   * - item visibility is SHARED and the user is a member/owner of the item's house, or
+   * - item visibility is PUBLIC
+   */
+  async findViewableById(userId: number, id: number) {
+    const item = await this.prisma.item.findFirst({
+      where: {
+        id,
+        OR: [
+          { userId },
+          { visibility: ItemVisibility.PUBLIC },
+          {
+            AND: [
+              { visibility: ItemVisibility.SHARED },
+              {
+                OR: [
+                  { house: { ownerId: userId } },
+                  { house: { sharedWith: { some: { userId } } } },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      include: { room: true, category: true, user: true },
+    });
+
+    if (!item) {
+      throw new ForbiddenException('Not allowed to view this item');
+    }
+    return item;
+  }
+
+  /**
    * Update an existing item in the database.
    * @param id The ID of the item to update.
    * @param userId The ID of the user who is updating the item.
@@ -167,28 +219,47 @@ export class ItemService {
    * @throws ForbiddenException If the user is not allowed to update the item.
    */
   async update(id: number, userId: number, dto: UpdateItemDto) {
-    // Find room by identifier if room is being updated
-    let room;
-    if (dto.room !== undefined) {
-      room = await this.findRoomById(dto.room, userId);
-      if (!room) {
-        throw new ForbiddenException('Room not found or access denied.');
+    // Load existing with room for house context
+    const existing = await this.prisma.item.findUnique({
+      where: { id },
+      include: { room: true },
+    });
+    if (!existing) {
+      throw new ForbiddenException('Item not found.');
+    }
+    if (existing.userId !== userId) {
+      // If not the creator, allow edit only when item is shared with the household and user is a house member
+      if (existing.visibility !== ItemVisibility.SHARED) {
+        throw new ForbiddenException('Only the creator can edit this item.');
       }
-    } else {
-      // Get current item's room if room is not being changed
-      const currentItem = await this.prisma.item.findUnique({
-        where: { id },
-        include: { room: true },
+
+      const houseId =
+        (existing as any).houseId ?? existing.room?.houseId ?? null;
+      if (!houseId) {
+        throw new ForbiddenException('Only the creator can edit this item.');
+      }
+
+      const isHouseMember = await this.prisma.house.findFirst({
+        where: {
+          id: houseId,
+          OR: [{ ownerId: userId }, { sharedWith: { some: { userId } } }],
+        },
+        select: { id: true },
       });
-      if (!currentItem) {
-        throw new ForbiddenException('Item not found.');
+
+      if (!isHouseMember) {
+        throw new ForbiddenException('Only the creator can edit this item.');
       }
-      room = currentItem.room;
     }
 
-    const canEdit = await this.prisma.userCanEditInRoom(room.id, userId);
-    if (!canEdit) {
-      throw new ForbiddenException('Not allowed to edit this item.');
+    // Determine target room (if changing), still ensure user has access to the room entity
+    let room = existing.room;
+    if (dto.room !== undefined) {
+      const found = await this.findRoomById(dto.room, userId);
+      if (!found) {
+        throw new ForbiddenException('Room not found or access denied.');
+      }
+      room = found;
     }
 
     // Find or create category if provided

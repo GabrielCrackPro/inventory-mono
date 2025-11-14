@@ -46,6 +46,10 @@ export class ItemService {
    */
   updateItem(id: string, formData: ItemFormData): Observable<Item> {
     const itemData = ItemHelpers.formDataToItem(formData, this.userId());
+    // Attach active houseId to ensure backend applies house scoping consistently
+    const houseId =
+      this._houseContext.currentSelectedHouseId() ?? this._profileService.getProfile()?.selectedHouseId;
+    if (houseId) (itemData as any).houseId = houseId;
     return this._apiService.patch<Item, any>('items', id, itemData);
   }
 

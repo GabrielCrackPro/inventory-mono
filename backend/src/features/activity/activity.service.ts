@@ -67,15 +67,35 @@ export class ActivityService {
    * @returns Array of activities
    */
   findAllForUser(userId: number, filters?: GetActivitiesDto) {
+    const houseIdNum =
+      filters?.houseId != null ? Number(filters.houseId) : null;
+
     const where: Prisma.ActivityWhereInput = {
       userId,
-      ...(filters?.type && { type: filters.type as any }), // Cast shared enum to Prisma enum
+      ...(filters?.type && { type: filters.type as any }),
       ...(filters?.startDate &&
         filters?.endDate && {
           createdAt: {
             gte: new Date(filters.startDate),
             lte: new Date(filters.endDate),
           },
+        }),
+      ...(houseIdNum != null &&
+        Number.isFinite(houseIdNum) && {
+          OR: [
+            {
+              metadata: {
+                path: ['houseId'],
+                equals: houseIdNum as any,
+              } as any,
+            },
+            {
+              metadata: {
+                path: ['houseId'],
+                equals: String(houseIdNum) as any,
+              } as any,
+            },
+          ],
         }),
     };
 

@@ -37,7 +37,8 @@ export class CreateUserDto implements ICreateUserDto {
 
 export class UpdateUserDto
   extends PartialType(CreateUserDto)
-  implements IUpdateUserDto {
+  implements IUpdateUserDto
+{
   @IsOptional()
   @ApiPropertyOptional({
     type: 'object',

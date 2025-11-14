@@ -8,6 +8,7 @@ import {
   IsInt,
   Min,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import type {
   CreateActivityDto as ICreateActivityDto,
@@ -65,19 +66,31 @@ export class GetActivitiesDto implements IGetActivitiesDto {
   @IsOptional()
   @IsInt()
   @Min(1)
+  @Type(() => Number)
   @ApiPropertyOptional({ example: 50, default: 50 })
   limit?: number = 50;
 
   @IsOptional()
   @IsInt()
   @Min(0)
+  @Type(() => Number)
   @ApiPropertyOptional({ example: 0, default: 0 })
   offset?: number = 0;
 
   @IsOptional()
   @IsInt()
+  @Type(() => Number)
   @ApiPropertyOptional({ example: 1 })
   userId?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Type(() => Number)
+  @ApiPropertyOptional({
+    example: 123,
+    description: 'Filter by house id (metadata.houseId)',
+  })
+  houseId?: number;
 }
 
 export class ActivityResponseDto implements IActivityResponseDto {

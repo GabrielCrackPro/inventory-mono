@@ -105,8 +105,11 @@ export class ItemController {
    * @returns The item with the given ID.
    * @throws ForbiddenException If the user is not allowed to view the item.
    */
-  async findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.itemService.findById(id);
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: JwtUser,
+  ) {
+    return this.itemService.findViewableById(user.id, id);
   }
 
   @Patch(':id')
