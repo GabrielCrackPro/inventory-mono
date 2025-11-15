@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ZardFormModule } from '@ui/form';
 import { FormValidators } from '@lib/utils';
 import { AccessService } from '@core/services/access';
+import { ProfileService } from '@features/user';
 import { PermissionService } from '@core/services/permission';
 import { HouseService } from '@features/house/services/house';
 import {
@@ -12,35 +13,23 @@ import {
   ShareHouseBody,
 } from '@features/house/services/house-access';
 import { ToastService } from '@shared/services';
-import { ZardCardComponent } from '@ui/card';
-import { ZardInputDirective } from '@ui/input';
-import { ZardSelectComponent, ZardSelectItemComponent } from '@ui/select';
-import {
-  ZardTableBodyComponent,
-  ZardTableCaptionComponent,
-  ZardTableCellComponent,
-  ZardTableComponent,
-  ZardTableHeadComponent,
-  ZardTableHeaderComponent,
-  ZardTableRowComponent,
-} from '@ui/table';
+import { ZardTabComponent, ZardTabGroupComponent } from '@ui/tabs';
+import { SettingsGeneralTabComponent } from './components/general-tab';
+import { SettingsInventoryTabComponent } from './components/inventory-tab';
+import { SettingsPermissionsTabComponent } from './components/permissions-tab';
 
 @Component({
   selector: 'hia-settings-page',
   standalone: true,
   imports: [
     CommonModule,
-    ZardCardComponent,
-    ZardTableComponent,
-    ZardTableHeaderComponent,
-    ZardTableBodyComponent,
-    ZardTableRowComponent,
-    ZardTableHeadComponent,
-    ZardTableCellComponent,
-    ZardSelectComponent,
-    ZardSelectItemComponent,
+    ZardTabGroupComponent,
+    ZardTabComponent,
     ReactiveFormsModule,
     ZardFormModule,
+    SettingsGeneralTabComponent,
+    SettingsInventoryTabComponent,
+    SettingsPermissionsTabComponent,
   ],
   templateUrl: './settings-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,28 +41,56 @@ export class SettingsPageComponent {
   private readonly perms = inject(PermissionService);
   private readonly toast = inject(ToastService);
   private readonly fb = inject(FormBuilder);
+  private readonly profile = inject(ProfileService);
 
   readonly isLoading = signal(false);
   readonly isSaving = signal(false);
+  readonly isSavingGeneral = signal(false);
   readonly houseId = signal<number | null>(null);
   readonly members = signal<HouseAccessEntry[]>([]);
   readonly houseAccessLevel = signal<'VIEW' | 'EDIT' | 'ADMIN' | null>(null);
+  readonly currentUserId = signal<number | null>(null);
+  readonly rooms = signal<{ id: number; name: string }[]>([]);
   readonly inviteForm = this.fb.group({
     email: ['', FormValidators.email()],
     permission: ['VIEW', Validators.required],
   });
+  readonly generalForm = this.fb.group({
+    name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+    address: [''],
+  });
+  readonly inventoryForm = this.fb.group({
+    defaultVisibility: ['shared' as 'private' | 'shared' | 'public'],
+    lowStockThreshold: [2, [Validators.min(0)]],
+    defaultRoomId: ['' as string],
+  });
 
   readonly isAdmin = computed(() => this.houseAccessLevel() === 'ADMIN');
+  readonly canManage = computed(() => this.isAdmin());
+
+  readonly onGeneralSubmitFn = () => this.onGeneralSubmit();
+  readonly onInventorySubmitFn = () => this.onInventorySubmit();
+  readonly isSelfFn = (userId: number) => this.isSelf(userId);
+  readonly onInviteSubmitFn = () => this.onInviteSubmit();
+  readonly onInvitePermissionChangeFn = (value: string) => this.onInvitePermissionChange(value);
+  readonly onPermissionChangeFn = (userId: number, nextPermission: string) =>
+    this.onPermissionChange(userId, nextPermission);
+  readonly onRevokeFn = (userId: number) => this.onRevoke(userId);
 
   ngOnInit() {
     const sel$ = this.houseService.getSelectedHouse();
     if (!sel$) return;
     this.isLoading.set(true);
+    this.currentUserId.set(this.profile.getProfile()?.id ?? null);
     sel$.subscribe({
       next: (house) => {
         const id = (house as any)?.id as number;
         this.houseId.set(id);
-        // Load effective access for this house
+        this.generalForm.patchValue({
+          name: (house as any)?.name ?? '',
+          address: (house as any)?.address ?? '',
+        });
+
         this.access.getHouseAccess(id).subscribe({
           next: (acc) => {
             this.houseAccessLevel.set(acc.level);
@@ -84,12 +101,124 @@ export class SettingsPageComponent {
             this.loadMembers();
           },
         });
+
+        this.houseService.getActiveHouseRooms().subscribe({
+          next: (list: any[]) => {
+            const simple = (list || []).map((r: any) => ({ id: r.id, name: r.name }));
+            this.rooms.set(simple);
+          },
+          error: () => this.rooms.set([]),
+        });
+
+        this.loadInventoryPrefs(id);
       },
       error: () => {
         this.isLoading.set(false);
         this.toast.error({ title: 'Failed to load house', message: 'Please select a house' });
       },
     });
+  }
+
+  visibilityOptions = [
+    { label: 'Private', value: 'private' },
+    { label: 'Household', value: 'shared' },
+    { label: 'Public', value: 'public' },
+  ];
+
+  roomOptions = () => [
+    { label: 'None', value: '' },
+    ...this.rooms().map((r: { id: number; name: string }) => ({
+      label: r.name,
+      value: String(r.id),
+    })),
+  ];
+
+  private inventoryKey(houseId: number) {
+    return `house:${houseId}:inventory_prefs`;
+  }
+
+  private loadInventoryPrefs(houseId: number) {
+    try {
+      const raw = localStorage.getItem(this.inventoryKey(houseId));
+      if (!raw) return;
+      const prefs = JSON.parse(raw) as {
+        defaultVisibility?: 'private' | 'shared' | 'public';
+        lowStockThreshold?: number;
+        defaultRoomId?: number | null;
+      };
+      this.inventoryForm.patchValue({
+        defaultVisibility: prefs.defaultVisibility ?? 'shared',
+        lowStockThreshold: prefs.lowStockThreshold ?? 2,
+        defaultRoomId:
+          prefs.defaultRoomId === null || prefs.defaultRoomId === undefined
+            ? ''
+            : String(prefs.defaultRoomId),
+      });
+    } catch {
+      // ignore
+    }
+  }
+
+  onInventorySubmit() {
+    if (this.inventoryForm.invalid) {
+      Object.values(this.inventoryForm.controls).forEach((c) => {
+        c.markAsTouched();
+        c.markAsDirty();
+      });
+      return;
+    }
+    const id = this.houseId();
+    if (!id) return;
+    const raw = this.inventoryForm.value as {
+      defaultVisibility: 'private' | 'shared' | 'public';
+      lowStockThreshold: number;
+      defaultRoomId: string; // '' | numeric string
+    };
+    const toSave = {
+      defaultVisibility: raw.defaultVisibility,
+      lowStockThreshold: raw.lowStockThreshold,
+      defaultRoomId: raw.defaultRoomId === '' ? null : Number(raw.defaultRoomId),
+    } as {
+      defaultVisibility: 'private' | 'shared' | 'public';
+      lowStockThreshold: number;
+      defaultRoomId: number | null;
+    };
+    try {
+      localStorage.setItem(this.inventoryKey(id), JSON.stringify(toSave));
+      this.toast.success({ title: 'Saved', message: 'Inventory preferences saved (local).' });
+    } catch (e) {
+      this.toast.error({ title: 'Save failed', message: 'Could not persist preferences locally.' });
+    }
+  }
+
+  onGeneralSubmit() {
+    if (this.generalForm.invalid || this.isSavingGeneral()) {
+      Object.values(this.generalForm.controls).forEach((c) => {
+        c.markAsTouched();
+        c.markAsDirty();
+      });
+      return;
+    }
+    const id = this.houseId();
+    if (!id) return;
+    const { name, address } = this.generalForm.value as { name: string; address?: string };
+    this.isSavingGeneral.set(true);
+    this.houseService
+      .updateHouse(id, { name: name.trim(), address: address?.trim() || '' })
+      .subscribe({
+        next: () => {
+          this.toast.success({ title: 'Saved', message: 'House settings updated.' });
+          this.isSavingGeneral.set(false);
+        },
+        error: (err: any) => {
+          this.toast.error({ title: 'Save failed', message: err?.message || 'Please try again.' });
+          this.isSavingGeneral.set(false);
+        },
+      });
+  }
+
+  isSelf(targetUserId: number) {
+    return this.currentUserId() != null && this.currentUserId() === targetUserId;
   }
 
   onInviteSubmit() {
@@ -138,7 +267,14 @@ export class SettingsPageComponent {
     }
     this.houseAccess.list(id).subscribe({
       next: (entries) => {
-        this.members.set(entries);
+        const sorted = [...entries].sort((a, b) => {
+          const order = { ADMIN: 0, EDIT: 1, VIEW: 2 } as const;
+          const pa = order[a.permission] ?? 99;
+          const pb = order[b.permission] ?? 99;
+          if (pa !== pb) return pa - pb;
+          return (a.user.name || a.user.email).localeCompare(b.user.name || b.user.email);
+        });
+        this.members.set(sorted);
         this.isLoading.set(false);
       },
       error: () => {

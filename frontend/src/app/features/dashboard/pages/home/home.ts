@@ -18,6 +18,7 @@ import {
 } from '@features/dashboard';
 import { RestockModalComponent } from '@features/dashboard/components/restock-modal';
 import { HouseService } from '@features/house';
+import { InventoryPreferencesService } from '@features/house/services/inventory-preferences';
 import { HouseContextService } from '@features/house/services';
 import { ItemService } from '@features/item';
 import { ProfileService } from '@features/user';
@@ -74,6 +75,7 @@ export class HomeComponent implements OnInit {
   private readonly _houseService = inject(HouseService);
   private readonly _dialogService = inject(DialogService);
   private readonly _exportService = inject(DashboardExportService);
+  private readonly _inventoryPrefs = inject(InventoryPreferencesService);
 
   readonly commonIcons = commonIcons;
 
@@ -88,6 +90,9 @@ export class HomeComponent implements OnInit {
     error: null,
   });
 
+  // Separate loading flag for activity feed only
+  private readonly _activitiesLoading = signal<boolean>(false);
+
   profile = computed(() => this._profileService.getProfile());
   activities = computed(() => this._dashboardData().activities);
   recentItems = computed(() => this._dashboardData().recentItems);
@@ -95,6 +100,7 @@ export class HomeComponent implements OnInit {
 
   loadingState = computed(() => this._loadingState());
   isLoading = computed(() => this._loadingState().isLoading);
+  activitiesLoading = computed(() => this._activitiesLoading());
 
   stats = computed(() => {
     const { items, rooms, categories } = this._profileService.getStats();
@@ -148,6 +154,24 @@ export class HomeComponent implements OnInit {
     this._loadDashboardData();
   }
 
+  // Refresh only the activity feed, not the entire dashboard
+  refreshActivities(): void {
+    this._activitiesLoading.set(true);
+    this._profileService
+      .getActivities()
+      .pipe(
+        finalize(() => this._activitiesLoading.set(false))
+      )
+      .subscribe({
+        next: (activities) => {
+          this._dashboardData.update((curr) => ({ ...curr, activities }));
+        },
+        error: (error) => {
+          console.error('Failed to refresh activities:', error);
+        },
+      });
+  }
+
   exportItems(): void {
     this._dialogService.create({
       zContent: DashboardExportModalComponent,
@@ -197,17 +221,18 @@ export class HomeComponent implements OnInit {
       const isRecent = new Date().getTime() - addedDate.getTime() < 24 * 60 * 60 * 1000; // Less than 24 hours
 
       // Determine stock status based on quantity
+      const threshold = this.getLowStockThreshold();
       const getStockStatus = (quantity: number) => {
         if (quantity === 0) return 'out-of-stock';
-        if (quantity <= 2) return 'low-stock';
+        if (quantity <= threshold) return 'low-stock';
         return 'normal';
       };
 
       // Determine badge variant based on quantity
       const getBadgeVariant = (quantity: number) => {
         if (quantity === 0) return 'destructive';
-        if (quantity <= 2) return 'warning';
-        if (quantity <= 5) return 'default';
+        if (quantity <= threshold) return 'warning';
+        if (quantity <= Math.max(threshold + 3, threshold * 2)) return 'default';
         return 'success';
       };
 
@@ -231,6 +256,12 @@ export class HomeComponent implements OnInit {
       } as ListItem;
     })
   );
+
+  private getLowStockThreshold(): number {
+    const prefs = this._inventoryPrefs.getForCurrentHouse();
+    const t = prefs?.lowStockThreshold;
+    return typeof t === 'number' && t >= 0 ? t : 2;
+  }
 
   handleRestockClick(): void {
     const component = RestockModalComponent;
@@ -277,16 +308,17 @@ export class HomeComponent implements OnInit {
 
   lowStockItemsList = computed((): ListItem[] =>
     this.lowStockItems().map((item) => {
+      const threshold = this.getLowStockThreshold();
       const getStockStatus = (quantity: number) => {
         if (quantity === 0) return 'out-of-stock';
-        if (quantity <= 2) return 'low-stock';
+        if (quantity <= threshold) return 'low-stock';
         return 'normal';
       };
 
       const getBadgeVariant = (quantity: number) => {
         if (quantity === 0) return 'destructive';
-        if (quantity <= 2) return 'warning';
-        if (quantity <= 5) return 'default';
+        if (quantity <= threshold) return 'warning';
+        if (quantity <= Math.max(threshold + 3, threshold * 2)) return 'default';
         return 'success';
       };
 

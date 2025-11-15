@@ -41,4 +41,8 @@ export class HouseService {
   deleteHouse(id: number) {
     return this._apiService.delete<void>('houses', id);
   }
+
+  updateHouse(id: number, body: Partial<UserHouse> & { name?: string; address?: string }) {
+    return this._apiService.patch<UserHouse, typeof body>('houses', id, body as any);
+  }
 }

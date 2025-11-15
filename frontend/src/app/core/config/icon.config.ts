@@ -35,7 +35,7 @@ export const commonIcons: Record<string, IconName> = {
   add: 'lucidePlus',
   edit: 'lucidePencil',
   delete: 'lucideTrash',
-  save: 'lucideCheck',
+  save: 'lucideSave',
   cancel: 'lucideX',
   refresh: 'lucideRefreshCcw',
   download: 'lucideDownload',

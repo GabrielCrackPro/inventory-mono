@@ -26,6 +26,7 @@ import { AlertDialogService, ToastService } from '@shared/services';
 import { ZardButtonComponent } from '@ui/button';
 import { ZardAlertComponent } from '@ui/alert';
 import { ZardTabComponent, ZardTabGroupComponent } from '@ui/tabs';
+import { InventoryPreferencesService } from '@features/house/services/inventory-preferences';
 
 @Component({
   selector: 'hia-add-item',
@@ -53,6 +54,7 @@ export class AddItemComponent implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly router = inject(RouterService);
   private readonly route = inject(ActivatedRoute);
+  private readonly inventoryPrefs = inject(InventoryPreferencesService);
 
   readonly formService = inject(ItemFormService);
   readonly commonIcons = commonIcons;
@@ -96,6 +98,19 @@ export class AddItemComponent implements OnInit {
     if (id) {
       this.itemId.set(id);
       this.loadItemForEdit(id);
+    }
+    // Apply defaults when creating a new item
+    if (!id) {
+      const prefs = this.inventoryPrefs.getForCurrentHouse();
+      if (prefs) {
+        const visibility = prefs.defaultVisibility === 'shared' ? 'household' : prefs.defaultVisibility;
+        if (visibility) {
+          this.formService.itemForm.get('visibility')?.setValue(visibility);
+        }
+        if (typeof prefs.defaultRoomId === 'number') {
+          this.formService.itemForm.get('room')?.setValue(prefs.defaultRoomId);
+        }
+      }
     }
   }
 

@@ -191,8 +191,8 @@
       <div class="animate-fade-in-up animate-stagger-4">
         <hia-activity-feed
           [activities]="activities()"
-          [loading]="loadingState().isLoading"
-          (refresh)="refreshData()"
+          [loading]="activitiesLoading()"
+          (refresh)="refreshActivities()"
           (activityClick)="handleActivityClick($event)"
           (viewAllActivities)="handleViewAllActivities()"
           class="transform transition-all duration-300 hover:shadow-lg"

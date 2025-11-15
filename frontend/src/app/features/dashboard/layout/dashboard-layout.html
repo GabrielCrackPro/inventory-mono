@@ -51,7 +51,7 @@
             [icon]="item.icon"
             [route]="item.to"
             [collapsed]="sidebarCollapsed()"
-            [exact]="item.to === ''"
+            [exact]="item.to === '/'"
             [attr.data-to]="item.to"
             (onHover)="moveHover($event, itemContainer.nativeElement)"
           />

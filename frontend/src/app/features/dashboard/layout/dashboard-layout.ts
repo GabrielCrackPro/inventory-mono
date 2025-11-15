@@ -6,7 +6,7 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
-import { RouterLinkWithHref, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLinkWithHref, RouterOutlet } from '@angular/router';
 import { commonIcons, IconName } from '@core/config';
 import { StorageService } from '@core/services';
 import { HeaderComponent } from '@features/layout';
@@ -43,6 +43,7 @@ export class DashboardLayoutComponent {
   @ViewChild('sidebarNav', { static: true }) private readonly _navRef!: ElementRef<HTMLElement>;
 
   private readonly _storageService = inject(StorageService);
+  private readonly _router = inject(Router);
 
   private readonly _sidebarCollapsedKey = 'sidebar-collapsed';
 
@@ -81,6 +82,12 @@ export class DashboardLayoutComponent {
 
   ngAfterViewInit(): void {
     setTimeout(() => this._positionToActive(), 0);
+    // Reposition on route changes to reflect active link accurately
+    this._router.events.subscribe((e) => {
+      if (e instanceof NavigationEnd) {
+        setTimeout(() => this._positionToActive(), 0);
+      }
+    });
   }
 
   moveHover(_: Event, el: HTMLElement) {
@@ -116,12 +123,23 @@ export class DashboardLayoutComponent {
       return;
     }
 
-    const active = nav.querySelector('[data-to] .active') as HTMLElement | null;
+    // Find the active router link and then its container within a nav item
+    const activeLink = nav.querySelector('a.active') as HTMLElement | null;
+    const activeContainer = activeLink?.closest('[data-route]') as HTMLElement | null;
 
-    if (active) {
-      this.moveHover(new Event('hover'), active);
-    } else {
+    const target = activeContainer ?? activeLink;
+    if (!target) {
       this.hoverEffect.update((state) => ({ ...state, visible: false }));
+      return;
     }
+
+    const navRect = nav.getBoundingClientRect();
+    const rect = target.getBoundingClientRect();
+    const top = rect.top - navRect.top + nav.scrollTop;
+    const left = rect.left - navRect.left;
+    const width = rect.width;
+    const height = rect.height;
+
+    this.hoverEffect.set({ visible: true, top, left, width, height });
   }
 }
