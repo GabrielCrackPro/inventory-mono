@@ -168,6 +168,23 @@ export class HouseController {
     });
   }
 
+  @Post(':id/invite/cancel')
+  @ApiDocs({
+    summary: 'Cancel a pending invite for a house by email',
+    responses: [{ status: 200, description: 'Invite(s) canceled' }],
+  })
+  async cancelInvite(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: { email: string },
+    @GetUser() user: JwtUser,
+  ) {
+    return await this.inviteService.cancelHouseInvite({
+      houseId: id,
+      requesterId: user.id,
+      email: dto.email,
+    });
+  }
+
   @Get(':id/access')
   @ApiDocs({
     summary: 'List access entries for a house',

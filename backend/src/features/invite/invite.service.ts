@@ -66,6 +66,28 @@ export class InviteService {
     return { ok: true };
   }
 
+  async cancelHouseInvite(params: {
+    houseId: number;
+    requesterId: number;
+    email: string;
+  }) {
+    const house = await this.prisma.house.findUnique({ where: { id: params.houseId } });
+    if (!house) throw new Error('House not found');
+    if (house.ownerId !== params.requesterId) {
+      throw new Error('Only the house owner can cancel invites');
+    }
+
+    const res = await this.prisma.houseInvite.deleteMany({
+      where: {
+        houseId: params.houseId,
+        email: params.email.toLowerCase(),
+        usedAt: null,
+      },
+    });
+
+    return { ok: true, deleted: res.count };
+  }
+
   async getInviteByToken(token: string) {
     const tokenHash = sha256(token);
     const invite = await this.prisma.houseInvite.findUnique({

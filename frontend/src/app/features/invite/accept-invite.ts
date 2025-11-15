@@ -47,11 +47,16 @@ export class AcceptInvitePageComponent {
     }
     this.api.get<InviteSummary>('invites', undefined, t).subscribe({
       next: (res) => {
-        this.invite.set(res);
+        if (!res) {
+          this.error.set('This invite was canceled or is no longer valid.');
+          this.invite.set(null);
+        } else {
+          this.invite.set(res);
+        }
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set(err?.message || 'Invalid invite');
+        this.error.set(err?.message || 'This invite was canceled or is no longer valid.');
         this.loading.set(false);
       },
     });

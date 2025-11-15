@@ -35,4 +35,10 @@ export class HouseAccessService {
   invite(houseId: number, body: InviteHouseBody) {
     return this.api.postTo<void, InviteHouseBody>('houses', `${houseId}/invite`, body);
   }
+
+  cancelInvite(houseId: number, email: string) {
+    return this.api.postTo<void, { email: string }>('houses', `${houseId}/invite/cancel`, {
+      email,
+    });
+  }
 }

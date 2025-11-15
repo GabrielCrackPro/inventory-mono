@@ -47,7 +47,7 @@ export class SettingsPageComponent {
   readonly isSaving = signal(false);
   readonly isSavingGeneral = signal(false);
   readonly houseId = signal<number | null>(null);
-  readonly members = signal<HouseAccessEntry[]>([]);
+  readonly members = signal<any[]>([]);
   readonly houseAccessLevel = signal<'VIEW' | 'EDIT' | 'ADMIN' | null>(null);
   readonly currentUserId = signal<number | null>(null);
   readonly rooms = signal<{ id: number; name: string }[]>([]);
@@ -76,6 +76,7 @@ export class SettingsPageComponent {
   readonly onPermissionChangeFn = (userId: number, nextPermission: string) =>
     this.onPermissionChange(userId, nextPermission);
   readonly onRevokeFn = (userId: number) => this.onRevoke(userId);
+  readonly onCancelInviteFn = (email: string) => this.onCancelInvite(email);
 
   ngOnInit() {
     const sel$ = this.houseService.getSelectedHouse();
@@ -241,6 +242,15 @@ export class SettingsPageComponent {
     this.houseAccess.invite(houseId, { email, permission }).subscribe({
       next: () => {
         this.toast.success({ title: 'Invite sent', message: `Invitation sent to ${email}.` });
+        // Optimistically add a pending row to the members table
+        const pendingRow = {
+          userId: -Date.now(),
+          permission,
+          user: undefined,
+          email,
+          pending: true,
+        } as any;
+        this.members.update((list) => [pendingRow, ...list]);
         this.inviteForm.reset({ email: '', permission: 'VIEW' });
         this.isSaving.set(false);
       },
@@ -257,6 +267,27 @@ export class SettingsPageComponent {
 
   onInvitePermissionChange(value: string) {
     this.inviteForm.get('permission')?.setValue((value as 'VIEW' | 'EDIT' | 'ADMIN') ?? 'VIEW');
+  }
+
+  onCancelInvite(email: string) {
+    const houseId = this.houseId();
+    if (!houseId) return;
+    this.isSaving.set(true);
+    this.houseAccess.cancelInvite(houseId, email).subscribe({
+      next: () => {
+        const list = this.members();
+        const after = list.filter(
+          (m: any) => !(m.pending && ((m.email ?? m.user?.email)?.toLowerCase?.() === email.toLowerCase()))
+        );
+        this.members.set(after);
+        this.toast.success({ title: 'Invite canceled', message: `Invitation to ${email} was canceled.` });
+        this.isSaving.set(false);
+      },
+      error: (err) => {
+        this.toast.error({ title: 'Cancel failed', message: err?.message || 'Please try again.' });
+        this.isSaving.set(false);
+      },
+    });
   }
 
   private loadMembers() {

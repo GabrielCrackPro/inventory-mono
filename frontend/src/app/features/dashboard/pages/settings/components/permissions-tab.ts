@@ -111,32 +111,51 @@ import { ZardInputDirective } from '@ui/input';
             </thead>
             <tbody z-table-body>
               <tr z-table-row *ngFor="let m of members(); trackBy: trackByUserId">
-                <td z-table-cell>{{ m.user.id }}</td>
-                <td z-table-cell>{{ m.user.name }}</td>
-                <td z-table-cell>{{ m.user.email }}</td>
+                <td z-table-cell>{{ m.user?.id || '-' }}</td>
+                <td z-table-cell>
+                  {{ m.user?.name || 'Invited User' }}
+                  @if (m.pending) {
+                    <span class="ml-2 inline-flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-full bg-amber-100 text-amber-800 border border-amber-200/60 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800/40">Pending</span>
+                  }
+                </td>
+                <td z-table-cell>{{ m.user?.email || m.email }}</td>
                 <td z-table-cell>
                   <div class="max-w-44">
-                    <z-select
-                      [zPlaceholder]="'Select permission'"
-                      [zValue]="m.permission"
-                      (zSelectionChange)="permissionChange.emit({ userId: m.userId, permission: $event })"
-                      [class]="'w-full'"
-                      [zDisabled]="!isAdmin() || isSelf()(m.userId)"
-                    >
-                      <z-select-item [zValue]="'VIEW'">View</z-select-item>
-                      <z-select-item [zValue]="'EDIT'">Edit</z-select-item>
-                      <z-select-item [zValue]="'ADMIN'">Admin</z-select-item>
-                    </z-select>
+                    @if (!m.pending) {
+                      <z-select
+                        [zPlaceholder]="'Select permission'"
+                        [zValue]="m.permission"
+                        (zSelectionChange)="permissionChange.emit({ userId: m.userId, permission: $event })"
+                        [class]="'w-full'"
+                        [zDisabled]="!isAdmin() || isSelf()(m.userId)"
+                      >
+                        <z-select-item [zValue]="'VIEW'">View</z-select-item>
+                        <z-select-item [zValue]="'EDIT'">Edit</z-select-item>
+                        <z-select-item [zValue]="'ADMIN'">Admin</z-select-item>
+                      </z-select>
+                    } @else {
+                      <span class="text-xs text-muted-foreground uppercase">{{ m.permission }}</span>
+                    }
                   </div>
                 </td>
                 <td z-table-cell>
-                  <z-button
-                    zType="destructive"
-                    [label]="'Revoke'"
-                    [iconName]="commonIcons['delete']"
-                    (click)="revoke.emit(m.userId)"
-                    [disabled]="!isAdmin() || isSelf()(m.userId)"
-                  />
+                  @if (!m.pending) {
+                    <z-button
+                      zType="destructive"
+                      [label]="'Revoke'"
+                      [iconName]="commonIcons['delete']"
+                      (click)="revoke.emit(m.userId)"
+                      [disabled]="!isAdmin() || isSelf()(m.userId)"
+                    />
+                  } @else {
+                    <z-button
+                      zType="text"
+                      iconClasses="text-destructive"
+                      [iconName]="commonIcons['delete']"
+                      (click)="cancelInvite.emit(m.email)"
+                      [disabled]="!isAdmin()"
+                    />
+                  }
                 </td>
               </tr>
               <tr z-table-row *ngIf="members().length === 0">
@@ -165,6 +184,7 @@ export class SettingsPermissionsTabComponent {
   invitePermissionChange = output<string>();
   permissionChange = output<{ userId: number; permission: string }>();
   revoke = output<number>();
+  cancelInvite = output<string>();
 
   trackByUserId = (_: number, m: any) => m.userId;
   readonly commonIcons = commonIcons;
