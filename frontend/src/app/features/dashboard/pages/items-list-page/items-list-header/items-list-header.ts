@@ -19,14 +19,14 @@ export class ItemsListHeaderComponent {
   showSettings = input<boolean>(false);
 
   readonly toggleSelectMode = output<void>();
-  readonly changeViewMode = output<string>();
+  readonly changeViewMode = output<string | number>();
   readonly settingsClick = output<void>();
 
   onToggleSelectMode(): void {
     this.toggleSelectMode.emit();
   }
 
-  onChangeViewMode(mode: string): void {
+  onChangeViewMode(mode: string | number): void {
     this.changeViewMode.emit(mode);
   }
 

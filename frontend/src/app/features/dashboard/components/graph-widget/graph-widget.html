@@ -1,0 +1,167 @@
+<z-card
+  class="overflow-hidden"
+  zTitle="Activity Graph"
+  zDescription="Track your progress over time"
+>
+  <!-- Header with controls -->
+  <div class="flex items-center justify-between mb-4 transition-all duration-300">
+    <div class="flex items-center gap-3 flex-1 min-w-0">
+      <z-button
+        zType="text"
+        [iconName]="showOptions() ? 'lucideX' : 'lucideSettings'"
+        [iconClasses]="
+          showOptions() ? 'text-destructive' : 'text-muted-foreground hover:text-foreground'
+        "
+        [iconSize]="16"
+        (click)="toggleOptions()"
+        class="transition-all duration-300 hover:scale-110 active:scale-95"
+      />
+
+      @if(hasData() && !showOptions()) {
+      <div
+        class="flex items-center gap-2 text-xs flex-wrap animate-in fade-in slide-in-from-left-2 duration-300"
+      >
+        @if(metric() === 'activities') {
+        <div
+          class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-500/10 border border-indigo-500/20 transition-all duration-200 hover:bg-indigo-500/15 hover:scale-105"
+        >
+          <span class="font-semibold text-indigo-600 dark:text-indigo-400 transition-colors">{{
+            totalActivities()
+          }}</span>
+          <span class="text-indigo-600/70 dark:text-indigo-400/70 transition-colors"
+            >activities</span
+          >
+        </div>
+        } @else if(metric() === 'items') {
+        <div
+          class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 transition-all duration-200 hover:bg-emerald-500/15 hover:scale-105"
+        >
+          <span class="font-semibold text-emerald-600 dark:text-emerald-400 transition-colors">{{
+            totalItems()
+          }}</span>
+          <span class="text-emerald-600/70 dark:text-emerald-400/70 transition-colors">items</span>
+        </div>
+        } @else {
+        <div
+          class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary/10 border border-primary/20 transition-all duration-200 hover:bg-primary/15 hover:scale-105"
+        >
+          <span class="font-semibold text-foreground transition-colors">{{
+            totalActivities() + totalItems()
+          }}</span>
+          <span class="text-muted-foreground transition-colors">total</span>
+        </div>
+        }
+        <div
+          class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-muted/50 transition-all duration-200 hover:bg-muted/70 hover:scale-105"
+        >
+          <span class="font-semibold text-foreground transition-colors">{{ avgPerDay() }}</span>
+          <span class="text-muted-foreground transition-colors">avg/day</span>
+        </div>
+        @if(trend() !== 0) {
+        <div
+          class="flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all duration-200 hover:scale-105"
+          [class]="
+            trend() > 0
+              ? 'bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/15'
+              : 'bg-red-500/10 border border-red-500/20 hover:bg-red-500/15'
+          "
+        >
+          <span
+            class="font-semibold transition-colors"
+            [class]="
+              trend() > 0
+                ? 'text-emerald-600 dark:text-emerald-400'
+                : 'text-red-600 dark:text-red-400'
+            "
+          >
+            {{ trend() > 0 ? '+' : '' }}{{ trend().toFixed(0) }}%
+          </span>
+          <span
+            class="text-sm transition-all duration-300"
+            [class]="
+              trend() > 0
+                ? 'text-emerald-600 dark:text-emerald-400'
+                : 'text-red-600 dark:text-red-400'
+            "
+          >
+            {{ trend() > 0 ? '↑' : '↓' }}
+          </span>
+        </div>
+        }
+      </div>
+      }
+    </div>
+
+    @if(showOptions()) {
+    <div
+      class="flex items-center gap-2 flex-wrap animate-in fade-in slide-in-from-right-2 duration-300"
+    >
+      <z-segmented
+        [zDefaultValue]="metric()"
+        zSize="sm"
+        [zOptions]="graphViewOptions()"
+        (zChange)="setMetric($event)"
+        class="transition-all duration-200"
+      />
+      <z-segmented
+        zSize="sm"
+        [zDefaultValue]="period()"
+        [zOptions]="graphPeriodOptions()"
+        (zChange)="setPeriod($event)"
+        class="transition-all duration-200"
+      />
+    </div>
+    }
+  </div>
+
+  <!-- Chart container -->
+  <div class="w-full relative transition-all duration-300">
+    @if(loading()) {
+    <div
+      class="w-full h-40 sm:h-44 flex items-center justify-center animate-in fade-in duration-300"
+    >
+      <div class="flex flex-col items-center gap-2 text-muted-foreground">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <span class="text-xs animate-pulse">Loading data...</span>
+      </div>
+    </div>
+    } @else {
+    <div class="animate-in fade-in zoom-in-95 duration-500">
+      <canvas
+        baseChart
+        class="w-full h-40 sm:h-44 transition-all duration-500"
+        [class.opacity-50]="!hasData()"
+        [class.scale-95]="!hasData()"
+        [type]="'bar'"
+        [data]="{ labels: labels(), datasets: datasets() }"
+        [options]="options()"
+      ></canvas>
+    </div>
+
+    @if (!hasData()) {
+    <div
+      class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border/60 bg-background/50 backdrop-blur-sm pointer-events-none animate-in fade-in zoom-in-95 duration-300"
+    >
+      <svg
+        class="w-12 h-12 text-muted-foreground/40 animate-in fade-in zoom-in-90 duration-500"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.5"
+          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+        />
+      </svg>
+      <div class="text-center animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100">
+        <p class="text-sm font-medium text-muted-foreground">No data yet</p>
+        <p class="text-xs text-muted-foreground/60 mt-1">
+          Start adding items or activities to see your progress
+        </p>
+      </div>
+    </div>
+    } }
+  </div>
+</z-card>

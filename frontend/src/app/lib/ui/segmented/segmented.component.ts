@@ -23,7 +23,7 @@ import { IconComponent } from '@ui/icon';
 import { IconName } from '@core/config';
 
 export interface SegmentedOption {
-  value: string;
+  value: string | number;
   label: string;
   disabled?: boolean;
   icon?: IconName;
@@ -96,17 +96,17 @@ export class ZardSegmentedComponent implements ControlValueAccessor, OnInit {
   readonly class = input<ClassValue>('');
   readonly zSize = input<ZardSegmentedVariants['zSize']>('default');
   readonly zOptions = input<SegmentedOption[]>([]);
-  readonly zDefaultValue = input<string>('');
+  readonly zDefaultValue = input<string | number>('');
   readonly zDisabled = input(false);
   readonly zAriaLabel = input<string>('Segmented control');
 
-  readonly zChange = output<string>();
+  readonly zChange = output<string | number>();
 
-  protected readonly selectedValue = signal<string>('');
+  protected readonly selectedValue = signal<string | number>('');
   protected readonly items = signal<readonly ZardSegmentedItemComponent[]>([]);
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private onChange: (value: string) => void = () => {};
+  private onChange: (value: string | number) => void = () => {};
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private onTouched = () => {};
 
@@ -129,18 +129,18 @@ export class ZardSegmentedComponent implements ControlValueAccessor, OnInit {
 
   protected readonly wrapperClasses = computed(() => 'inline-block gap-1');
 
-  protected getItemClasses(value: string): string {
+  protected getItemClasses(value: string | number): string {
     return segmentedItemVariants({
       zSize: this.zSize(),
       isActive: this.isSelected(value),
     });
   }
 
-  protected isSelected(value: string): boolean {
+  protected isSelected(value: string | number): boolean {
     return this.selectedValue() === value;
   }
 
-  protected selectOption(value: string) {
+  protected selectOption(value: string | number) {
     if (this.zDisabled()) return;
 
     const option = this.zOptions().find((opt) => opt.value === value);
@@ -159,7 +159,7 @@ export class ZardSegmentedComponent implements ControlValueAccessor, OnInit {
     this.selectedValue.set(value || '');
   }
 
-  registerOnChange(fn: (value: string) => void): void {
+  registerOnChange(fn: (value: string | number) => void): void {
     this.onChange = fn;
   }
 

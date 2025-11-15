@@ -7,6 +7,7 @@ import { AccessService } from '@core/services/access';
 import { ProfileService } from '@features/user';
 import { PermissionService } from '@core/services/permission';
 import { HouseService } from '@features/house/services/house';
+import { HouseContextService } from '@features/house/services/house-context';
 import {
   HouseAccessEntry,
   HouseAccessService,
@@ -36,6 +37,7 @@ import { SettingsPermissionsTabComponent } from './components/permissions-tab';
 })
 export class SettingsPageComponent {
   private readonly houseService = inject(HouseService);
+  private readonly houseContext = inject(HouseContextService);
   private readonly houseAccess = inject(HouseAccessService);
   private readonly access = inject(AccessService);
   private readonly perms = inject(PermissionService);
@@ -187,6 +189,8 @@ export class SettingsPageComponent {
     try {
       localStorage.setItem(this.inventoryKey(id), JSON.stringify(toSave));
       this.toast.success({ title: 'Saved', message: 'Inventory preferences saved (local).' });
+      // Notify the app so any views depending on inventory prefs (e.g., low-stock threshold) recompute
+      this.houseContext.notifySelectedHouseChange(id);
     } catch (e) {
       this.toast.error({ title: 'Save failed', message: 'Could not persist preferences locally.' });
     }
@@ -209,6 +213,8 @@ export class SettingsPageComponent {
       .subscribe({
         next: () => {
           this.toast.success({ title: 'Saved', message: 'House settings updated.' });
+          // Notify the app so any views depending on the active house refetch immediately
+          this.houseContext.notifySelectedHouseChange(id);
           this.isSavingGeneral.set(false);
         },
         error: (err: any) => {
@@ -277,10 +283,14 @@ export class SettingsPageComponent {
       next: () => {
         const list = this.members();
         const after = list.filter(
-          (m: any) => !(m.pending && ((m.email ?? m.user?.email)?.toLowerCase?.() === email.toLowerCase()))
+          (m: any) =>
+            !(m.pending && (m.email ?? m.user?.email)?.toLowerCase?.() === email.toLowerCase())
         );
         this.members.set(after);
-        this.toast.success({ title: 'Invite canceled', message: `Invitation to ${email} was canceled.` });
+        this.toast.success({
+          title: 'Invite canceled',
+          message: `Invitation to ${email} was canceled.`,
+        });
         this.isSaving.set(false);
       },
       error: (err) => {

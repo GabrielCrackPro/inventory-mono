@@ -23,6 +23,8 @@ import { HouseContextService } from '@features/house/services';
 import { ItemService } from '@features/item';
 import { ProfileService } from '@features/user';
 import { DialogService, LoadingService } from '@shared/services';
+import { DashboardLayoutService } from '../../services/dashboard-layout';
+import { CustomizeDashboardModalComponent } from '../../components/customize-dashboard-modal/customize-dashboard-modal';
 import { ZardButtonComponent } from '@ui/button';
 import {
   ZardDropdownDirective,
@@ -33,6 +35,7 @@ import { ZardCardComponent } from '@ui/card';
 import { IconComponent } from '@ui/icon';
 import { ItemListComponent, ListItem } from '@ui/list';
 import { StatsCardComponent } from '@ui/stats';
+import { GraphWidgetComponent } from '../../components/graph-widget/graph-widget';
 import { finalize } from 'rxjs';
 
 interface DashboardStat {
@@ -62,6 +65,7 @@ interface LoadingState {
     ZardDropdownDirective,
     ZardDropdownMenuContentComponent,
     ZardDropdownMenuItemComponent,
+    GraphWidgetComponent,
   ],
   templateUrl: './home.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -76,6 +80,7 @@ export class HomeComponent implements OnInit {
   private readonly _dialogService = inject(DialogService);
   private readonly _exportService = inject(DashboardExportService);
   private readonly _inventoryPrefs = inject(InventoryPreferencesService);
+  private readonly _layout = inject(DashboardLayoutService);
 
   readonly commonIcons = commonIcons;
 
@@ -113,15 +118,45 @@ export class HomeComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    // Load dashboard layout for current house
+    this._layout.load();
     this._loadDashboardData();
     this._loadCounters();
 
     this._houseContext.selectedHouseChanged$.subscribe(() => {
+      // reload layout on house change
+      this._layout.load();
       this._loadDashboardData();
       this._loadCounters();
     });
   }
 
+  // Layout API
+  widgets = computed(() => this._layout.layout()?.widgets ?? []);
+  show(widgetId: 'stats' | 'recent' | 'stock' | 'activity') {
+    const w = (this._layout.layout()?.widgets ?? []).find((x) => x.id === widgetId);
+    return !!w?.visible;
+  }
+
+  openCustomize(): void {
+    const dialogRef = this._dialogService.create({
+      zContent: CustomizeDashboardModalComponent,
+      zTitle: 'Customize Dashboard',
+      zDescription: 'Show, hide, and reorder dashboard widgets',
+      zOkText: 'Save',
+      zOkIcon: 'lucideSave',
+      zCancelText: 'Cancel',
+      zCancelIcon: 'lucideX',
+      zClosable: true,
+      zMaskClosable: true,
+      zOnOk: (cmp: CustomizeDashboardModalComponent) => {
+        const next = cmp.getLayout();
+        this._layout.save(next as any);
+        return;
+      },
+    });
+    dialogRef.afterClosed().subscribe();
+  }
   private _loadDashboardData(): void {
     this._setLoadingState({ isLoading: true, error: null });
 
@@ -159,9 +194,7 @@ export class HomeComponent implements OnInit {
     this._activitiesLoading.set(true);
     this._profileService
       .getActivities()
-      .pipe(
-        finalize(() => this._activitiesLoading.set(false))
-      )
+      .pipe(finalize(() => this._activitiesLoading.set(false)))
       .subscribe({
         next: (activities) => {
           this._dashboardData.update((curr) => ({ ...curr, activities }));
@@ -247,11 +280,11 @@ export class HomeComponent implements OnInit {
         isNew: isRecent,
         lastUpdated: addedDate,
         tags: ['Recent'],
-        metadata: { 
-          addedDate: item.addedDate, 
+        metadata: {
+          addedDate: item.addedDate,
           originalQuantity: item.quantity,
           room: item.room,
-          category: item.category
+          category: item.category,
         },
       } as ListItem;
     })

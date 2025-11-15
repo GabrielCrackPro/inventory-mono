@@ -66,6 +66,12 @@
             Export
           </span>
         </z-dropdown-menu-item>
+        <z-dropdown-menu-item (click)="openCustomize()">
+          <span class="flex items-center gap-2">
+            <hia-icon [name]="commonIcons['settings']" [size]="14" />
+            Customize Dashboard
+          </span>
+        </z-dropdown-menu-item>
       </z-dropdown-menu-content>
       <z-button
         zType="default"
@@ -77,76 +83,84 @@
     </div>
   </div>
 
-  <!-- Stats Cards -->
-  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-fade-in-up">
-    @for (stat of stats(); track stat.title; let i = $index) {
-    <hia-stats-card
-      [title]="stat.title"
-      [value]="stat.value"
-      [icon]="stat.icon"
-      [change]="stat.change"
-      [trend]="stat.trend"
-      [class]="
-        'hover:shadow-md transition-all duration-300 hover:scale-105 animate-scale-in animate-stagger-' +
-        (i + 1)
-      "
-    />
-    }
-  </div>
-
   <!-- Main Content Grid -->
   <div class="grid gap-8 lg:grid-cols-12 lg:items-start">
-    <!-- Recent Items -->
+    <!-- Main column driven by layout order -->
     <div class="lg:col-span-8 animate-fade-in-left animate-stagger-2">
-      <z-card
-        zTitle="Recent Items"
-        zDescription="Items you've added recently"
-        class="h-full overflow-hidden transform transition-all duration-300 hover:shadow-lg"
-      >
-        @if (isLoading()) {
-        <div class="space-y-2">
-          @for (i of [1,2,3]; track i) {
-          <div
-            class="p-5 border border-border/60 rounded-xl bg-linear-to-r from-card/80 to-card/60 animate-pulse"
-          >
-            <div class="flex items-center gap-4">
-              <div class="w-12 h-12 rounded-xl bg-muted/60"></div>
-              <div class="flex-1 space-y-2">
-                <div class="h-4 bg-muted/60 rounded w-3/4"></div>
-                <div class="h-3 bg-muted/40 rounded w-1/2"></div>
-              </div>
-              <div class="w-16 h-6 bg-muted/40 rounded-full"></div>
-            </div>
-          </div>
+      <div class="flex flex-col gap-6">
+        @for (w of widgets(); track w.id) { @if (w.visible && w.zone === 'main' && w.id === 'stats')
+        {
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-fade-in-up">
+          @for (stat of stats(); track stat.title; let i = $index) {
+          <hia-stats-card
+            [title]="stat.title"
+            [value]="stat.value"
+            [icon]="stat.icon"
+            [change]="stat.change"
+            [trend]="stat.trend"
+            [class]="
+              'hover:shadow-md transition-all duration-300 hover:scale-105 animate-scale-in animate-stagger-' +
+              (i + 1)
+            "
+          />
           }
         </div>
-        } @else {
-        <div class="animate-fade-in-up">
-          <hia-item-list
-            [items]="recentItemsList()"
-            emptyMessage="No items added yet"
-            emptyIcon="lucideBox"
-            (onItemClick)="handleItemClick($event)"
-            class="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
-          />
-        </div>
-        } @if (recentItems().length > 0) {
-        <div class="mt-6 pt-6 border-t border-border/50">
-          <z-button
-            zType="text"
-            label="View all items"
-            iconName="lucideArrowRight"
-            iconPosition="right"
-            class="w-full hover:bg-accent/50 transition-colors"
-          />
-        </div>
-        }
-      </z-card>
+        } @else if (w.visible && w.zone === 'main' && w.id === 'recent') {
+        <z-card
+          zTitle="Recent Items"
+          zDescription="Items you've added recently"
+          class="h-full overflow-hidden transform transition-all duration-300 hover:shadow-lg"
+        >
+          @if (isLoading()) {
+          <div class="space-y-2">
+            @for (i of [1,2,3]; track i) {
+            <div
+              class="p-5 border border-border/60 rounded-xl bg-linear-to-r from-card/80 to-card/60 animate-pulse"
+            >
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-muted/60"></div>
+                <div class="flex-1 space-y-2">
+                  <div class="h-4 bg-muted/60 rounded w-3/4"></div>
+                  <div class="h-3 bg-muted/40 rounded w-1/2"></div>
+                </div>
+                <div class="w-16 h-6 bg-muted/40 rounded-full"></div>
+              </div>
+            </div>
+            }
+          </div>
+          } @else {
+          <div class="animate-fade-in-up">
+            <hia-item-list
+              [items]="recentItemsList()"
+              emptyMessage="No items added yet"
+              emptyIcon="lucideBox"
+              (onItemClick)="handleItemClick($event)"
+              class="max-h-[420px] lg:max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+            />
+          </div>
+          } @if (recentItems().length > 0) {
+          <div class="mt-6 pt-6 border-t border-border/50">
+            <z-button
+              zType="text"
+              label="View all items"
+              iconName="lucideArrowRight"
+              iconPosition="right"
+              class="w-full hover:bg-accent/50 transition-colors"
+            />
+          </div>
+          }
+        </z-card>
+        } @else if (w.visible && w.zone === 'main' && w.id === 'graph') {
+        <hia-graph-widget />
+        } }
+      </div>
     </div>
 
     <!-- Sidebar -->
-    <div class="lg:col-span-4 flex flex-col gap-6 animate-fade-in-right animate-stagger-3">
-      <!-- Low Stock Alert -->
+    <div
+      class="lg:col-span-4 flex flex-col gap-6 animate-fade-in-right animate-stagger-3 lg:sticky lg:top-6"
+    >
+      @for (w of widgets(); track w.id) { @if (w.visible && w.zone === 'side' && w.id === 'stock') {
       <z-card
         zTitle="Stock Alerts"
         [zDescription]="
@@ -161,7 +175,7 @@
             emptyMessage="No stock alerts"
             emptyIcon="lucideCircleCheck"
             (onItemClick)="handleItemClick($event)"
-            class="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+            class="max-h-[360px] lg:max-h-[55vh] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
           />
           <div class="mt-4 pt-4 border-t border-border/50">
             <z-button
@@ -186,8 +200,7 @@
         </div>
         }
       </z-card>
-
-      <!-- Recent Activity -->
+      } @else if (w.visible && w.zone === 'side' && w.id === 'activity') {
       <div class="animate-fade-in-up animate-stagger-4">
         <hia-activity-feed
           [activities]="activities()"
@@ -195,9 +208,12 @@
           (refresh)="refreshActivities()"
           (activityClick)="handleActivityClick($event)"
           (viewAllActivities)="handleViewAllActivities()"
-          class="transform transition-all duration-300 hover:shadow-lg"
+          class="transform transition-all duration-300 hover:shadow-lg max-h-[320px] lg:max-h-[40vh] overflow-y-auto"
         />
       </div>
+      } @else if (w.visible && w.zone === 'side' && w.id === 'graph') {
+      <hia-graph-widget />
+      } }
     </div>
   </div>
 </div>
