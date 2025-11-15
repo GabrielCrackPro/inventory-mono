@@ -36,34 +36,17 @@ import { ZardInputDirective } from '@ui/input';
   template: `
     <z-card zTitle="Permissions" zDescription="Admins can manage user roles for this workspace.">
       <div class="space-y-8">
-        <div class="mb-4">
-          <span
-            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border shadow-sm"
-            [class.bg-green-100]="isAdmin()"
-            [class.text-green-800]="isAdmin()"
-            [class.border-green-200/60]="isAdmin()"
-            [class.dark:bg-green-900/30]="isAdmin()"
-            [class.dark:text-green-300]="isAdmin()"
-            [class.dark:border-green-800/40]="isAdmin()"
-            [class.bg-amber-100]="!isAdmin() && accessLevel()==='EDIT'"
-            [class.text-amber-800]="!isAdmin() && accessLevel()==='EDIT'"
-            [class.border-amber-200/60]="!isAdmin() && accessLevel()==='EDIT'"
-            [class.bg-slate-100]="accessLevel()==='VIEW'"
-            [class.text-slate-800]="accessLevel()==='VIEW'"
-            [class.border-slate-200/60]="accessLevel()==='VIEW'"
-          >
-            <span>Your access:</span>
-            <span class="uppercase">{{ accessLevel() || 'NONE' }}</span>
-          </span>
-        </div>
-
         <div class="text-sm text-muted-foreground" *ngIf="!isAdmin()">
           You do not have access to manage roles.
         </div>
 
         <ng-container *ngIf="isAdmin()">
           <!-- Invite form -->
-          <form class="flex flex-wrap items-end gap-3 mb-4" [formGroup]="inviteForm()" (ngSubmit)="inviteSubmit.emit()">
+          <form
+            class="flex flex-wrap items-end gap-3 mb-4"
+            [formGroup]="inviteForm()"
+            (ngSubmit)="inviteSubmit.emit()"
+          >
             <div class="flex-1 min-w-64">
               <label class="block text-sm font-medium mb-1">Email</label>
               <input
@@ -115,46 +98,51 @@ import { ZardInputDirective } from '@ui/input';
                 <td z-table-cell>
                   {{ m.user?.name || 'Invited User' }}
                   @if (m.pending) {
-                    <span class="ml-2 inline-flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-full bg-amber-100 text-amber-800 border border-amber-200/60 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800/40">Pending</span>
+                  <span
+                    class="ml-2 inline-flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-full bg-amber-100 text-amber-800 border border-amber-200/60 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800/40"
+                    >Pending</span
+                  >
                   }
                 </td>
                 <td z-table-cell>{{ m.user?.email || m.email }}</td>
                 <td z-table-cell>
                   <div class="max-w-44">
                     @if (!m.pending) {
-                      <z-select
-                        [zPlaceholder]="'Select permission'"
-                        [zValue]="m.permission"
-                        (zSelectionChange)="permissionChange.emit({ userId: m.userId, permission: $event })"
-                        [class]="'w-full'"
-                        [zDisabled]="!isAdmin() || isSelf()(m.userId)"
-                      >
-                        <z-select-item [zValue]="'VIEW'">View</z-select-item>
-                        <z-select-item [zValue]="'EDIT'">Edit</z-select-item>
-                        <z-select-item [zValue]="'ADMIN'">Admin</z-select-item>
-                      </z-select>
+                    <z-select
+                      [zPlaceholder]="'Select permission'"
+                      [zValue]="m.permission"
+                      (zSelectionChange)="
+                        permissionChange.emit({ userId: m.userId, permission: $event })
+                      "
+                      [class]="'w-full'"
+                      [zDisabled]="!isAdmin() || isSelf()(m.userId)"
+                    >
+                      <z-select-item [zValue]="'VIEW'">View</z-select-item>
+                      <z-select-item [zValue]="'EDIT'">Edit</z-select-item>
+                      <z-select-item [zValue]="'ADMIN'">Admin</z-select-item>
+                    </z-select>
                     } @else {
-                      <span class="text-xs text-muted-foreground uppercase">{{ m.permission }}</span>
+                    <span class="text-xs text-muted-foreground uppercase">{{ m.permission }}</span>
                     }
                   </div>
                 </td>
                 <td z-table-cell>
                   @if (!m.pending) {
-                    <z-button
-                      zType="destructive"
-                      [label]="'Revoke'"
-                      [iconName]="commonIcons['delete']"
-                      (click)="revoke.emit(m.userId)"
-                      [disabled]="!isAdmin() || isSelf()(m.userId)"
-                    />
+                  <z-button
+                    zType="destructive"
+                    [label]="'Revoke'"
+                    [iconName]="commonIcons['delete']"
+                    (click)="revoke.emit(m.userId)"
+                    [disabled]="!isAdmin() || isSelf()(m.userId)"
+                  />
                   } @else {
-                    <z-button
-                      zType="text"
-                      iconClasses="text-destructive"
-                      [iconName]="commonIcons['delete']"
-                      (click)="cancelInvite.emit(m.email)"
-                      [disabled]="!isAdmin()"
-                    />
+                  <z-button
+                    zType="text"
+                    iconClasses="text-destructive"
+                    [iconName]="commonIcons['delete']"
+                    (click)="cancelInvite.emit(m.email)"
+                    [disabled]="!isAdmin()"
+                  />
                   }
                 </td>
               </tr>
