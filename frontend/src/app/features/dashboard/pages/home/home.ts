@@ -6,7 +6,7 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IconName, commonIcons } from '@core/config';
 import {
   ActivityFeed,
@@ -81,6 +81,7 @@ export class HomeComponent implements OnInit {
   private readonly _exportService = inject(DashboardExportService);
   private readonly _inventoryPrefs = inject(InventoryPreferencesService);
   private readonly _layout = inject(DashboardLayoutService);
+  private readonly _router = inject(Router);
 
   readonly commonIcons = commonIcons;
 
@@ -326,7 +327,8 @@ export class HomeComponent implements OnInit {
   }
 
   handleItemClick(item: ListItem): void {
-    console.log('Item clicked:', item);
+    // Navigate to item detail page
+    this._router.navigate(['/dashboard', 'items', 'detail', item.id]);
   }
 
   handleActivityClick(activity: any): void {

@@ -42,6 +42,7 @@ export class CustomizeDashboardModalComponent implements OnInit {
       .map((w, index) => ({ w, index }))
       .filter((x) => (x.w.zone ?? 'main') === 'side')
   );
+  visibleCount = computed(() => this._widgets().filter((w) => w.visible).length);
 
   ngOnInit(): void {
     const current = this.layoutService.load();

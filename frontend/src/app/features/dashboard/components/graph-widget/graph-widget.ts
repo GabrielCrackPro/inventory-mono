@@ -46,17 +46,33 @@ export class GraphWidgetComponent {
     return `house:${houseId}:graph_prefs`;
   }
 
-  readonly period = signal<7 | 30>(7);
+  readonly period = signal<1 | 7 | 14 | 30 | 60 | 90>(7);
   readonly metric = signal<string | number>('activities');
+  readonly chartType = signal<'bar' | 'line' | 'area'>('bar');
+  readonly showDataLabels = signal<boolean>(true);
+  readonly showGridLines = signal<boolean>(true);
+  readonly stacked = signal<boolean>(false);
+  readonly colorScheme = signal<'default' | 'monochrome' | 'vibrant'>('default');
+  readonly animationSpeed = signal<'fast' | 'normal' | 'slow'>('normal');
   readonly loading = signal<boolean>(false);
+
   readonly graphViewOptions = signal<SegmentedOption[]>([
     { label: 'Activities', value: 'activities', icon: 'lucideHistory' },
     { label: 'Items', value: 'items', icon: commonIcons['item'] },
     { label: 'Both', value: 'both', icon: 'lucideBoxes' },
   ]);
   readonly graphPeriodOptions = signal<SegmentedOption[]>([
+    { label: 'Today', value: 1, icon: 'lucideCalendarCheck' },
     { label: '7d', value: 7, icon: 'lucideCalendarDays' },
+    { label: '14d', value: 14, icon: 'lucideCalendarDays' },
     { label: '30d', value: 30, icon: 'lucideCalendarDays' },
+    { label: '60d', value: 60, icon: 'lucideCalendar' },
+    { label: '90d', value: 90, icon: 'lucideCalendar' },
+  ]);
+  readonly chartTypeOptions = signal<SegmentedOption[]>([
+    { label: 'Bar', value: 'bar', icon: 'lucideBarChart3' },
+    { label: 'Line', value: 'line', icon: 'lucideLineChart' },
+    { label: 'Area', value: 'area', icon: 'lucideAreaChart' },
   ]);
 
   readonly showOptions = signal(false);
@@ -67,31 +83,52 @@ export class GraphWidgetComponent {
 
   // Chart configuration
   readonly labels = computed(() => this.formatLabels(this.baseDays()));
-  readonly datasets = computed<ChartDataset<'bar', number[]>[]>(() => {
+  readonly chartTypeValue = computed<'bar' | 'line'>(() => {
+    const type = this.chartType();
+    return (type === 'area' ? 'line' : type) as 'bar' | 'line';
+  });
+  // TypeScript workaround: return 'bar' type to satisfy BaseChartDirective, actual value is correct at runtime
+  getChartType(): 'bar' {
+    const type = this.chartType();
+    return (type === 'area' ? 'line' : type) as 'bar';
+  }
+
+  readonly datasets = computed<ChartDataset<any, number[]>[]>(() => {
     const metric = this.metric();
     const colors = this.getChartColors();
+    const type = this.chartType();
+    const isLine = type === 'line' || type === 'area';
+    const fill = type === 'area';
 
     if (metric === 'both') {
       return [
         {
           label: 'Activities',
           data: this.seriesActivities().map((d) => d.value),
-          backgroundColor: colors.chart1,
+          backgroundColor: fill ? colors.chart1 : colors.chart1,
           borderColor: colors.chart1Border,
-          borderWidth: 2,
-          borderRadius: 8,
+          borderWidth: isLine ? 2 : 2,
+          borderRadius: isLine ? 0 : 8,
           hoverBackgroundColor: colors.chart1Hover,
-          hoverBorderWidth: 3,
+          hoverBorderWidth: isLine ? 3 : 3,
+          fill: fill,
+          tension: isLine ? 0.4 : 0,
+          pointRadius: isLine ? 3 : 0,
+          pointHoverRadius: isLine ? 5 : 0,
         },
         {
           label: 'Items',
           data: this.seriesItems().map((d) => d.value),
-          backgroundColor: colors.chart2,
+          backgroundColor: fill ? colors.chart2 : colors.chart2,
           borderColor: colors.chart2Border,
-          borderWidth: 2,
-          borderRadius: 8,
+          borderWidth: isLine ? 2 : 2,
+          borderRadius: isLine ? 0 : 8,
           hoverBackgroundColor: colors.chart2Hover,
-          hoverBorderWidth: 3,
+          hoverBorderWidth: isLine ? 3 : 3,
+          fill: fill,
+          tension: isLine ? 0.4 : 0,
+          pointRadius: isLine ? 3 : 0,
+          pointHoverRadius: isLine ? 5 : 0,
         },
       ];
     }
@@ -103,10 +140,14 @@ export class GraphWidgetComponent {
         data: single,
         backgroundColor: isActivities ? colors.chart1 : colors.chart2,
         borderColor: isActivities ? colors.chart1Border : colors.chart2Border,
-        borderWidth: 2,
-        borderRadius: 8,
+        borderWidth: isLine ? 2 : 2,
+        borderRadius: isLine ? 0 : 8,
         hoverBackgroundColor: isActivities ? colors.chart1Hover : colors.chart2Hover,
-        hoverBorderWidth: 3,
+        hoverBorderWidth: isLine ? 3 : 3,
+        fill: fill,
+        tension: isLine ? 0.4 : 0,
+        pointRadius: isLine ? 3 : 0,
+        pointHoverRadius: isLine ? 5 : 0,
       },
     ];
   });
@@ -114,10 +155,13 @@ export class GraphWidgetComponent {
   readonly options = computed<ChartConfiguration<'bar'>['options']>(() => {
     const baseOptions = this.chartService.barOptions({ showLegend: this.metric() === 'both' });
     const tooltipBg = this.getTooltipBackground();
+    const animSpeed = this.animationSpeed();
+    const animDuration = animSpeed === 'fast' ? 400 : animSpeed === 'slow' ? 1200 : 750;
+
     return {
       ...baseOptions,
       animation: {
-        duration: 750,
+        duration: animDuration,
         easing: 'easeInOutQuart',
       },
       interaction: {
@@ -126,6 +170,10 @@ export class GraphWidgetComponent {
       },
       plugins: {
         ...baseOptions?.plugins,
+        legend: {
+          display: this.metric() === 'both',
+          position: 'top' as const,
+        },
         tooltip: {
           ...baseOptions?.plugins?.tooltip,
           backgroundColor: tooltipBg,
@@ -141,21 +189,59 @@ export class GraphWidgetComponent {
             },
           },
         },
+        datalabels: {
+          ...baseOptions?.plugins?.datalabels,
+          display: this.showDataLabels(),
+        },
+      },
+      scales: {
+        x: {
+          stacked: this.stacked() && this.metric() === 'both',
+          grid: { display: false },
+          ticks: baseOptions?.scales?.['x']?.ticks,
+        },
+        y: {
+          stacked: this.stacked() && this.metric() === 'both',
+          beginAtZero: true,
+          grid: {
+            display: this.showGridLines(),
+            color: baseOptions?.scales?.['y']?.grid?.color,
+          },
+          ticks: baseOptions?.scales?.['y']?.ticks,
+        },
       },
     };
   });
 
   constructor() {
-    // preferences load handled below
+    // Load preferences from localStorage
     const hid = this.houseCtx.currentSelectedHouseId();
     if (hid) {
       try {
         const raw = localStorage.getItem(this.key(hid));
         const parsed = raw ? JSON.parse(raw) : null;
-        const p = parsed?.period as 7 | 30 | undefined;
-        if (p === 30) this.period.set(30);
-        const m = parsed?.metric as 'activities' | 'items' | 'both' | undefined;
-        if (m === 'items' || m === 'both') this.metric.set(m);
+        if (parsed) {
+          const p = parsed.period as 1 | 7 | 14 | 30 | 60 | 90 | undefined;
+          if (p && [1, 7, 14, 30, 60, 90].includes(p)) this.period.set(p);
+
+          const m = parsed.metric as 'activities' | 'items' | 'both' | undefined;
+          if (m && ['activities', 'items', 'both'].includes(m)) this.metric.set(m);
+
+          const ct = parsed.chartType as 'bar' | 'line' | 'area' | undefined;
+          if (ct && ['bar', 'line', 'area'].includes(ct)) this.chartType.set(ct);
+
+          if (typeof parsed.showDataLabels === 'boolean')
+            this.showDataLabels.set(parsed.showDataLabels);
+          if (typeof parsed.showGridLines === 'boolean')
+            this.showGridLines.set(parsed.showGridLines);
+          if (typeof parsed.stacked === 'boolean') this.stacked.set(parsed.stacked);
+
+          const cs = parsed.colorScheme as 'default' | 'monochrome' | 'vibrant' | undefined;
+          if (cs && ['default', 'monochrome', 'vibrant'].includes(cs)) this.colorScheme.set(cs);
+
+          const as = parsed.animationSpeed as 'fast' | 'normal' | 'slow' | undefined;
+          if (as && ['fast', 'normal', 'slow'].includes(as)) this.animationSpeed.set(as);
+        }
       } catch {}
     }
 
@@ -178,23 +264,64 @@ export class GraphWidgetComponent {
   }
 
   setPeriod(p: number | string) {
-    this.period.set(p as 7 | 30);
-    const hid = this.houseCtx.currentSelectedHouseId();
-    if (hid) {
-      try {
-        localStorage.setItem(this.key(hid), JSON.stringify({ period: p, metric: this.metric() }));
-      } catch {}
-    }
+    this.period.set(p as 1 | 7 | 14 | 30 | 60 | 90);
+    this.savePreferences();
   }
 
   setMetric(m: string | number) {
     this.metric.set(m);
+    this.savePreferences();
+  }
+
+  setChartType(ct: string | number) {
+    this.chartType.set(ct as 'bar' | 'line' | 'area');
+    this.savePreferences();
+  }
+
+  private savePreferences() {
     const hid = this.houseCtx.currentSelectedHouseId();
     if (hid) {
       try {
-        localStorage.setItem(this.key(hid), JSON.stringify({ period: this.period(), metric: m }));
+        localStorage.setItem(
+          this.key(hid),
+          JSON.stringify({
+            period: this.period(),
+            metric: this.metric(),
+            chartType: this.chartType(),
+            showDataLabels: this.showDataLabels(),
+            showGridLines: this.showGridLines(),
+            stacked: this.stacked(),
+            colorScheme: this.colorScheme(),
+            animationSpeed: this.animationSpeed(),
+          })
+        );
       } catch {}
     }
+  }
+
+  toggleDataLabels() {
+    this.showDataLabels.update((v) => !v);
+    this.savePreferences();
+  }
+
+  toggleGridLines() {
+    this.showGridLines.update((v) => !v);
+    this.savePreferences();
+  }
+
+  toggleStacked() {
+    this.stacked.update((v) => !v);
+    this.savePreferences();
+  }
+
+  setColorScheme(scheme: string | number) {
+    this.colorScheme.set(scheme as 'default' | 'monochrome' | 'vibrant');
+    this.savePreferences();
+  }
+
+  setAnimationSpeed(speed: string | number) {
+    this.animationSpeed.set(speed as 'fast' | 'normal' | 'slow');
+    this.savePreferences();
   }
 
   // Summary statistics
@@ -294,6 +421,10 @@ export class GraphWidgetComponent {
   // Format labels for display
   private formatLabels(days: DayData[]): string[] {
     const period = this.period();
+    if (period === 1) {
+      // Show "Today" for single day view
+      return ['Today'];
+    }
     if (period === 7) {
       // Show day names for 7-day view
       return days.map((d) => {
@@ -301,7 +432,7 @@ export class GraphWidgetComponent {
         return date.toLocaleDateString('en-US', { weekday: 'short' });
       });
     }
-    // Show dates for 30-day view (MM/DD)
+    // Show dates for longer periods (MM/DD)
     return days.map((d) => d.label.slice(5));
   }
 
@@ -313,21 +444,54 @@ export class GraphWidgetComponent {
     if (index === -1 || !days[index]) return label;
 
     const date = new Date(days[index].key);
+    if (period === 1) {
+      return (
+        'Today - ' +
+        date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        })
+      );
+    }
     return date.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: period === 30 ? 'numeric' : undefined,
+      year: period >= 30 ? 'numeric' : undefined,
     });
   }
 
-  // Get chart colors with vibrant palette
+  // Get chart colors based on color scheme
   private getChartColors() {
+    const scheme = this.colorScheme();
+
+    if (scheme === 'monochrome') {
+      return {
+        chart1: 'rgba(100, 116, 139, 0.75)',
+        chart1Hover: 'rgba(100, 116, 139, 0.9)',
+        chart1Border: 'rgb(100, 116, 139)',
+        chart2: 'rgba(148, 163, 184, 0.75)',
+        chart2Hover: 'rgba(148, 163, 184, 0.9)',
+        chart2Border: 'rgb(148, 163, 184)',
+      };
+    }
+
+    if (scheme === 'vibrant') {
+      return {
+        chart1: 'rgba(236, 72, 153, 0.75)',
+        chart1Hover: 'rgba(236, 72, 153, 0.9)',
+        chart1Border: 'rgb(236, 72, 153)',
+        chart2: 'rgba(59, 130, 246, 0.75)',
+        chart2Hover: 'rgba(59, 130, 246, 0.9)',
+        chart2Border: 'rgb(59, 130, 246)',
+      };
+    }
+
+    // Default scheme
     return {
-      // Indigo - vibrant purple-blue
       chart1: 'rgba(99, 102, 241, 0.75)',
       chart1Hover: 'rgba(99, 102, 241, 0.9)',
       chart1Border: 'rgb(99, 102, 241)',
-      // Emerald - vibrant green
       chart2: 'rgba(16, 185, 129, 0.75)',
       chart2Hover: 'rgba(16, 185, 129, 0.9)',
       chart2Border: 'rgb(16, 185, 129)',

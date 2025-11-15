@@ -35,4 +35,12 @@ export class DashboardExportModalComponent {
       this.selectedFields = this.selectedFields.filter((k) => k !== key);
     }
   }
+
+  selectAllFields() {
+    this.selectedFields = this.fields.map((f) => f.key);
+  }
+
+  clearAllFields() {
+    this.selectedFields = [];
+  }
 }

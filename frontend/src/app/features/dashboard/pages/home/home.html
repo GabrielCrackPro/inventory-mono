@@ -83,29 +83,32 @@
     </div>
   </div>
 
+  <!-- Stats Section -->
+  @for (w of widgets(); track w.id) { @if (w.visible && w.id === 'stats') {
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-fade-in-up animate-stagger-2">
+    @for (stat of stats(); track stat.title; let i = $index) {
+    <hia-stats-card
+      [title]="stat.title"
+      [value]="stat.value"
+      [icon]="stat.icon"
+      [change]="stat.change"
+      [trend]="stat.trend"
+      [class]="
+        'hover:shadow-md transition-all duration-300 hover:scale-105 animate-scale-in animate-stagger-' +
+        (i + 1)
+      "
+    />
+    }
+  </div>
+  } }
+
   <!-- Main Content Grid -->
   <div class="grid gap-8 lg:grid-cols-12 lg:items-start">
     <!-- Main column driven by layout order -->
-    <div class="lg:col-span-8 animate-fade-in-left animate-stagger-2">
+    <div class="lg:col-span-8 animate-fade-in-left animate-stagger-3">
       <div class="flex flex-col gap-6">
-        @for (w of widgets(); track w.id) { @if (w.visible && w.zone === 'main' && w.id === 'stats')
-        {
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-fade-in-up">
-          @for (stat of stats(); track stat.title; let i = $index) {
-          <hia-stats-card
-            [title]="stat.title"
-            [value]="stat.value"
-            [icon]="stat.icon"
-            [change]="stat.change"
-            [trend]="stat.trend"
-            [class]="
-              'hover:shadow-md transition-all duration-300 hover:scale-105 animate-scale-in animate-stagger-' +
-              (i + 1)
-            "
-          />
-          }
-        </div>
-        } @else if (w.visible && w.zone === 'main' && w.id === 'recent') {
+        @for (w of widgets(); track w.id) { @if (w.visible && w.zone === 'main' && w.id ===
+        'recent') {
         <z-card
           zTitle="Recent Items"
           zDescription="Items you've added recently"
@@ -158,7 +161,7 @@
 
     <!-- Sidebar -->
     <div
-      class="lg:col-span-4 flex flex-col gap-6 animate-fade-in-right animate-stagger-3 lg:sticky lg:top-6"
+      class="lg:col-span-4 flex flex-col gap-6 animate-fade-in-right animate-stagger-4 lg:sticky lg:top-6"
     >
       @for (w of widgets(); track w.id) { @if (w.visible && w.zone === 'side' && w.id === 'stock') {
       <z-card
@@ -201,7 +204,7 @@
         }
       </z-card>
       } @else if (w.visible && w.zone === 'side' && w.id === 'activity') {
-      <div class="animate-fade-in-up animate-stagger-4">
+      <div class="animate-fade-in-up animate-stagger-5">
         <hia-activity-feed
           [activities]="activities()"
           [loading]="activitiesLoading()"

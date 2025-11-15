@@ -1,33 +1,162 @@
-<form novalidate>
-  <div class="space-y-4">
-    <section>
-      <h3 class="font-medium">Scope</h3>
-      <div class="mt-2 space-y-2">
-        <z-radio name="scope" [value]="'all'" [(ngModel)]="scope">All items</z-radio>
-        <z-radio name="scope" [value]="'low-stock'" [(ngModel)]="scope">Low stock only</z-radio>
-      </div>
-    </section>
+<form novalidate class="space-y-6">
+  <!-- Scope Section -->
+  <section class="space-y-3">
+    <div class="flex items-center gap-2">
+      <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+        />
+      </svg>
+      <h3 class="text-sm font-semibold text-foreground">Export Scope</h3>
+    </div>
+    <div class="pl-6 space-y-2.5">
+      <label
+        class="flex items-center gap-3 p-3 rounded-lg border border-border cursor-pointer transition-all duration-200 hover:bg-muted/50"
+        [class.bg-primary/5]="scope === 'all'"
+        [class.border-primary]="scope === 'all'"
+      >
+        <z-radio name="scope" [value]="'all'" [(ngModel)]="scope" />
+        <div class="flex-1">
+          <div class="text-sm font-medium text-foreground">All items</div>
+          <div class="text-xs text-muted-foreground">Export complete inventory</div>
+        </div>
+      </label>
+      <label
+        class="flex items-center gap-3 p-3 rounded-lg border border-border cursor-pointer transition-all duration-200 hover:bg-muted/50"
+        [class.bg-primary/5]="scope === 'low-stock'"
+        [class.border-primary]="scope === 'low-stock'"
+      >
+        <z-radio name="scope" [value]="'low-stock'" [(ngModel)]="scope" />
+        <div class="flex-1">
+          <div class="text-sm font-medium text-foreground">Low stock only</div>
+          <div class="text-xs text-muted-foreground">Items below minimum quantity</div>
+        </div>
+      </label>
+    </div>
+  </section>
 
-    <section>
-      <h3 class="font-medium">Format</h3>
-      <div class="mt-2 space-y-2">
-        <z-radio name="format" [value]="'csv'" [(ngModel)]="format">CSV</z-radio>
-        <z-radio name="format" [value]="'json'" [(ngModel)]="format">JSON</z-radio>
-      </div>
-    </section>
+  <!-- Divider -->
+  <div class="border-t border-border"></div>
 
-    <section>
-      <h3 class="font-medium">Fields</h3>
-      <div class="mt-2 grid grid-cols-2 gap-2">
-        @for (f of fields; track f.key) {
+  <!-- Format Section -->
+  <section class="space-y-3">
+    <div class="flex items-center gap-2">
+      <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        />
+      </svg>
+      <h3 class="text-sm font-semibold text-foreground">File Format</h3>
+    </div>
+    <div class="pl-6 grid grid-cols-2 gap-2">
+      <label
+        class="flex flex-col items-center justify-center gap-2 p-4 rounded-lg border border-border cursor-pointer transition-all duration-200 hover:bg-muted/50 hover:scale-105 active:scale-95"
+        [class.bg-primary/5]="format === 'csv'"
+        [class.border-primary]="format === 'csv'"
+        [class.ring-2]="format === 'csv'"
+        [class.ring-primary/30]="format === 'csv'"
+      >
+        <z-radio name="format" [value]="'csv'" [(ngModel)]="format" />
+        <div class="text-center">
+          <div class="text-sm font-semibold text-foreground">CSV</div>
+          <div class="text-xs text-muted-foreground mt-0.5">Spreadsheet</div>
+        </div>
+      </label>
+      <label
+        class="flex flex-col items-center justify-center gap-2 p-4 rounded-lg border border-border cursor-pointer transition-all duration-200 hover:bg-muted/50 hover:scale-105 active:scale-95"
+        [class.bg-primary/5]="format === 'json'"
+        [class.border-primary]="format === 'json'"
+        [class.ring-2]="format === 'json'"
+        [class.ring-primary/30]="format === 'json'"
+      >
+        <z-radio name="format" [value]="'json'" [(ngModel)]="format" />
+        <div class="text-center">
+          <div class="text-sm font-semibold text-foreground">JSON</div>
+          <div class="text-xs text-muted-foreground mt-0.5">Structured data</div>
+        </div>
+      </label>
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <div class="border-t border-border"></div>
+
+  <!-- Fields Section -->
+  <section class="space-y-3">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+          />
+        </svg>
+        <h3 class="text-sm font-semibold text-foreground">Include Fields</h3>
+      </div>
+      <div class="flex gap-1">
+        <button
+          type="button"
+          (click)="selectAllFields()"
+          class="px-2 py-1 text-xs font-medium text-primary hover:bg-primary/10 rounded transition-colors"
+        >
+          Select All
+        </button>
+        <button
+          type="button"
+          (click)="clearAllFields()"
+          class="px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-muted rounded transition-colors"
+        >
+          Clear
+        </button>
+      </div>
+    </div>
+    <div class="pl-6 grid grid-cols-2 gap-2">
+      @for (f of fields; track f.key) {
+      <label
+        class="flex items-center gap-2 p-2.5 rounded-lg border border-border cursor-pointer transition-all duration-200 hover:bg-muted/50"
+        [class.bg-primary/5]="selectedFields.includes(f.key)"
+        [class.border-primary]="selectedFields.includes(f.key)"
+      >
         <z-checkbox
           [checkedInput]="selectedFields.includes(f.key)"
           (checkChange)="toggleField(f.key, $event)"
-        >
-          {{ f.label }}
-        </z-checkbox>
-        }
+        />
+        <span class="text-sm text-foreground">{{ f.label }}</span>
+      </label>
+      }
+    </div>
+    @if(selectedFields.length === 0) {
+    <div
+      class="pl-6 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-xs text-destructive"
+    >
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+        <span>Please select at least one field to export</span>
       </div>
-    </section>
+    </div>
+    }
+  </section>
+
+  <!-- Summary -->
+  <div class="pt-2 border-t border-border">
+    <div class="flex items-center justify-between text-xs text-muted-foreground">
+      <span>{{ selectedFields.length }} field{{ selectedFields.length !== 1 ? 's' : '' }} selected</span>
+      <span class="font-medium">{{ format.toUpperCase() }} format</span>
+    </div>
   </div>
 </form>

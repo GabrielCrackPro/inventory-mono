@@ -62,24 +62,26 @@ export interface ListItem {
         <div [class]="getStatusIndicatorClasses(item.status)"></div>
         }
 
-        <div class="flex items-start gap-4 relative">
+        <div class="flex items-start gap-3 relative">
           <!-- Icon container with status-aware styling -->
           @if (item.icon) {
           <div [class]="getIconContainerClasses(item)">
-            <hia-icon [name]="item.icon" [class]="getIconClasses(item)" />
+            <hia-icon [name]="item.icon" [class]="getIconClasses(item)" [size]="20" />
             @if (item.isNew) {
             <div
-              class="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full border-2 border-card animate-pulse"
+              class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-primary rounded-full border-2 border-card animate-pulse"
             ></div>
             }
           </div>
           }
 
           <!-- Content area -->
-          <div class="flex-1 min-w-0 space-y-2.5">
+          <div class="flex-1 min-w-0 space-y-1.5">
             <!-- Title and badges row -->
             <div class="flex items-center gap-2 flex-wrap">
-              <h3 [class]="getTitleClasses(item)">{{ item.title }}</h3>
+              <h3 [class]="getTitleClasses(item)">
+                {{ item.title }}
+              </h3>
               @if (item.badge) {
               <span [class]="getBadgeClasses(item.badgeVariant || 'default')">{{
                 item.badge
@@ -98,34 +100,26 @@ export interface ListItem {
 
             <!-- Description -->
             @if (item.description) {
-            <p class="text-xs text-muted-foreground/80 line-clamp-2 leading-relaxed">
+            <p class="text-xs text-muted-foreground line-clamp-1">
               {{ item.description }}
             </p>
             }
 
-            <!-- Last updated -->
-            @if (isValidLastUpdated(item.lastUpdated)) {
-            <div class="flex items-center gap-1 text-[11px] text-muted-foreground/70">
-              <hia-icon [name]="commonIcons['history']" [size]="14" />
-              <span>Updated {{ formatLastUpdated(item.lastUpdated) }}</span>
-            </div>
-            }
-
             <!-- Tags and metadata -->
             @if (item.tags?.length || item.metadata) {
-            <div class="pt-1 space-y-2">
+            <div class="pt-1 space-y-1.5">
               <!-- Tags -->
               @if (item.tags?.length) {
               <div class="flex gap-1.5 flex-wrap">
                 @for (tag of item.tags?.slice(0, 2) || []; track tag) {
                 <span
-                  class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-muted/60 text-muted-foreground border border-border/40"
+                  class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground"
                 >
                   {{ tag }}
                 </span>
                 } @if ((item.tags?.length || 0) > 2) {
-                <span class="text-xs text-muted-foreground/60 self-center"
-                  >+{{ (item.tags?.length || 0) - 2 }} more</span
+                <span class="text-[10px] text-muted-foreground/60 self-center"
+                  >+{{ (item.tags?.length || 0) - 2 }}</span
                 >
                 }
               </div>
@@ -138,7 +132,12 @@ export interface ListItem {
                   class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-secondary/80 text-secondary-foreground border border-border/30 shadow-sm"
                 >
                   <hia-icon [name]="commonIcons['boxes']" [size]="12" />
-                  <span>{{ item.metadata?.['quantity'] }}{{ item.metadata?.['unit'] ? ' ' + (item.metadata?.['unit'] || '') : '' }}</span>
+                  <span
+                    >{{ item.metadata?.['quantity']
+
+
+                    }}{{ item.metadata?.['unit'] ? ' ' + (item.metadata?.['unit'] || '') : '' }}</span
+                  >
                 </span>
                 } @if (item.metadata?.['room']) {
                 <span
@@ -152,7 +151,9 @@ export interface ListItem {
                   class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200/60 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800/40 shadow-sm"
                 >
                   <hia-icon [name]="commonIcons['category']" [size]="12" />
-                  <span>{{ (item.metadata?.['category']?.name || item.metadata?.['category']) | titlecase }}</span>
+                  <span
+                    >{{ (item.metadata?.['category']?.name || item.metadata?.['category']) | titlecase }}</span
+                  >
                 </span>
                 }
               </div>
@@ -162,7 +163,11 @@ export interface ListItem {
 
           <!-- Action indicator -->
           <div class="shrink-0 flex items-center">
-            <hia-icon [name]="commonIcons['right']" [size]="16" class="text-muted-foreground/40" />
+            <hia-icon
+              [name]="commonIcons['right']"
+              [size]="18"
+              class="text-muted-foreground/40 group-hover:text-primary transition-colors"
+            />
           </div>
         </div>
         }
@@ -202,24 +207,21 @@ export class ItemListComponent {
 
   protected getItemClasses(item: ListItem): string {
     return mergeClasses(
-      'group relative p-5 border rounded-2xl transition-all duration-300 ease-out overflow-hidden',
-      'bg-gradient-to-br from-card/98 to-card/92 backdrop-blur-sm',
-      'shadow-sm hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20',
-      'hover:scale-[1.02] hover:-translate-y-1 min-h-[120px]',
+      'group relative p-4 border rounded-lg transition-all duration-200',
+      'bg-card',
+      'hover:shadow-md hover:border-border',
       // Status-based styling
       {
-        'border-border/40 hover:border-border/60': !item.status || item.status === 'normal',
-        'border-orange-200/70 bg-gradient-to-br from-orange-50/90 to-orange-25/50 dark:border-orange-800/50 dark:from-orange-950/30 hover:border-orange-300/80 dark:hover:border-orange-700/60':
+        'border-border/60': !item.status || item.status === 'normal',
+        'border-orange-300 bg-orange-50/50 dark:border-orange-800 dark:bg-orange-950/20':
           item.status === 'low-stock',
-        'border-destructive/40 bg-gradient-to-br from-destructive/8 to-destructive/3 hover:border-destructive/50':
-          item.status === 'out-of-stock',
-        'border-green-200/70 bg-gradient-to-br from-green-50/90 to-green-25/50 dark:border-green-800/50 dark:from-green-950/30 hover:border-green-300/80 dark:hover:border-green-700/60':
+        'border-destructive/50 bg-destructive/5': item.status === 'out-of-stock',
+        'border-green-300 bg-green-50/50 dark:border-green-800 dark:bg-green-950/20':
           item.status === 'new',
       },
       // Interactive states
       {
-        'cursor-pointer hover:bg-gradient-to-br hover:from-card/100 hover:to-card/95':
-          this.clickable(),
+        'cursor-pointer': this.clickable(),
         'cursor-default': !this.clickable(),
       }
     );
@@ -236,17 +238,15 @@ export class ItemListComponent {
 
   protected getIconContainerClasses(item: ListItem): string {
     return mergeClasses(
-      'relative w-16 h-16 rounded-2xl flex items-center justify-center shrink-0',
-      'border shadow-md group-hover:shadow-lg transition-all duration-300',
+      'relative w-12 h-12 rounded-lg flex items-center justify-center shrink-0',
+      'border',
       // Status-based icon container styling
       {
-        'bg-gradient-to-br from-primary/15 to-primary/5 border-primary/15':
-          !item.status || item.status === 'normal',
-        'bg-gradient-to-br from-orange-100 to-orange-50 border-orange-200/60 dark:from-orange-900/30 dark:to-orange-950/20 dark:border-orange-800/40':
+        'bg-primary/10 border-primary/20': !item.status || item.status === 'normal',
+        'bg-orange-100 border-orange-200 dark:bg-orange-900/30 dark:border-orange-800':
           item.status === 'low-stock',
-        'bg-gradient-to-br from-destructive/15 to-destructive/5 border-destructive/20':
-          item.status === 'out-of-stock',
-        'bg-gradient-to-br from-green-100 to-green-50 border-green-200/60 dark:from-green-900/30 dark:to-green-950/20 dark:border-green-800/40':
+        'bg-destructive/10 border-destructive/20': item.status === 'out-of-stock',
+        'bg-green-100 border-green-200 dark:bg-green-900/30 dark:border-green-800':
           item.status === 'new',
       }
     );

@@ -1,23 +1,11 @@
-<div class="space-y-3 p-1">
-  <!-- Instructions Banner -->
-  <div class="rounded-lg bg-primary/5 border border-primary/20 p-3">
-    <div class="flex items-center justify-between gap-3">
-      <div class="flex items-center gap-2 flex-1 min-w-0">
-        <svg
-          class="w-4 h-4 text-primary shrink-0"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
+<div class="space-y-4">
+  <!-- Header Section -->
+  <div class="space-y-3">
+    <div class="flex items-start justify-between gap-4">
+      <div class="space-y-1">
+        <h3 class="text-sm font-semibold text-foreground">Customize Your Dashboard</h3>
         <p class="text-xs text-muted-foreground">
-          Drag cards between columns • Reorder by dragging • Toggle visibility
+          Drag widgets between columns, reorder them, and toggle visibility
         </p>
       </div>
       <z-button
@@ -29,26 +17,65 @@
         class="shrink-0"
       />
     </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-3 gap-2">
+      <div class="rounded-lg bg-indigo-500/10 border border-indigo-500/20 p-2">
+        <div class="text-xs text-muted-foreground mb-0.5">Main Column</div>
+        <div class="text-lg font-bold text-indigo-600 dark:text-indigo-400">
+          {{ mainList().length }}
+        </div>
+      </div>
+      <div class="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-2">
+        <div class="text-xs text-muted-foreground mb-0.5">Sidebar</div>
+        <div class="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+          {{ sideList().length }}
+        </div>
+      </div>
+      <div class="rounded-lg bg-primary/10 border border-primary/20 p-2">
+        <div class="text-xs text-muted-foreground mb-0.5">Visible</div>
+        <div class="text-lg font-bold text-primary">{{ visibleCount() }}</div>
+      </div>
+    </div>
   </div>
 
   <!-- Widget Zones -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <!-- Main Zone Board -->
-    <div class="rounded-lg border-2 border-border/60 p-3 bg-linear-to-br from-card to-card/50">
-      <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center gap-1.5">
-          <div class="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
-          <div class="text-xs font-semibold">Main Column</div>
+    <div
+      class="rounded-xl border-2 p-4 transition-all duration-300"
+      [class]="
+        dragOverZone === 'main'
+          ? 'border-indigo-500 bg-indigo-500/5 shadow-lg shadow-indigo-500/20'
+          : 'border-border/60 bg-linear-to-br from-card to-card/50'
+      "
+    >
+      <div class="flex items-center gap-2 mb-3">
+        <div
+          class="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center"
+        >
+          <svg
+            class="w-4 h-4 text-indigo-600 dark:text-indigo-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+            />
+          </svg>
         </div>
-        <div class="text-[10px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted/50">
-          {{ mainList().length }}
+        <div class="flex-1">
+          <div class="text-sm font-semibold text-foreground">Main Column</div>
+          <div class="text-xs text-muted-foreground">Primary content area</div>
         </div>
       </div>
       <div
-        class="min-h-24 space-y-2 transition-all duration-200 rounded-lg p-1.5"
-        [class]="
-          dragOverZone === 'main' ? 'ring-2 ring-indigo-500/50 bg-indigo-500/5' : 'bg-transparent'
-        "
+        class="min-h-32 space-y-2.5 transition-all duration-300 rounded-lg p-2"
+        [class]="dragOverZone === 'main' ? 'bg-indigo-500/5' : 'bg-muted/20'"
         (dragover)="onDragOver($event)"
         (dragenter)="onDragEnterZone('main')"
         (dragleave)="onDragLeaveZone('main')"
@@ -56,9 +83,22 @@
       >
         @if (mainList().length === 0) {
         <div
-          class="h-20 flex items-center justify-center rounded-lg border border-dashed border-border/40 text-muted-foreground"
+          class="h-32 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border/40 text-muted-foreground transition-all duration-200 hover:border-indigo-500/40 hover:bg-indigo-500/5"
         >
-          <p class="text-[10px]">Drop widgets here</p>
+          <svg
+            class="w-8 h-8 mb-2 opacity-40"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+            />
+          </svg>
+          <p class="text-xs font-medium">Drop widgets here</p>
         </div>
         } @for (m of mainList(); track m.w.id) {
         <div
@@ -130,21 +170,40 @@
     </div>
 
     <!-- Sidebar Zone Board -->
-    <div class="rounded-lg border-2 border-border/60 p-3 bg-linear-to-br from-card to-card/50">
-      <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center gap-1.5">
-          <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-          <div class="text-xs font-semibold">Sidebar</div>
+    <div
+      class="rounded-xl border-2 p-4 transition-all duration-300"
+      [class]="
+        dragOverZone === 'side'
+          ? 'border-emerald-500 bg-emerald-500/5 shadow-lg shadow-emerald-500/20'
+          : 'border-border/60 bg-linear-to-br from-card to-card/50'
+      "
+    >
+      <div class="flex items-center gap-2 mb-3">
+        <div
+          class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center"
+        >
+          <svg
+            class="w-4 h-4 text-emerald-600 dark:text-emerald-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
+            />
+          </svg>
         </div>
-        <div class="text-[10px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted/50">
-          {{ sideList().length }}
+        <div class="flex-1">
+          <div class="text-sm font-semibold text-foreground">Sidebar</div>
+          <div class="text-xs text-muted-foreground">Secondary content area</div>
         </div>
       </div>
       <div
-        class="min-h-24 space-y-2 transition-all duration-200 rounded-lg p-1.5"
-        [class]="
-          dragOverZone === 'side' ? 'ring-2 ring-emerald-500/50 bg-emerald-500/5' : 'bg-transparent'
-        "
+        class="min-h-32 space-y-2.5 transition-all duration-300 rounded-lg p-2"
+        [class]="dragOverZone === 'side' ? 'bg-emerald-500/5' : 'bg-muted/20'"
         (dragover)="onDragOver($event)"
         (dragenter)="onDragEnterZone('side')"
         (dragleave)="onDragLeaveZone('side')"
@@ -152,9 +211,22 @@
       >
         @if (sideList().length === 0) {
         <div
-          class="h-20 flex items-center justify-center rounded-lg border border-dashed border-border/40 text-muted-foreground"
+          class="h-32 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border/40 text-muted-foreground transition-all duration-200 hover:border-emerald-500/40 hover:bg-emerald-500/5"
         >
-          <p class="text-[10px]">Drop widgets here</p>
+          <svg
+            class="w-8 h-8 mb-2 opacity-40"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+            />
+          </svg>
+          <p class="text-xs font-medium">Drop widgets here</p>
         </div>
         } @for (s of sideList(); track s.w.id) {
         <div
