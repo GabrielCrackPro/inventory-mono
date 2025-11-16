@@ -1,395 +1,390 @@
-# Home Inventory Management System - Monorepo
+# Inventory Dashboard - Monorepo
 
-A comprehensive home inventory management system built with modern technologies and a monorepo architecture for better code sharing and maintainability.
+A comprehensive inventory management system built with a modern monorepo architecture, featuring backend API, web frontend, and mobile app with shared TypeScript types.
 
 ## 🏗️ Architecture
 
-This project uses a monorepo structure with shared TypeScript models to ensure type safety and consistency across all applications.
-
 ```
-inventory-dashboard/
-├── shared/                 # Shared TypeScript models and types
-│   ├── src/
-│   │   ├── models/        # Domain models (User, House, Room, Item, etc.)
-│   │   ├── types/         # Common utility types
-│   │   └── index.ts       # Main exports
-│   └── package.json
-├── backend/               # NestJS API server
-│   ├── src/
-│   │   ├── features/      # Feature modules
-│   │   ├── shared/        # Shared backend utilities
-│   │   └── prisma/        # Database schema and migrations
-│   └── package.json
-├── frontend/              # Angular web application
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── core/      # Core services and guards
-│   │   │   ├── features/  # Feature modules
-│   │   │   ├── shared/    # Shared components and services
-│   │   │   └── lib/       # UI component library
-│   │   └── environments/
-│   └── package.json
-├── docker-compose.yml     # Production Docker setup
-├── docker-compose.dev.yml # Development Docker setup
-└── package.json           # Root workspace configuration
+┌─────────────────────────────────────────────────────────┐
+│                    @inventory/shared                     │
+│  Types, Models, DTOs, Constants, Validation Utilities   │
+└─────────────────────────────────────────────────────────┘
+           ↓                ↓                ↓
+    ┌──────────┐     ┌──────────┐     ┌──────────┐
+    │ Backend  │     │ Frontend │     │  Mobile  │
+    │ (NestJS) │     │ (Angular)│     │  (Expo)  │
+    └──────────┘     └──────────┘     └──────────┘
 ```
 
-## 🚀 Technologies
+## 📦 Packages
 
-### Backend
+### [`shared/`](./shared) - Shared Package
 
-- **NestJS** - Progressive Node.js framework
-- **Prisma** - Next-generation ORM
-- **PostgreSQL** - Robust relational database
-- **JWT** - Authentication and authorization
-- **Swagger** - API documentation
+TypeScript types, models, DTOs, and utilities shared across all applications.
 
-### Frontend
+**Key Features:**
 
-- **Angular 20** - Modern web framework
-- **TypeScript** - Type-safe JavaScript
-- **Tailwind CSS** - Utility-first CSS framework
-- **Lucide Icons** - Beautiful icon library
-- **RxJS** - Reactive programming
+- Domain models (User, Item, House, Room, etc.)
+- DTOs for API communication
+- Enums and constants
+- Validation utilities
+- API endpoint definitions
 
-### Shared
+### [`backend/`](./backend) - Backend API
 
-- **TypeScript** - Shared type definitions
-- **Monorepo** - Workspace-based architecture
+NestJS REST API with PostgreSQL database.
 
-### DevOps
+**Tech Stack:**
 
-- **Docker** - Containerization
-- **Docker Compose** - Multi-container orchestration
-- **pnpm Workspaces** - Monorepo management
+- NestJS 11
+- Prisma ORM
+- PostgreSQL
+- JWT Authentication
+- Swagger/OpenAPI
 
-## 🛠️ Development Setup
+**Features:**
+
+- User authentication & authorization
+- Multi-house inventory management
+- Room-based organization
+- Item tracking with categories
+- Activity logging
+- Email verification
+- Password reset
+- Invitation system
+
+### [`frontend/`](./frontend) - Web Frontend
+
+Modern Angular application with standalone components.
+
+**Tech Stack:**
+
+- Angular 20
+- Tailwind CSS
+- Chart.js
+- RxJS
+- Standalone Components
+
+**Features:**
+
+- Responsive dashboard
+- Item management
+- House & room organization
+- User management
+- Activity tracking
+- Analytics & charts
+
+### [`mobile/`](./mobile) - Mobile App
+
+Cross-platform mobile app built with React Native and Expo.
+
+**Tech Stack:**
+
+- React Native 0.76
+- Expo 52
+- Expo Router
+- Zustand (state management)
+- Axios
+
+**Features:**
+
+- iOS, Android, and Web support
+- File-based routing
+- Shared types from monorepo
+- Native performance
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 20+
-- Docker and Docker Compose
-- pnpm
+- Node.js 18+ and npm/pnpm
+- PostgreSQL 14+
+- Docker (optional)
+- Expo CLI (for mobile)
 
-### Quick Start with Docker (Recommended)
-
-1. **Clone the repository**
-
-   ```bash
-   git clone <repository-url>
-   cd inventory-dashboard
-   ```
-
-2. **Start development environment**
-
-   ```bash
-   pnpm -w run docker:dev
-   ```
-
-   This will start:
-
-   - PostgreSQL database on port 5432
-   - Backend API on port 3000
-   - Frontend app on port 4200
-
-3. **Access the application**
-   - Frontend: http://localhost:4200
-   - Backend API: http://localhost:3000
-   - API Documentation: http://localhost:3000/api
-
-### Manual Development Setup
-
-1. **Install dependencies**
-
-   ```bash
-   pnpm install
-   ```
-
-2. **Build shared package**
-
-   ```bash
-   pnpm -w run build:shared
-   ```
-
-3. **Start PostgreSQL** (using Docker)
-
-   ```bash
-   docker run -d \
-     --name postgres \
-     -e POSTGRES_PASSWORD=password \
-     -e POSTGRES_DB=home_inventory \
-     -p 5432:5432 \
-     postgres:16
-   ```
-
-4. **Start development servers**
-   ```bash
-   pnpm -w run dev
-   ```
-
-## 📦 Available Scripts
-
-### Root Level Commands
+### Installation
 
 ```bash
+# Clone the repository
+git clone <repository-url>
+cd inventory-dashboard-monorepo
+
 # Install all dependencies
-pnpm install
+npm install
 
+# Or use the convenience script
+npm run install:all
+```
+
+### Setup
+
+1. **Configure Backend**
+
+   ```bash
+   cd backend
+   cp .env.example .env
+   # Edit .env with your database credentials
+   ```
+
+2. **Setup Database**
+
+   ```bash
+   cd backend
+   npx prisma migrate dev
+   npx prisma generate
+   ```
+
+3. **Build Shared Package** (Required first!)
+   ```bash
+   npm run build:shared
+   ```
+
+### Development
+
+```bash
+# Start all services
+npm run dev
+
+# Or start individually:
+npm run dev:backend    # http://localhost:3000
+npm run dev:frontend   # http://localhost:4200
+npm run dev:mobile     # Expo dev server
+```
+
+### Building
+
+```bash
 # Build all packages
-pnpm -w run build
+npm run build
 
-# Start all services in development mode
-pnpm -w run dev
-
-# Docker commands
-pnpm -w run docker:dev    # Start development environment
-pnpm -w run docker:prod   # Start production environment
-pnpm -w run docker:down   # Stop all containers
-
-# Maintenance
-pnpm -w run clean         # Clean all build artifacts
-pnpm -w run lint          # Lint all packages
-pnpm -w run test          # Run all tests
+# Build individually
+npm run build:shared
+npm run build:backend
+npm run build:frontend
+npm run build:mobile
 ```
 
-### Package-Specific Commands
+## 🐳 Docker
+
+### Development
 
 ```bash
-# Shared package
-pnpm -w run build:shared
-pnpm -w run dev:shared
-
-# Backend
-pnpm --filter backend run start:dev
-pnpm --filter backend run build
-
-# Frontend
-pnpm --filter frontend run start
-pnpm --filter frontend run build
+npm run docker:dev
 ```
 
-## 🗄️ Database
-
-The application uses PostgreSQL with Prisma ORM. Database migrations are automatically applied when the backend starts.
-
-### Prisma workflow (backend)
+### Production
 
 ```bash
-# Generate Prisma Client after schema edits
-pnpm --filter backend exec prisma generate
-
-# Create and apply a new migration
-pnpm --filter backend exec prisma migrate dev --name <migration_name>
-
-# Open Prisma Studio
-pnpm --filter backend exec prisma studio
+npm run docker:prod
 ```
 
-### Database Schema
+## 📚 Documentation
 
-- **Users** - User accounts and authentication
-- **Houses** - Properties/homes management
-- **Rooms** - Room organization within houses
-- **Items** - Inventory items with details
-- **Categories** - Item categorization
-- **Activities** - Audit trail and activity logging
-- **HouseAccess** - House sharing and permissions
+- [Monorepo Structure](./MONOREPO_STRUCTURE.md) - Detailed project structure
+- [Migration Guide](./MIGRATION_GUIDE.md) - How to use shared package
+- [Shared Package](./shared/README.md) - Shared types documentation
+- [Backend API](./backend/README.md) - API documentation
+- [Frontend](./frontend/README.md) - Frontend documentation
+- [Mobile App](./mobile/README.md) - Mobile app documentation
 
-## 🔧 Configuration
+## 🔧 Available Scripts
 
-### Environment Variables
+### Root Level
 
-Create `.env` files in the respective directories:
-
-**Backend (.env)**
-
-```env
-DATABASE_URL="postgresql://postgres:password@localhost:5432/home_inventory?schema=public"
-JWT_SECRET="your-jwt-secret"
-JWT_REFRESH_SECRET="your-refresh-secret"
-NODE_ENV="development"
+```bash
+npm run build              # Build all packages
+npm run dev                # Start all in development mode
+npm run clean              # Clean all build artifacts
+npm run install:all        # Install all dependencies
+npm run lint               # Lint all packages
+npm run test               # Test all packages
+npm run docker:dev         # Start with Docker (dev)
+npm run docker:prod        # Start with Docker (prod)
+npm run docker:down        # Stop Docker containers
 ```
 
-**Frontend (environment files)**
+### Package-Specific
 
-```typescript
-export const environment = {
-  production: false,
-  apiUrl: "http://localhost:3000",
-};
+```bash
+npm run build:shared       # Build shared package
+npm run build:backend      # Build backend
+npm run build:frontend     # Build frontend
+npm run build:mobile       # Build mobile
+
+npm run dev:shared         # Watch mode for shared
+npm run dev:backend        # Start backend dev server
+npm run dev:frontend       # Start frontend dev server
+npm run dev:mobile         # Start Expo dev server
 ```
 
-## 🐳 Docker Development
+## 🏛️ Project Structure
 
-The project includes optimized Docker configurations for both development and production:
-
-### Development Features
-
-- **Hot Reload** - Both frontend and backend reload on code changes
-- **Volume Mounting** - Source code changes reflected immediately
-- **Database Persistence** - Data persists between container restarts
-- **Health Checks** - Ensures services start in correct order
-
-### Production Features
-
-- **Multi-stage Builds** - Optimized image sizes
-- **nginx** - Serves frontend with API proxy
-- **Security** - Production-ready configurations
-
-## 🔄 Shared Models
-
-The monorepo architecture includes a shared package (`@inventory/shared`) that provides:
-
-- **Type Safety** - Consistent types across frontend and backend
-- **Single Source of Truth** - Models defined once, used everywhere
-- **Better Maintainability** - Changes propagate automatically
-- **Development Experience** - IntelliSense and auto-completion
-
-### Using Shared Types
-
-**Backend Example:**
-
-```typescript
-import { CreateUserData, UserRole } from "@inventory/shared";
-
-@Injectable()
-export class UserService {
-  async createUser(data: CreateUserData): Promise<User> {
-    // Implementation with full type safety
-  }
-}
+```
+inventory-dashboard-monorepo/
+├── shared/                 # Shared TypeScript package
+│   ├── src/
+│   │   ├── models/        # Domain models
+│   │   ├── dtos/          # Data Transfer Objects
+│   │   ├── types/         # TypeScript types
+│   │   ├── constants/     # Constants & validation rules
+│   │   └── utils/         # Utility functions
+│   └── dist/              # Compiled output
+│
+├── backend/               # NestJS API
+│   ├── src/
+│   │   ├── features/      # Feature modules
+│   │   ├── shared/        # Backend utilities
+│   │   ├── config/        # Configuration
+│   │   └── prisma/        # Database client
+│   └── prisma/
+│       └── schema.prisma  # Database schema
+│
+├── frontend/              # Angular web app
+│   └── src/
+│       └── app/
+│           ├── features/  # Feature modules
+│           ├── core/      # Core services
+│           ├── shared/    # Shared components
+│           └── lib/       # UI library
+│
+├── mobile/                # React Native app
+│   ├── app/              # Expo Router pages
+│   ├── services/         # API services
+│   ├── components/       # React components
+│   └── stores/           # State management
+│
+├── docker-compose.yml     # Production Docker
+├── docker-compose.dev.yml # Development Docker
+└── package.json          # Workspace configuration
 ```
 
-**Frontend Example:**
+## 🔑 Key Features
 
-```typescript
-import { AuthUser, LoginRequest } from "@inventory/shared";
+### Shared Package Benefits
 
-@Injectable()
-export class AuthService {
-  login(credentials: LoginRequest): Observable<AuthUser> {
-    // Implementation with full type safety
-  }
-}
-```
+- ✅ **Type Safety**: Single source of truth for types
+- ✅ **Consistency**: Same validation rules everywhere
+- ✅ **DRY**: No duplicate type definitions
+- ✅ **API Contract**: Ensures backend/frontend agreement
+- ✅ **Maintainability**: Update once, apply everywhere
+
+### Backend Features
+
+- JWT authentication with refresh tokens
+- Role-based access control (RBAC)
+- Multi-house support with permissions
+- Room-based item organization
+- Category management
+- Activity logging & audit trail
+- Email verification & password reset
+- Invitation system
+- Swagger API documentation
+
+### Frontend Features
+
+- Modern standalone components
+- Responsive design with Tailwind CSS
+- Real-time dashboard with charts
+- Item management with advanced filtering
+- House & room organization
+- User administration
+- Activity timeline
+- Toast notifications
+
+### Mobile Features
+
+- Cross-platform (iOS, Android, Web)
+- File-based routing with Expo Router
+- Native performance
+- Shared types from monorepo
+- Offline-ready architecture
+- Push notifications (coming soon)
 
 ## 🧪 Testing
 
 ```bash
 # Run all tests
-pnpm -w run test
+npm test
 
-# Backend tests
-pnpm --filter backend run test
-
-# Frontend tests
-pnpm --filter frontend run test
+# Test specific package
+npm run test --workspace=backend
+npm run test --workspace=frontend
+npm run test --workspace=mobile
 ```
 
-## 📝 API Documentation
-
-The backend automatically generates Swagger documentation available at:
-
-- Development: http://localhost:3000/api
-- Production: https://your-domain.com/api
-
-## 🚀 Deployment
-
-### Production Build
+## 📝 Code Quality
 
 ```bash
-pnpm -w run build
-pnpm -w run docker:prod
+# Lint all packages
+npm run lint
+
+# Format code (if configured)
+npm run format
 ```
 
-### Environment Setup
+## 🔄 Workflow
 
-1. Configure production environment variables
-2. Set up SSL certificates (for HTTPS)
-3. Configure reverse proxy (nginx/Traefik)
-4. Set up database backups
-5. Configure monitoring and logging
+### Adding New Features
 
-## 📚 Additional Documentation
+1. **Define types in shared package**
 
-- Migration Guide: ./MIGRATION_GUIDE.md
-- Docker README: ./README-Docker.md
-- Frontend Animations Guide: ./frontend/docs/animations-guide.md
+   ```bash
+   cd shared/src/models
+   # Add your model
+   # Export from index.ts
+   npm run build
+   ```
+
+2. **Implement in backend**
+
+   ```bash
+   cd backend
+   # Create feature module
+   # Use types from @inventory/shared
+   ```
+
+3. **Implement in frontend**
+
+   ```bash
+   cd frontend
+   # Create components/services
+   # Use types from @inventory/shared
+   ```
+
+4. **Implement in mobile**
+   ```bash
+   cd mobile
+   # Create screens/components
+   # Use types from @inventory/shared
+   ```
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Update documentation
-6. Submit a pull request
-
-### Development Guidelines
-
-- Follow TypeScript best practices
-- Use shared types from `@inventory/shared`
-- Write tests for new features
-- Update documentation
-- Follow conventional commit messages
+1. Create a feature branch
+2. Make your changes
+3. Update types in `shared` if needed
+4. Test in all affected packages
+5. Submit a pull request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT
 
-## 🆘 Troubleshooting
+## 🆘 Support
 
-### Common Issues
+For issues and questions:
 
-**Port conflicts:**
+- Check the [Migration Guide](./MIGRATION_GUIDE.md)
+- Review [Monorepo Structure](./MONOREPO_STRUCTURE.md)
+- Check package-specific READMEs
 
-```bash
-# Check what's using the ports
-lsof -i :3000
-lsof -i :4200
-lsof -i :5432
-```
+## 🎯 Roadmap
 
-**Docker issues:**
-
-```bash
-# Reset Docker environment
-pnpm -w run docker:down
-docker system prune -f
-pnpm -w run docker:dev
-```
-
-**Shared package not updating:**
-
-```bash
-# Rebuild shared package
-pnpm -w run build:shared
-# Restart development servers
-pnpm -w run dev
-```
-
-**Database connection issues:**
-
-```bash
-# Check database status
-docker-compose logs db
-# Reset database
-docker-compose down -v
-docker-compose up -d
-```
-
-## 🧩 pnpm Workspaces Tips
-
-- Target a workspace: `pnpm --filter backend <command>`
-- Run a script in a workspace: `pnpm --filter frontend run start`
-- Execute binaries in a workspace: `pnpm --filter backend exec prisma studio`
-- Prune store if needed: `pnpm store prune`
-
-## 📞 Support
-
-For support and questions:
-
-- Create an issue in the repository
-- Check the documentation in each package
-- Review the troubleshooting section above
-
+- [ ] GraphQL API option
+- [ ] Real-time updates with WebSockets
+- [ ] Mobile push notifications
+- [ ] Barcode scanning
+- [ ] Image upload & storage
+- [ ] Export/import functionality
+- [ ] Advanced analytics
+- [ ] Multi-language support

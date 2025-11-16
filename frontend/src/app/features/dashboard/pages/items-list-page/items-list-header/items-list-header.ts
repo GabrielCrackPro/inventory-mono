@@ -19,7 +19,7 @@ export class ItemsListHeaderComponent {
   showSettings = input<boolean>(false);
 
   readonly toggleSelectMode = output<void>();
-  readonly changeViewMode = output<string | number>();
+  readonly changeViewMode = output<string>();
   readonly settingsClick = output<void>();
 
   onToggleSelectMode(): void {
@@ -27,7 +27,7 @@ export class ItemsListHeaderComponent {
   }
 
   onChangeViewMode(mode: string | number): void {
-    this.changeViewMode.emit(mode);
+    this.changeViewMode.emit(String(mode));
   }
 
   onSettingsClick(): void {

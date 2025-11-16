@@ -14,6 +14,7 @@ export * from "./dtos";
 
 // Types
 export * from "./types/common";
+export * from "./types/frontend";
 
 // Re-export commonly used types for convenience
 export type {

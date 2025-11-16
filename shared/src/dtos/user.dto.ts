@@ -18,6 +18,7 @@ export interface UpdateUserDto {
   email?: string;
   password?: string;
   role?: UserRole;
+  preferences?: Record<string, any>;
 }
 
 /**
