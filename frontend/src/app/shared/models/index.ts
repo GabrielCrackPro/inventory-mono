@@ -3,3 +3,7 @@ export * from './role';
 export * from './shared-components';
 export * from './toast';
 export * from './user';
+export * from './item';
+export * from './house';
+export * from './room';
+export * from './category';

@@ -1,11 +1,8 @@
 import { UserRole } from '@shared/models';
+import type { RegisterDto } from '@inventory/shared';
 
-export interface RegisterRequest {
-  name: string;
-  email: string;
-  password: string;
-  role?: UserRole;
-}
+// Re-export shared type
+export type RegisterRequest = RegisterDto;
 
 export interface RegisterResponse {
   id: number;

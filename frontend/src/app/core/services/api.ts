@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
+import { API_ENDPOINTS } from '@inventory/shared';
 import { catchError, Observable, throwError } from 'rxjs';
 
 export interface ApiEndpoints {
@@ -32,21 +33,22 @@ export class ApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.apiUrl;
 
+  // Use shared API endpoints where available, with fallbacks for custom endpoints
   private readonly endpoints: ApiEndpoints = {
-    activity: 'activities',
-    register: 'auth/register',
-    login: 'auth/login',
-    logout: 'auth/logout',
-    forgotPassword: 'auth/forgot-password',
-    resetPassword: 'auth/reset-password',
-    verifyEmail: 'auth/verify-email',
-    resendVerification: 'auth/resend-verification',
-    users: 'users',
-    items: 'items',
+    activity: API_ENDPOINTS.ACTIVITIES.replace(/^\//, ''),
+    register: API_ENDPOINTS.AUTH_REGISTER.replace(/^\//, ''),
+    login: API_ENDPOINTS.AUTH_LOGIN.replace(/^\//, ''),
+    logout: API_ENDPOINTS.AUTH_LOGOUT.replace(/^\//, ''),
+    forgotPassword: API_ENDPOINTS.AUTH_REQUEST_PASSWORD_RESET.replace(/^\//, ''),
+    resetPassword: API_ENDPOINTS.AUTH_RESET_PASSWORD.replace(/^\//, ''),
+    verifyEmail: API_ENDPOINTS.AUTH_VERIFY_EMAIL.replace(/^\//, ''),
+    resendVerification: API_ENDPOINTS.AUTH_RESEND_VERIFICATION.replace(/^\//, ''),
+    users: API_ENDPOINTS.USERS.replace(/^\//, ''),
+    items: API_ENDPOINTS.ITEMS.replace(/^\//, ''),
     lowStockItems: 'items/low-stock',
     recentItems: 'items/recent',
-    rooms: 'rooms',
-    houses: 'houses',
+    rooms: API_ENDPOINTS.ROOMS.replace(/^\//, ''),
+    houses: API_ENDPOINTS.HOUSES.replace(/^\//, ''),
     stats: 'activities/stadistics',
     activeHouseRooms: 'rooms/house',
     deleteMultipleItems: 'items/delete-multiple',
@@ -120,7 +122,9 @@ export class ApiService {
    * Performs a POST request to endpoint with an extra path, e.g. houses/{id}/share
    */
   postTo<T, B>(endpoint: keyof ApiEndpoints, extraPath: string | number, body?: B): Observable<T> {
-    return this.http.post<T>(this._buildUrl(endpoint, extraPath), body).pipe(catchError(this._handleError));
+    return this.http
+      .post<T>(this._buildUrl(endpoint, extraPath), body)
+      .pipe(catchError(this._handleError));
   }
 
   /**
@@ -152,6 +156,8 @@ export class ApiService {
    * Performs a DELETE to endpoint with arbitrary extra path, e.g. houses/{id}/access/{userId}
    */
   deletePath<T>(endpoint: keyof ApiEndpoints, extraPath: string | number): Observable<T> {
-    return this.http.delete<T>(this._buildUrl(endpoint, extraPath)).pipe(catchError(this._handleError));
+    return this.http
+      .delete<T>(this._buildUrl(endpoint, extraPath))
+      .pipe(catchError(this._handleError));
   }
 }

@@ -1,7 +1,8 @@
 import { IconName } from '@core/config';
+import { ItemCondition, ItemVisibility } from '@inventory/shared';
 
-export type ItemCondition = 'NEW' | 'USED' | 'DAMAGED';
-export type ItemVisibility = 'private' | 'household' | 'public';
+// Re-export for backward compatibility
+export { ItemCondition, ItemVisibility };
 export type ItemUnit =
   | 'pieces'
   | 'kg'
@@ -18,6 +19,9 @@ export type ItemUnit =
   | 'boxes'
   | 'bottles'
   | 'cans';
+
+// Frontend-specific visibility type (includes 'household' for UI)
+export type ItemVisibilityUI = ItemVisibility | 'household';
 
 export interface Item {
   id: string;
@@ -90,7 +94,7 @@ export interface ItemFormData {
   // Sharing & Access
   isShared: boolean;
   sharedWith: string;
-  visibility: ItemVisibility;
+  visibility: ItemVisibility | 'household'; // Frontend allows 'household' which maps to 'shared'
 }
 
 export interface RecentItem {
@@ -170,7 +174,10 @@ export class ItemHelpers {
             .map((email) => email.trim())
             .filter((email) => email.length > 0)
         : [],
-      visibility: (formData.visibility === 'household' ? 'shared' : formData.visibility) || 'private',
+      visibility:
+        (formData.visibility as string) === 'household'
+          ? 'shared'
+          : (formData.visibility as ItemVisibility) || 'private',
     };
   }
 
@@ -208,7 +215,8 @@ export class ItemHelpers {
       // Sharing & Access
       isShared: item.isShared,
       sharedWith: item.sharedWith.join(', '),
-      visibility: (item.visibility as any) === 'shared' ? ('household' as any) : (item.visibility as any),
+      visibility:
+        (item.visibility as any) === 'shared' ? ('household' as any) : (item.visibility as any),
     };
   }
 
