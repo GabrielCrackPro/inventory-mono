@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { JwtUser, UserRole } from '@inventory/shared';
@@ -27,7 +28,13 @@ export class RoomController {
     summary: 'Get all rooms for the authenticated user',
     responses: [{ status: 200, description: 'List of rooms' }],
   })
-  findAll(@GetUser() user: JwtUser) {
+  findAll(
+    @GetUser() user: JwtUser,
+    @Query('houseId', new ParseIntPipe({ optional: true })) houseId?: number,
+  ) {
+    if (houseId) {
+      return this.roomService.findAllForUserInHouse(user.id, houseId);
+    }
     return this.roomService.findAllForUser(user.id);
   }
 

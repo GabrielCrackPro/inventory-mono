@@ -48,7 +48,11 @@ export class RoomService {
       where: {
         OR: [{ ownerId: userId }, { sharedWith: { some: { userId } } }],
       },
-      include: { items: true },
+      include: {
+        _count: {
+          select: { items: true },
+        },
+      },
     });
   }
 
@@ -74,7 +78,11 @@ export class RoomService {
     // Once house access is validated, return all rooms in the house (membership grants read access)
     return this.prisma.room.findMany({
       where: { houseId },
-      include: { items: true },
+      include: {
+        _count: {
+          select: { items: true },
+        },
+      },
     });
   }
 

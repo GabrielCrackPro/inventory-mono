@@ -34,6 +34,11 @@ export const dashboardRoutes: Routes = [
         loadComponent: () => import('./pages').then((m) => m.AddItemComponent),
       }),
       createRoute({
+        title: 'Rooms',
+        path: 'rooms',
+        loadComponent: () => import('./pages').then((m) => m.RoomsListPageComponent),
+      }),
+      createRoute({
         title: 'Settings',
         path: 'settings',
         loadComponent: () => import('./pages').then((m) => m.SettingsPageComponent),

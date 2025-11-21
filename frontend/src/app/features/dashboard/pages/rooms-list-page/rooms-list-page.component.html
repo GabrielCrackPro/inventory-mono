@@ -1,0 +1,103 @@
+<div class="h-full flex flex-col py-4 px-6">
+  <!-- Breadcrumb Navigation -->
+  <div class="mb-4">
+    <z-breadcrumb>
+      <z-breadcrumb-item routerLink="/dashboard">Dashboard</z-breadcrumb-item>
+      <z-breadcrumb-item>Rooms</z-breadcrumb-item>
+    </z-breadcrumb>
+  </div>
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-3xl font-bold tracking-tight">Rooms</h1>
+      <p class="text-muted-foreground mt-1">Manage rooms in your house</p>
+    </div>
+    <z-button
+      label="Add Room"
+      iconName="lucidePlus"
+      routerLink="/dashboard/rooms/new"
+      class="shrink-0"
+    />
+  </div>
+
+  <!-- Content -->
+  <div class="flex-1 min-h-0 overflow-auto">
+    @if (loading()) {
+    <!-- Loading Skeleton -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+      <z-card class="p-6">
+        <div class="animate-pulse">
+          <div class="h-12 w-12 bg-muted rounded-lg mb-4"></div>
+          <div class="h-6 bg-muted rounded w-3/4 mb-2"></div>
+          <div class="h-4 bg-muted rounded w-1/2"></div>
+        </div>
+      </z-card>
+      }
+    </div>
+    } @else if (rooms().length === 0) {
+    <!-- Empty State -->
+    <div class="h-full flex items-center justify-center p-6">
+      <z-card class="w-full max-w-2xl mx-auto p-12 min-h-96 flex items-center justify-center">
+        <div class="flex flex-col items-center gap-4 text-center">
+          <z-empty
+            zIcon="lucideHome"
+            [zIconSize]="48"
+            zDescription="No rooms yet"
+            zTitle="Get started by adding your first room"
+          />
+          <z-button label="Add Room" iconName="lucidePlus" routerLink="/dashboard/rooms/new" />
+        </div>
+      </z-card>
+    </div>
+    } @else {
+    <!-- Rooms Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-fade-in-up">
+      @for (room of rooms(); track room.id) {
+      <z-card
+        class="p-6 cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] group"
+        (click)="navigateToRoom(room.id)"
+      >
+        <div class="flex items-start justify-between mb-4">
+          <div
+            class="flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 text-primary transition-colors duration-200"
+          >
+            <hia-icon [name]="getRoomIcon(room)" [size]="24" />
+          </div>
+          @if (rooms().length > 1) {
+          <button
+            type="button"
+            (click)="deleteRoom(room, $event)"
+            class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 hover:bg-destructive/10 hover:text-destructive rounded-md"
+            aria-label="Delete room"
+          >
+            <hia-icon [name]="'lucideTrash2'" [size]="16" />
+          </button>
+          }
+        </div>
+
+        <h3
+          class="text-lg font-semibold mb-2 group-hover:text-primary transition-colors duration-200"
+        >
+          {{ room.name }}
+        </h3>
+
+        <div class="flex items-center gap-4 text-xs text-muted-foreground">
+          <div class="flex items-center gap-1">
+            <hia-icon [name]="commonIcons['item']" [size]="14" />
+            <span>{{ getItemCount(room) }} {{ getItemCount(room) === 1 ? 'item' : 'items' }}</span>
+          </div>
+          @if (room.shared) {
+          <div class="flex items-center gap-1">
+            <hia-icon [name]="'lucideUsers'" [size]="14" />
+            <span>Shared</span>
+          </div>
+          }
+        </div>
+      </z-card>
+      }
+    </div>
+    }
+  </div>
+</div>

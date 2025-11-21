@@ -1,10 +1,38 @@
 <div class="h-full flex flex-col py-4 px-6">
   <!-- Breadcrumb Navigation -->
-  <div class="mb-4">
+  <div class="mb-4 flex items-center justify-between">
     <z-breadcrumb>
       <z-breadcrumb-item routerLink="/dashboard">Dashboard</z-breadcrumb-item>
+      @if (currentRoom()) {
+      <z-breadcrumb-item routerLink="/dashboard/rooms">Rooms</z-breadcrumb-item>
+      <z-breadcrumb-item>{{ currentRoom()!.name }}</z-breadcrumb-item>
+      } @else {
       <z-breadcrumb-item>Items</z-breadcrumb-item>
+      }
     </z-breadcrumb>
+
+    @if (currentRoom()) {
+    <div class="flex items-center gap-2">
+      <span
+        class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+        </svg>
+        Filtered by room
+      </span>
+    </div>
+    }
   </div>
 
   @if (items().length !== 0) {

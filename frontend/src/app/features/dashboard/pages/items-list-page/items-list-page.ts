@@ -6,11 +6,13 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { IconName } from '@core/config';
 import { TableCol, TableColSortKey } from '@features/dashboard';
 import { Item, ItemService } from '@features/item';
 import { HouseContextService } from '@features/house/services/house-context';
 import { ProfileService } from '@features/user';
+import { RoomService } from '@features/room';
 import { buildItemColumns, sortItems } from '@lib/utils';
 import { AlertDialogService, DialogService, LoadingService } from '@shared/services';
 import { PermissionService } from '@core/services/permission';
@@ -55,10 +57,14 @@ export class ItemsListPageComponent implements OnInit {
   private readonly _loadingService = inject(LoadingService);
   private readonly _houseContext = inject(HouseContextService);
   private readonly _permission = inject(PermissionService);
+  private readonly _route = inject(ActivatedRoute);
+  private readonly _roomService = inject(RoomService);
 
   private _items = signal<Item[]>([]);
   private hiddenCols = signal<Set<string>>(new Set());
   private colOrder = signal<string[] | null>(null);
+  private _roomFilter = signal<string | null>(null);
+  protected readonly currentRoom = signal<{ id: number; name: string } | null>(null);
 
   defaultView = signal<ViewMode>(
     this._coerceViewMode(
@@ -78,7 +84,28 @@ export class ItemsListPageComponent implements OnInit {
   canCreateItem = computed(() => this._permission.can('item:create'));
 
   ngOnInit(): void {
-    this.reloadItems();
+    // Read room filter from query params
+    this._route.queryParams.subscribe((params) => {
+      const roomId = params['room'];
+      this._roomFilter.set(roomId || null);
+
+      // Fetch room details if filtering by room
+      if (roomId) {
+        this._roomService.getRoom(roomId).subscribe({
+          next: (room) => {
+            this.currentRoom.set({ id: room.id, name: room.name });
+          },
+          error: () => {
+            this.currentRoom.set(null);
+          },
+        });
+      } else {
+        this.currentRoom.set(null);
+      }
+
+      this.reloadItems();
+    });
+
     this._houseContext.selectedHouseChanged$.subscribe(() => this.reloadItems());
     const prefHidden = (this._profileService.getProfile() as any)?.preferences?.itemsHiddenCols as
       | string[]
@@ -182,7 +209,10 @@ export class ItemsListPageComponent implements OnInit {
   }
 
   reloadItems(): void {
-    this._itemsService.getItems().subscribe((items) => {
+    const roomFilter = this._roomFilter();
+    const filters = roomFilter ? { room: roomFilter } : undefined;
+
+    this._itemsService.getItems(filters).subscribe((items) => {
       this._items.set(items);
       const currentProfile = this._profileService.getProfile() as any;
       const prevStats = currentProfile?.stats ?? {};
