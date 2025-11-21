@@ -13,7 +13,7 @@ import { JwtUser, UserRole } from '@inventory/shared';
 import { ApiDocs } from '../../shared';
 import { GetUser, Roles } from '../auth/auth.decorator';
 import { JwtAuthGuard, RolesGuard } from '../../shared';
-import { CreateUserDto, UpdateUserDto } from './user.dto';
+import { ChangePasswordDto, CreateUserDto, UpdateUserDto } from './user.dto';
 import { UserService } from './user.service';
 
 @Controller('api/users')
@@ -70,6 +70,28 @@ export class UsersController {
       delete (dto as any).role;
     }
     return this.usersService.update(id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/change-password')
+  @ApiDocs({
+    summary: 'Change user password',
+    responses: [{ status: 200, description: 'Password changed successfully' }],
+  })
+  async changePassword(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: ChangePasswordDto,
+    @GetUser() user: JwtUser,
+  ) {
+    // Users can only change their own password
+    if (user.id !== id) {
+      throw new Error('You can only change your own password');
+    }
+    return this.usersService.changePassword(
+      id,
+      dto.currentPassword,
+      dto.newPassword,
+    );
   }
 
   @Delete()

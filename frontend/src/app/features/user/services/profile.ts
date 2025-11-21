@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { ActivityService, ApiService, StorageService } from '@core/services';
 import { AuthUser } from '@shared/models';
 import { tap } from 'rxjs';
@@ -11,7 +11,10 @@ export class ProfileService {
   private readonly _activityService = inject(ActivityService);
   private readonly _apiService = inject(ApiService);
 
-  getProfile() {
+  // Signal to track profile changes reactively
+  private readonly _profileSignal = signal<AuthUser | null>(this._loadProfileFromStorage());
+
+  private _loadProfileFromStorage(): AuthUser | null {
     const p = this._storageService.getItem<AuthUser>('profile');
     if (!p) return p;
     if (typeof (p as any).emailVerified === 'undefined') {
@@ -20,6 +23,10 @@ export class ProfileService {
       return normalized;
     }
     return p;
+  }
+
+  getProfile() {
+    return this._profileSignal();
   }
 
   getActivities() {
@@ -37,6 +44,7 @@ export class ProfileService {
     const current = this.getProfile();
     const merged = { ...(current ?? {}), ...profile } as AuthUser;
     this._storageService.setItem('profile', merged);
+    this._profileSignal.set(merged);
   }
 
   savePreferences(prefs: Record<string, any>) {
@@ -51,6 +59,7 @@ export class ProfileService {
         tap(() => {
           const nextProfile = { ...current, preferences: merged } as any;
           this._storageService.setItem('profile', nextProfile);
+          this._profileSignal.set(nextProfile);
         })
       );
   }
@@ -69,11 +78,15 @@ export class ProfileService {
     const current = this.getProfile();
     if (!current) return undefined as any;
     return this._apiService.getOne<AuthUser>('users', current.id).pipe(
-      tap((fresh) => this._storageService.setItem('profile', fresh))
+      tap((fresh) => {
+        this._storageService.setItem('profile', fresh);
+        this._profileSignal.set(fresh);
+      })
     );
   }
 
   clearProfile() {
     this._storageService.removeItem('profile');
+    this._profileSignal.set(null);
   }
 }

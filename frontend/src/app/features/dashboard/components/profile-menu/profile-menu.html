@@ -3,6 +3,13 @@
     class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-accent/50 transition-colors duration-200 group"
   >
     <!-- Avatar -->
+    @if (profile()?.profilePicture) {
+    <img
+      [src]="profile()?.profilePicture"
+      [alt]="profile()?.name || 'User'"
+      class="w-8 h-8 rounded-full object-cover ring-2 ring-transparent group-hover:ring-primary/20 transition-all duration-200"
+    />
+    } @else {
     <div
       class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center ring-2 ring-transparent group-hover:ring-primary/20 transition-all duration-200"
     >
@@ -10,6 +17,7 @@
         {{ profile()?.name?.charAt(0) || 'U' }}
       </span>
     </div>
+    }
 
     <!-- User Info (hidden on mobile) -->
     <div class="hidden md:block text-left">
@@ -36,11 +44,19 @@
     <!-- Profile Header -->
     <div class="px-3 py-2 border-b border-border mb-2">
       <div class="flex items-center gap-3">
+        @if (profile()?.profilePicture) {
+        <img
+          [src]="profile()?.profilePicture"
+          [alt]="profile()?.name || 'User'"
+          class="w-10 h-10 rounded-full object-cover"
+        />
+        } @else {
         <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
           <span class="text-sm font-semibold text-primary">
             {{ profile()?.name?.charAt(0) || 'U' }}
           </span>
         </div>
+        }
         <div class="flex-1 min-w-0">
           <p class="text-sm font-medium text-foreground truncate">
             {{ profile()?.name || 'User' }}

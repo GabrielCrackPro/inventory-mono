@@ -15,6 +15,7 @@ export interface User {
   email: string;
   role: UserRole;
   emailVerified: boolean;
+  profilePicture?: string | null;
   preferences?: Record<string, any>;
   createdAt: Date;
   updatedAt: Date;
@@ -59,5 +60,6 @@ export interface UpdateUserData {
   name?: string;
   email?: string;
   role?: UserRole;
+  profilePicture?: string | null;
   preferences?: Record<string, any>;
 }

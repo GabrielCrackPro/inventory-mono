@@ -38,6 +38,11 @@ export const dashboardRoutes: Routes = [
         path: 'settings',
         loadComponent: () => import('./pages').then((m) => m.SettingsPageComponent),
       }),
+      createRoute({
+        title: 'Account Settings',
+        path: 'account',
+        loadComponent: () => import('./pages').then((m) => m.AccountSettingsComponent),
+      }),
     ],
   }),
   createRoute({

@@ -1,3 +1,4 @@
+export * from './account-settings';
 export * from './add-item';
 export * from './home';
 export * from './item-detail-page';

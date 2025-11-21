@@ -40,6 +40,11 @@ export class UpdateUserDto
   implements IUpdateUserDto
 {
   @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ example: 'https://example.com/avatar.jpg' })
+  profilePicture?: string | null;
+
+  @IsOptional()
   @ApiPropertyOptional({
     type: 'object',
     additionalProperties: true,
@@ -73,4 +78,15 @@ export class UserListResponseDto implements IUserListResponseDto {
 
   @ApiProperty({ example: 10 })
   total: number;
+}
+
+export class ChangePasswordDto {
+  @IsString()
+  @ApiProperty({ example: 'currentPassword123' })
+  currentPassword: string;
+
+  @IsString()
+  @MinLength(6)
+  @ApiProperty({ example: 'newPassword123' })
+  newPassword: string;
 }
