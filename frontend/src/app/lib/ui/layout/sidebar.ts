@@ -35,6 +35,9 @@ import {
       [class]="classes()"
       [style.width.px]="currentWidth()"
       [attr.data-collapsed]="zCollapsed()"
+      [attr.data-position]="zPosition()"
+      role="complementary"
+      aria-label="Sidebar navigation"
     >
       <!-- Sidebar Content -->
       <div class="flex flex-col h-full relative">
@@ -42,7 +45,9 @@ import {
         <ng-content select="[slot=header]"></ng-content>
 
         <!-- Main Content -->
-        <div class="flex-1 overflow-y-auto overflow-x-hidden px-2 py-4 space-y-1">
+        <div
+          class="flex-1 overflow-y-auto overflow-x-hidden px-2 py-4 space-y-1 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent hover:scrollbar-thumb-border/80"
+        >
           <ng-content></ng-content>
         </div>
 
@@ -57,14 +62,16 @@ import {
         (click)="toggleCollapsed()"
         [attr.aria-label]="zCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
         [attr.aria-expanded]="!zCollapsed()"
+        [attr.title]="zCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
         type="button"
       >
         <svg
-          class="w-3 h-3 transition-transform duration-200"
+          class="w-3 h-3 transition-transform duration-300 ease-in-out"
           [class.rotate-180]="zCollapsed()"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
+          aria-hidden="true"
         >
           <path
             stroke-linecap="round"
@@ -87,6 +94,8 @@ export class SidebarComponent {
   readonly zCollapsed = input(false, { transform });
   readonly zReverseArrow = input(false, { transform });
   readonly zTrigger = input<TemplateRef<void> | null>(null);
+  readonly zPosition = input<'left' | 'right'>('left');
+  readonly zShowTooltips = input(true, { transform });
   readonly class = input<ClassValue>('');
 
   readonly zCollapsedChange = output<boolean>();
@@ -120,10 +129,15 @@ export class SidebarComponent {
   });
 
   protected readonly classes = computed(() =>
-    mergeClasses(sidebarVariants({ collapsed: this.zCollapsed() }), this.class())
+    mergeClasses(
+      sidebarVariants({ collapsed: this.zCollapsed(), zPosition: this.zPosition() }),
+      this.class()
+    )
   );
 
-  protected readonly triggerClasses = computed(() => mergeClasses(sidebarTriggerVariants()));
+  protected readonly triggerClasses = computed(() =>
+    mergeClasses(sidebarTriggerVariants({ zPosition: this.zPosition() }))
+  );
 
   toggleCollapsed(): void {
     const newState = !this.zCollapsed();

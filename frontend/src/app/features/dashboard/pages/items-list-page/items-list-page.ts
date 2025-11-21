@@ -19,9 +19,9 @@ import { ItemsTableSettingsComponent, ItemsTableViewComponent } from './items-ta
 import { ItemListPageSkeletonComponent } from './item-list-page-skeleton';
 import { ZardEmptyComponent } from '@ui/empty';
 import { ZardCardComponent } from '@ui/card';
-import { RouterLink } from '@angular/router';
 import { ItemsListHeaderComponent } from './items-list-header';
 import { ZardButtonComponent } from '@ui/button';
+import { ZardBreadcrumbComponent, ZardBreadcrumbItemComponent } from '@ui/breadcrumb';
 
 interface ViewOption {
   value: string;
@@ -39,9 +39,10 @@ type ViewMode = 'grid' | 'table';
     ItemListPageSkeletonComponent,
     ZardEmptyComponent,
     ZardCardComponent,
-    RouterLink,
     ItemsListHeaderComponent,
     ZardButtonComponent,
+    ZardBreadcrumbComponent,
+    ZardBreadcrumbItemComponent,
   ],
   templateUrl: './items-list-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

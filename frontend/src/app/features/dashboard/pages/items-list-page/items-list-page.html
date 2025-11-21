@@ -1,4 +1,12 @@
 <div class="h-full flex flex-col py-4 px-6">
+  <!-- Breadcrumb Navigation -->
+  <div class="mb-4">
+    <z-breadcrumb>
+      <z-breadcrumb-item routerLink="/dashboard">Dashboard</z-breadcrumb-item>
+      <z-breadcrumb-item>Items</z-breadcrumb-item>
+    </z-breadcrumb>
+  </div>
+
   @if (items().length !== 0) {
 
   <hia-items-list-header

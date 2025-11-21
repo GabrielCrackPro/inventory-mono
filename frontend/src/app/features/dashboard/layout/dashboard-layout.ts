@@ -57,6 +57,7 @@ export class DashboardLayoutComponent {
     left: 0,
     width: 0,
     height: 0,
+    opacity: 1,
   });
 
   leaveHover() {
@@ -110,6 +111,7 @@ export class DashboardLayoutComponent {
       left,
       width,
       height,
+      opacity: 1,
     });
   }
 
@@ -140,6 +142,6 @@ export class DashboardLayoutComponent {
     const width = rect.width;
     const height = rect.height;
 
-    this.hoverEffect.set({ visible: true, top, left, width, height });
+    this.hoverEffect.set({ visible: true, top, left, width, height, opacity: 1 });
   }
 }
