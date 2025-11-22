@@ -136,19 +136,24 @@ export interface ListItem {
                     >{{ item.metadata?.['quantity']
 
 
+
+
+
+
+
                     }}{{ item.metadata?.['unit'] ? ' ' + (item.metadata?.['unit'] || '') : '' }}</span
                   >
                 </span>
                 } @if (item.metadata?.['room']) {
                 <span
-                  class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200/60 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800/40 shadow-sm"
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium shadow-sm [background:color-mix(in_srgb,var(--chart-1)_15%,transparent)] text-chart-1 border-[color-mix(in_srgb,var(--chart-1)_30%,transparent)] border"
                 >
                   <hia-icon [name]="commonIcons['room']" [size]="12" />
                   <span>{{ item.metadata?.['room']?.name || item.metadata?.['room'] }}</span>
                 </span>
                 } @if (item.metadata?.['category']) {
                 <span
-                  class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200/60 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800/40 shadow-sm"
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium shadow-sm [background:color-mix(in_srgb,var(--chart-4)_15%,transparent)] text-chart-4 border-[color-mix(in_srgb,var(--chart-4)_30%,transparent)] border"
                 >
                   <hia-icon [name]="commonIcons['category']" [size]="12" />
                   <span
@@ -213,10 +218,10 @@ export class ItemListComponent {
       // Status-based styling
       {
         'border-border/60': !item.status || item.status === 'normal',
-        'border-orange-300 bg-orange-50/50 dark:border-orange-800 dark:bg-orange-950/20':
+        '[border-color:color-mix(in_srgb,var(--chart-3)_40%,transparent)] [background:color-mix(in_srgb,var(--chart-3)_5%,transparent)]':
           item.status === 'low-stock',
         'border-destructive/50 bg-destructive/5': item.status === 'out-of-stock',
-        'border-green-300 bg-green-50/50 dark:border-green-800 dark:bg-green-950/20':
+        '[border-color:color-mix(in_srgb,var(--chart-2)_40%,transparent)] [background:color-mix(in_srgb,var(--chart-2)_5%,transparent)]':
           item.status === 'new',
       },
       // Interactive states
@@ -229,10 +234,10 @@ export class ItemListComponent {
 
   protected getStatusIndicatorClasses(status: ItemStatus): string {
     return mergeClasses('absolute top-0 left-0 w-1 h-full rounded-l-2xl', {
-      'bg-orange-400': status === 'low-stock',
+      '[background:var(--chart-3)]': status === 'low-stock',
       'bg-destructive': status === 'out-of-stock',
-      'bg-green-500': status === 'new',
-      'bg-blue-500': status === 'updated',
+      '[background:var(--chart-2)]': status === 'new',
+      '[background:var(--chart-1)]': status === 'updated',
     });
   }
 
@@ -243,10 +248,10 @@ export class ItemListComponent {
       // Status-based icon container styling
       {
         'bg-primary/10 border-primary/20': !item.status || item.status === 'normal',
-        'bg-orange-100 border-orange-200 dark:bg-orange-900/30 dark:border-orange-800':
+        '[background:color-mix(in_srgb,var(--chart-3)_15%,transparent)] [border-color:color-mix(in_srgb,var(--chart-3)_30%,transparent)]':
           item.status === 'low-stock',
         'bg-destructive/10 border-destructive/20': item.status === 'out-of-stock',
-        'bg-green-100 border-green-200 dark:bg-green-900/30 dark:border-green-800':
+        '[background:color-mix(in_srgb,var(--chart-2)_15%,transparent)] [border-color:color-mix(in_srgb,var(--chart-2)_30%,transparent)]':
           item.status === 'new',
       }
     );
@@ -255,18 +260,18 @@ export class ItemListComponent {
   protected getIconClasses(item: ListItem): string {
     return mergeClasses({
       'text-primary': !item.status || item.status === 'normal',
-      'text-orange-600 dark:text-orange-400': item.status === 'low-stock',
+      '[color:var(--chart-3)]': item.status === 'low-stock',
       'text-destructive': item.status === 'out-of-stock',
-      'text-green-600 dark:text-green-400': item.status === 'new',
+      '[color:var(--chart-2)]': item.status === 'new',
     });
   }
 
   protected getTitleClasses(item: ListItem): string {
     return mergeClasses('font-semibold truncate', {
       'text-foreground': !item.status || item.status === 'normal',
-      'text-orange-900 dark:text-orange-100': item.status === 'low-stock',
-      'text-destructive-foreground': item.status === 'out-of-stock',
-      'text-green-900 dark:text-green-100': item.status === 'new',
+      '[color:var(--chart-3)]': item.status === 'low-stock',
+      'text-destructive': item.status === 'out-of-stock',
+      '[color:var(--chart-2)]': item.status === 'new',
     });
   }
 
@@ -277,9 +282,9 @@ export class ItemListComponent {
       {
         'bg-secondary/80 text-secondary-foreground border-border/40': variant === 'default',
         'bg-muted/80 text-muted-foreground border-border/40': variant === 'secondary',
-        'bg-green-100 text-green-800 border-green-200/60 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800/40':
+        '[background:color-mix(in_srgb,var(--chart-2)_15%,transparent)] [color:var(--chart-2)] [border-color:color-mix(in_srgb,var(--chart-2)_30%,transparent)]':
           variant === 'success',
-        'bg-orange-100 text-orange-800 border-orange-200/60 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800/40':
+        '[background:color-mix(in_srgb,var(--chart-3)_15%,transparent)] [color:var(--chart-3)] [border-color:color-mix(in_srgb,var(--chart-3)_30%,transparent)]':
           variant === 'warning',
         'bg-destructive/10 text-destructive border-destructive/20': variant === 'destructive',
         'bg-transparent text-foreground border-border': variant === 'outline',

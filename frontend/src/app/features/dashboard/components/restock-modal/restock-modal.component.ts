@@ -27,7 +27,13 @@ interface RestockItem extends LowStockItem {
 @Component({
   selector: 'hia-restock-modal',
   standalone: true,
-  imports: [FormsModule, ZardQuantityInputComponent, ZardButtonComponent, IconComponent, TitleCasePipe],
+  imports: [
+    FormsModule,
+    ZardQuantityInputComponent,
+    ZardButtonComponent,
+    IconComponent,
+    TitleCasePipe,
+  ],
   templateUrl: './restock-modal.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -137,11 +143,11 @@ export class RestockModalComponent implements OnInit {
   getStockStatusColor(status: 'critical' | 'low' | 'ok'): string {
     switch (status) {
       case 'critical':
-        return 'text-red-600';
+        return 'text-destructive';
       case 'low':
-        return 'text-yellow-600';
+        return '[color:var(--chart-3)]';
       case 'ok':
-        return 'text-green-600';
+        return '[color:var(--chart-2)]';
     }
   }
 

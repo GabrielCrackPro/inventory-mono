@@ -52,9 +52,11 @@ export class GraphWidgetComponent {
   readonly showDataLabels = signal<boolean>(true);
   readonly showGridLines = signal<boolean>(true);
   readonly stacked = signal<boolean>(false);
-  readonly colorScheme = signal<'default' | 'monochrome' | 'vibrant'>('default');
   readonly animationSpeed = signal<'fast' | 'normal' | 'slow'>('normal');
   readonly loading = signal<boolean>(false);
+
+  // Signal to track theme changes
+  private readonly themeVersion = signal<number>(0);
 
   readonly graphViewOptions = signal<SegmentedOption[]>([
     { label: 'Activities', value: 'activities', icon: 'lucideHistory' },
@@ -93,9 +95,16 @@ export class GraphWidgetComponent {
     return (type === 'area' ? 'line' : type) as 'bar';
   }
 
+  // Make chart colors reactive to theme changes
+  private readonly chartColors = computed(() => {
+    // Include themeVersion to force recomputation when theme changes
+    this.themeVersion();
+    return this.getChartColors();
+  });
+
   readonly datasets = computed<ChartDataset<any, number[]>[]>(() => {
     const metric = this.metric();
-    const colors = this.getChartColors();
+    const colors = this.chartColors(); // Use computed colors that react to theme changes
     const type = this.chartType();
     const isLine = type === 'line' || type === 'area';
     const fill = type === 'area';
@@ -214,6 +223,19 @@ export class GraphWidgetComponent {
   });
 
   constructor() {
+    // Listen for theme changes
+    if (typeof window !== 'undefined') {
+      const observer = new MutationObserver(() => {
+        // Increment version to trigger recomputation
+        this.themeVersion.update((v) => v + 1);
+      });
+
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme', 'data-color-scheme', 'class', 'style'],
+      });
+    }
+
     // Load preferences from localStorage
     const hid = this.houseCtx.currentSelectedHouseId();
     if (hid) {
@@ -235,9 +257,6 @@ export class GraphWidgetComponent {
           if (typeof parsed.showGridLines === 'boolean')
             this.showGridLines.set(parsed.showGridLines);
           if (typeof parsed.stacked === 'boolean') this.stacked.set(parsed.stacked);
-
-          const cs = parsed.colorScheme as 'default' | 'monochrome' | 'vibrant' | undefined;
-          if (cs && ['default', 'monochrome', 'vibrant'].includes(cs)) this.colorScheme.set(cs);
 
           const as = parsed.animationSpeed as 'fast' | 'normal' | 'slow' | undefined;
           if (as && ['fast', 'normal', 'slow'].includes(as)) this.animationSpeed.set(as);
@@ -291,7 +310,6 @@ export class GraphWidgetComponent {
             showDataLabels: this.showDataLabels(),
             showGridLines: this.showGridLines(),
             stacked: this.stacked(),
-            colorScheme: this.colorScheme(),
             animationSpeed: this.animationSpeed(),
           })
         );
@@ -311,11 +329,6 @@ export class GraphWidgetComponent {
 
   toggleStacked() {
     this.stacked.update((v) => !v);
-    this.savePreferences();
-  }
-
-  setColorScheme(scheme: string | number) {
-    this.colorScheme.set(scheme as 'default' | 'monochrome' | 'vibrant');
     this.savePreferences();
   }
 
@@ -461,33 +474,51 @@ export class GraphWidgetComponent {
     });
   }
 
-  // Get chart colors based on color scheme
+  // Get chart colors from theme
+  // This method is called within a computed signal to react to theme changes
   private getChartColors() {
-    const scheme = this.colorScheme();
-
-    if (scheme === 'monochrome') {
-      return {
-        chart1: 'rgba(100, 116, 139, 0.75)',
-        chart1Hover: 'rgba(100, 116, 139, 0.9)',
-        chart1Border: 'rgb(100, 116, 139)',
-        chart2: 'rgba(148, 163, 184, 0.75)',
-        chart2Hover: 'rgba(148, 163, 184, 0.9)',
-        chart2Border: 'rgb(148, 163, 184)',
-      };
+    if (typeof window === 'undefined') {
+      return this.getFallbackColors();
     }
 
-    if (scheme === 'vibrant') {
-      return {
-        chart1: 'rgba(236, 72, 153, 0.75)',
-        chart1Hover: 'rgba(236, 72, 153, 0.9)',
-        chart1Border: 'rgb(236, 72, 153)',
-        chart2: 'rgba(59, 130, 246, 0.75)',
-        chart2Hover: 'rgba(59, 130, 246, 0.9)',
-        chart2Border: 'rgb(59, 130, 246)',
-      };
+    // Force re-computation by reading from DOM each time
+    const getColor = (variable: string) =>
+      getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+
+    // Always use theme chart colors
+    const chart1 = getColor('--chart-1') || 'oklch(0.55 0.22 264)';
+    const chart2 = getColor('--chart-2') || 'oklch(0.65 0.15 240)';
+
+    return {
+      chart1: this.addAlpha(chart1, 0.75),
+      chart1Hover: this.addAlpha(chart1, 0.9),
+      chart1Border: chart1,
+      chart2: this.addAlpha(chart2, 0.75),
+      chart2Hover: this.addAlpha(chart2, 0.9),
+      chart2Border: chart2,
+    };
+  }
+
+  // Add alpha channel to OKLCH color
+  private addAlpha(color: string, alpha: number): string {
+    if (!color) return `rgba(99, 102, 241, ${alpha})`;
+
+    // If already has alpha, replace it
+    if (color.includes('/')) {
+      return color.replace(/\/\s*[\d.]+\s*\)/, `/ ${alpha})`);
     }
 
-    // Default scheme
+    // Add alpha to OKLCH color
+    if (color.startsWith('oklch(')) {
+      return color.replace(')', ` / ${alpha})`);
+    }
+
+    // Fallback for other formats
+    return color;
+  }
+
+  // Fallback colors for SSR
+  private getFallbackColors() {
     return {
       chart1: 'rgba(99, 102, 241, 0.75)',
       chart1Hover: 'rgba(99, 102, 241, 0.9)',

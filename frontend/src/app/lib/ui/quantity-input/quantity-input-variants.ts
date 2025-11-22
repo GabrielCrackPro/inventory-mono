@@ -11,8 +11,8 @@ export const quantityInputVariants = cva(
       },
       zStatus: {
         error: 'border-destructive focus-within:ring-destructive',
-        warning: 'border-yellow-500 focus-within:ring-yellow-500',
-        success: 'border-green-500 focus-within:ring-green-500',
+        warning: '[border-color:var(--chart-3)] [--tw-ring-color:var(--chart-3)]',
+        success: '[border-color:var(--chart-2)] [--tw-ring-color:var(--chart-2)]',
       },
       zDisabled: {
         true: 'opacity-50 cursor-not-allowed',

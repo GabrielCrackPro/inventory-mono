@@ -36,13 +36,25 @@ import { isPlatformBrowser } from '@angular/common';
   },
   template: `
     <!-- Dropdown Trigger -->
-    <div class="trigger-container" (click)="toggle()" (keydown.enter)="toggle()" (keydown.space)="toggle()" tabindex="0">
+    <div
+      class="trigger-container"
+      (click)="toggle()"
+      (keydown.enter)="toggle()"
+      (keydown.space)="toggle()"
+      tabindex="0"
+    >
       <ng-content select="[dropdown-trigger]"></ng-content>
     </div>
 
     <!-- Template for overlay content -->
     <ng-template #dropdownTemplate>
-      <div [class]="contentClasses()" role="menu" [attr.data-state]="'open'" (keydown)="onDropdownKeydown($event)" tabindex="-1">
+      <div
+        [class]="contentClasses()"
+        role="menu"
+        [attr.data-state]="'open'"
+        (keydown)="onDropdownKeydown($event)"
+        tabindex="-1"
+      >
         <ng-content></ng-content>
       </div>
     </ng-template>
@@ -62,13 +74,16 @@ export class ZardDropdownMenuComponent implements OnInit, OnDestroy {
 
   readonly class = input<ClassValue>('');
   readonly disabled = input(false, { transform });
+  readonly align = input<'start' | 'end'>('start');
 
   readonly openChange = output<boolean>();
 
   readonly isOpen = signal(false);
   readonly focusedIndex = signal<number>(-1);
 
-  protected readonly contentClasses = computed(() => mergeClasses(dropdownContentVariants(), this.class()));
+  protected readonly contentClasses = computed(() =>
+    mergeClasses(dropdownContentVariants(), this.class())
+  );
 
   ngOnInit() {
     setTimeout(() => {
@@ -163,20 +178,21 @@ export class ZardDropdownMenuComponent implements OnInit, OnDestroy {
 
     if (isPlatformBrowser(this.platformId)) {
       try {
+        const alignment = this.align();
         const positionStrategy = this.overlayPositionBuilder
           .flexibleConnectedTo(this.elementRef)
           .withPositions([
             {
-              originX: 'start',
+              originX: alignment,
               originY: 'bottom',
-              overlayX: 'start',
+              overlayX: alignment,
               overlayY: 'top',
               offsetY: 4,
             },
             {
-              originX: 'start',
+              originX: alignment,
               originY: 'top',
-              overlayX: 'start',
+              overlayX: alignment,
               overlayY: 'bottom',
               offsetY: -4,
             },
@@ -206,9 +222,9 @@ export class ZardDropdownMenuComponent implements OnInit, OnDestroy {
   private getDropdownItems(): HTMLElement[] {
     if (!this.overlayRef?.hasAttached()) return [];
     const dropdownElement = this.overlayRef.overlayElement;
-    return Array.from(dropdownElement.querySelectorAll('z-dropdown-menu-item, [z-dropdown-menu-item]')).filter(
-      (item: Element) => !item.hasAttribute('data-disabled'),
-    ) as HTMLElement[];
+    return Array.from(
+      dropdownElement.querySelectorAll('z-dropdown-menu-item, [z-dropdown-menu-item]')
+    ).filter((item: Element) => !item.hasAttribute('data-disabled')) as HTMLElement[];
   }
 
   private navigateItems(direction: number, items: HTMLElement[]) {
@@ -263,7 +279,9 @@ export class ZardDropdownMenuComponent implements OnInit, OnDestroy {
 
   private focusDropdown() {
     if (this.overlayRef?.hasAttached()) {
-      const dropdownElement = this.overlayRef.overlayElement.querySelector('[role="menu"]') as HTMLElement;
+      const dropdownElement = this.overlayRef.overlayElement.querySelector(
+        '[role="menu"]'
+      ) as HTMLElement;
       if (dropdownElement) {
         dropdownElement.focus();
       }

@@ -138,7 +138,7 @@
           <div class="grid grid-cols-4 gap-1">
             @for (i of [1,2,3,4]; track i) {
             <div
-              class="h-6 rounded bg-linear-to-br from-indigo-500/10 to-indigo-500/5 border border-indigo-500/20"
+              class="h-6 rounded [background:color-mix(in_srgb,var(--chart-1)_10%,transparent)] border border-[color-mix(in_srgb,var(--chart-1)_20%,transparent)]"
             ></div>
             }
           </div>
@@ -157,7 +157,7 @@
             <div class="w-full h-full p-1.5 flex items-end gap-0.5">
               @for (i of [1,2,3,4,5,6,7]; track i) {
               <div
-                class="flex-1 rounded-t bg-linear-to-t from-indigo-500/40 to-indigo-500/20"
+                class="flex-1 rounded-t [background:color-mix(in_srgb,var(--chart-1)_30%,transparent)]"
                 [style.height.%]="30 + i * 8"
               ></div>
               }
@@ -266,9 +266,11 @@
           <div class="space-y-1">
             @for (i of [1,2]; track i) {
             <div
-              class="h-5 rounded bg-linear-to-r from-amber-500/10 to-amber-500/5 border border-amber-500/20 flex items-center px-1.5"
+              class="h-5 rounded [background:color-mix(in_srgb,var(--chart-3)_10%,transparent)] border border-[color-mix(in_srgb,var(--chart-3)_20%,transparent)] flex items-center px-1.5"
             >
-              <div class="w-2 h-2 rounded-full bg-amber-500/40"></div>
+              <div
+                class="w-2 h-2 rounded-full [background:color-mix(in_srgb,var(--chart-3)_40%,transparent)]"
+              ></div>
             </div>
             }
           </div>
@@ -290,7 +292,7 @@
             <div class="w-full h-full p-1.5 flex items-end gap-0.5">
               @for (i of [1,2,3,4,5,6,7]; track i) {
               <div
-                class="flex-1 rounded-t bg-linear-to-t from-emerald-500/40 to-emerald-500/20"
+                class="flex-1 rounded-t [background:color-mix(in_srgb,var(--chart-2)_30%,transparent)]"
                 [style.height.%]="30 + i * 8"
               ></div>
               }

@@ -26,11 +26,9 @@
       >
         @if(metric() === 'activities') {
         <div
-          class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-500/10 border border-indigo-500/20 transition-all duration-200 hover:bg-indigo-500/15 hover:scale-105"
+          class="flex items-center gap-1.5 px-2.5 py-1 rounded-md [background:color-mix(in_srgb,var(--chart-1)_10%,transparent)] border border-[color-mix(in_srgb,var(--chart-1)_20%,transparent)] transition-all duration-200 hover:[background:color-mix(in_srgb,var(--chart-1)_15%,transparent)] hover:scale-105"
         >
-          <span class="font-semibold text-indigo-600 dark:text-indigo-400 transition-colors">{{
-            totalActivities()
-          }}</span>
+          <span class="font-semibold text-chart-1 transition-colors">{{ totalActivities() }}</span>
           <span class="text-indigo-600/70 dark:text-indigo-400/70 transition-colors"
             >activities</span
           >
@@ -235,128 +233,68 @@
       <!-- Divider -->
       <div class="border-t border-border/50"></div>
 
-      <!-- Style Options -->
-      <div class="space-y-2">
+      <!-- Animation Speed -->
+      <div class="space-y-1.5">
         <label
           class="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide pl-0.5"
-          >Style</label
+          >Animation Speed</label
         >
-
-        <div class="flex items-center justify-between gap-3">
-          <span class="text-xs text-muted-foreground shrink-0">Colors</span>
-          <div class="flex gap-1.5">
-            <button
-              (click)="setColorScheme('default')"
-              class="w-9 h-9 rounded-lg border-2 transition-all duration-200 hover:scale-110 active:scale-95 shadow-sm relative overflow-hidden"
-              [class]="
-                colorScheme() === 'default'
-                  ? 'border-primary ring-2 ring-primary/30'
-                  : 'border-border/60 hover:border-border'
-              "
-              style="
-                background: linear-gradient(135deg, rgb(99, 102, 241) 50%, rgb(16, 185, 129) 50%);
-              "
-            >
-              @if(colorScheme() === 'default') {
-              <div class="absolute inset-0 flex items-center justify-center bg-black/20">
-                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </div>
-              }
-            </button>
-            <button
-              (click)="setColorScheme('monochrome')"
-              class="w-9 h-9 rounded-lg border-2 transition-all duration-200 hover:scale-110 active:scale-95 shadow-sm relative overflow-hidden"
-              [class]="
-                colorScheme() === 'monochrome'
-                  ? 'border-primary ring-2 ring-primary/30'
-                  : 'border-border/60 hover:border-border'
-              "
-              style="
-                background: linear-gradient(135deg, rgb(100, 116, 139) 50%, rgb(148, 163, 184) 50%);
-              "
-            >
-              @if(colorScheme() === 'monochrome') {
-              <div class="absolute inset-0 flex items-center justify-center bg-black/20">
-                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </div>
-              }
-            </button>
-            <button
-              (click)="setColorScheme('vibrant')"
-              class="w-9 h-9 rounded-lg border-2 transition-all duration-200 hover:scale-110 active:scale-95 shadow-sm relative overflow-hidden"
-              [class]="
-                colorScheme() === 'vibrant'
-                  ? 'border-primary ring-2 ring-primary/30'
-                  : 'border-border/60 hover:border-border'
-              "
-              style="
-                background: linear-gradient(135deg, rgb(236, 72, 153) 50%, rgb(59, 130, 246) 50%);
-              "
-            >
-              @if(colorScheme() === 'vibrant') {
-              <div class="absolute inset-0 flex items-center justify-center bg-black/20">
-                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </div>
-              }
-            </button>
-          </div>
+        <div class="flex gap-1.5 bg-muted/30 rounded-lg p-1 border border-border/60">
+          <button
+            (click)="setAnimationSpeed('fast')"
+            class="flex-1 px-3 py-2 rounded-md text-xs font-medium transition-all duration-200 hover:scale-[1.02] active:scale-95"
+            [class]="
+              animationSpeed() === 'fast'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-muted-foreground hover:bg-background/50'
+            "
+          >
+            Fast
+          </button>
+          <button
+            (click)="setAnimationSpeed('normal')"
+            class="flex-1 px-3 py-2 rounded-md text-xs font-medium transition-all duration-200 hover:scale-[1.02] active:scale-95"
+            [class]="
+              animationSpeed() === 'normal'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-muted-foreground hover:bg-background/50'
+            "
+          >
+            Normal
+          </button>
+          <button
+            (click)="setAnimationSpeed('slow')"
+            class="flex-1 px-3 py-2 rounded-md text-xs font-medium transition-all duration-200 hover:scale-[1.02] active:scale-95"
+            [class]="
+              animationSpeed() === 'slow'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-muted-foreground hover:bg-background/50'
+            "
+          >
+            Slow
+          </button>
         </div>
+      </div>
 
-        <div class="flex items-center justify-between gap-3">
-          <span class="text-xs text-muted-foreground shrink-0">Animation</span>
-          <div class="flex gap-1 bg-card rounded-lg p-0.5 border border-border/60 shadow-sm">
-            <button
-              (click)="setAnimationSpeed('fast')"
-              class="px-3 py-1 rounded-md text-[10px] font-medium transition-all duration-200"
-              [class]="
-                animationSpeed() === 'fast'
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:bg-muted'
-              "
-            >
-              Fast
-            </button>
-            <button
-              (click)="setAnimationSpeed('normal')"
-              class="px-2 py-1 rounded text-[10px] font-medium transition-all duration-200"
-              [class]="
-                animationSpeed() === 'normal'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-background text-muted-foreground border border-border hover:bg-muted'
-              "
-            >
-              Normal
-            </button>
-            <button
-              (click)="setAnimationSpeed('slow')"
-              class="px-2 py-1 rounded text-[10px] font-medium transition-all duration-200"
-              [class]="
-                animationSpeed() === 'slow'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-background text-muted-foreground border border-border hover:bg-muted'
-              "
-            >
-              Slow
-            </button>
-          </div>
+      <!-- Info Note -->
+      <div class="p-3 rounded-lg bg-muted/30 border border-border/50">
+        <div class="flex items-start gap-2">
+          <svg
+            class="w-4 h-4 text-primary shrink-0 mt-0.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <p class="text-xs text-muted-foreground leading-relaxed">
+            Chart colors automatically match your theme. Change theme in settings to update colors.
+          </p>
         </div>
       </div>
     </div>

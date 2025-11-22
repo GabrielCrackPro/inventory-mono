@@ -169,55 +169,57 @@ export class ActivityFeed {
   }
 
   private _getActivityColor(type: ActivityType): string {
+    // Use CSS custom properties that follow the theme
     const colorMap: Record<ActivityType, string> = {
-      ITEM_CREATED: 'text-green-600',
-      ITEM_UPDATED: 'text-blue-600',
-      ITEM_DELETED: 'text-red-600',
-      ROOM_CREATED: 'text-purple-600',
-      ROOM_UPDATED: 'text-blue-600',
-      ROOM_DELETED: 'text-red-600',
-      HOUSE_CREATED: 'text-indigo-600',
-      HOUSE_UPDATED: 'text-blue-600',
-      HOUSE_DELETED: 'text-red-600',
-      USER_LOGIN: 'text-green-600',
-      USER_LOGOUT: 'text-gray-600',
-      USER_REGISTERED: 'text-green-600',
-      ROOM_SHARED: 'text-cyan-600',
-      HOUSE_SHARED: 'text-cyan-600',
-      CATEGORY_CREATED: 'text-orange-600',
-      CATEGORY_UPDATED: 'text-blue-600',
-      CATEGORY_DELETED: 'text-red-600',
-      LOW_STOCK: 'text-amber-600',
-      STOCK_UPDATED: 'text-blue-600',
+      ITEM_CREATED: '[color:var(--chart-2)]', // Green/success
+      ITEM_UPDATED: '[color:var(--chart-1)]', // Primary/blue
+      ITEM_DELETED: '[color:var(--destructive)]', // Red/destructive
+      ROOM_CREATED: '[color:var(--chart-4)]', // Purple/accent
+      ROOM_UPDATED: '[color:var(--chart-1)]', // Primary
+      ROOM_DELETED: '[color:var(--destructive)]', // Red
+      HOUSE_CREATED: '[color:var(--primary)]', // Primary brand
+      HOUSE_UPDATED: '[color:var(--chart-1)]', // Primary
+      HOUSE_DELETED: '[color:var(--destructive)]', // Red
+      USER_LOGIN: '[color:var(--chart-2)]', // Green
+      USER_LOGOUT: 'text-muted-foreground', // Muted
+      USER_REGISTERED: '[color:var(--chart-2)]', // Green
+      ROOM_SHARED: '[color:var(--chart-5)]', // Cyan/info
+      HOUSE_SHARED: '[color:var(--chart-5)]', // Cyan/info
+      CATEGORY_CREATED: '[color:var(--chart-3)]', // Orange/warning
+      CATEGORY_UPDATED: '[color:var(--chart-1)]', // Primary
+      CATEGORY_DELETED: '[color:var(--destructive)]', // Red
+      LOW_STOCK: '[color:var(--chart-3)]', // Orange/warning
+      STOCK_UPDATED: '[color:var(--chart-1)]', // Primary
     };
 
-    return colorMap[type] || 'text-gray-600';
+    return colorMap[type] || 'text-muted-foreground';
   }
 
   private _getActivityBgColor(type: ActivityType): string {
+    // Use theme-aware background colors with proper opacity
     const bgColorMap: Record<ActivityType, string> = {
-      ITEM_CREATED: 'bg-green-50 dark:bg-green-950',
-      ITEM_UPDATED: 'bg-blue-50 dark:bg-blue-950',
-      ITEM_DELETED: 'bg-red-50 dark:bg-red-950',
-      ROOM_CREATED: 'bg-purple-50 dark:bg-purple-950',
-      ROOM_UPDATED: 'bg-blue-50 dark:bg-blue-950',
-      ROOM_DELETED: 'bg-red-50 dark:bg-red-950',
-      HOUSE_CREATED: 'bg-indigo-50 dark:bg-indigo-950',
-      HOUSE_UPDATED: 'bg-blue-50 dark:bg-blue-950',
-      HOUSE_DELETED: 'bg-red-50 dark:bg-red-950',
-      USER_LOGIN: 'bg-green-50 dark:bg-green-950',
-      USER_LOGOUT: 'bg-gray-50 dark:bg-gray-950',
-      USER_REGISTERED: 'bg-green-50 dark:bg-green-950',
-      ROOM_SHARED: 'bg-cyan-50 dark:bg-cyan-950',
-      HOUSE_SHARED: 'bg-cyan-50 dark:bg-cyan-950',
-      CATEGORY_CREATED: 'bg-orange-50 dark:bg-orange-950',
-      CATEGORY_UPDATED: 'bg-blue-50 dark:bg-blue-950',
-      CATEGORY_DELETED: 'bg-red-50 dark:bg-red-950',
-      LOW_STOCK: 'bg-amber-50 dark:bg-amber-950',
-      STOCK_UPDATED: 'bg-blue-50 dark:bg-blue-950',
+      ITEM_CREATED: '[background:color-mix(in_srgb,var(--chart-2)_10%,transparent)]',
+      ITEM_UPDATED: '[background:color-mix(in_srgb,var(--chart-1)_10%,transparent)]',
+      ITEM_DELETED: '[background:color-mix(in_srgb,var(--destructive)_10%,transparent)]',
+      ROOM_CREATED: '[background:color-mix(in_srgb,var(--chart-4)_10%,transparent)]',
+      ROOM_UPDATED: '[background:color-mix(in_srgb,var(--chart-1)_10%,transparent)]',
+      ROOM_DELETED: '[background:color-mix(in_srgb,var(--destructive)_10%,transparent)]',
+      HOUSE_CREATED: '[background:color-mix(in_srgb,var(--primary)_10%,transparent)]',
+      HOUSE_UPDATED: '[background:color-mix(in_srgb,var(--chart-1)_10%,transparent)]',
+      HOUSE_DELETED: '[background:color-mix(in_srgb,var(--destructive)_10%,transparent)]',
+      USER_LOGIN: '[background:color-mix(in_srgb,var(--chart-2)_10%,transparent)]',
+      USER_LOGOUT: 'bg-muted/50',
+      USER_REGISTERED: '[background:color-mix(in_srgb,var(--chart-2)_10%,transparent)]',
+      ROOM_SHARED: '[background:color-mix(in_srgb,var(--chart-5)_10%,transparent)]',
+      HOUSE_SHARED: '[background:color-mix(in_srgb,var(--chart-5)_10%,transparent)]',
+      CATEGORY_CREATED: '[background:color-mix(in_srgb,var(--chart-3)_10%,transparent)]',
+      CATEGORY_UPDATED: '[background:color-mix(in_srgb,var(--chart-1)_10%,transparent)]',
+      CATEGORY_DELETED: '[background:color-mix(in_srgb,var(--destructive)_10%,transparent)]',
+      LOW_STOCK: '[background:color-mix(in_srgb,var(--chart-3)_10%,transparent)]',
+      STOCK_UPDATED: '[background:color-mix(in_srgb,var(--chart-1)_10%,transparent)]',
     };
 
-    return bgColorMap[type] || 'bg-gray-50 dark:bg-gray-950';
+    return bgColorMap[type] || 'bg-muted/50';
   }
 
   private _formatRelativeTime(date: string | number | Date): string {

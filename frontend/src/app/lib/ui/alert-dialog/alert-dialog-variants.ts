@@ -24,10 +24,10 @@ export const alertDialogContainerVariants = cva(
         destructive:
           'border-destructive/50 [&_[data-alert-title]]:text-destructive [&_[data-alert-icon]]:text-destructive',
         warning:
-          'border-amber-500/50 [&_[data-alert-title]]:text-amber-600 [&_[data-alert-icon]]:text-amber-500',
-        info: 'border-blue-500/50 [&_[data-alert-title]]:text-blue-600 [&_[data-alert-icon]]:text-blue-500',
+          '[border-color:color-mix(in_srgb,var(--chart-3)_50%,transparent)] [&_[data-alert-title]]:[color:var(--chart-3)] [&_[data-alert-icon]]:[color:var(--chart-3)]',
+        info: '[border-color:color-mix(in_srgb,var(--chart-1)_50%,transparent)] [&_[data-alert-title]]:[color:var(--chart-1)] [&_[data-alert-icon]]:[color:var(--chart-1)]',
         success:
-          'border-green-500/50 [&_[data-alert-title]]:text-green-600 [&_[data-alert-icon]]:text-green-500',
+          '[border-color:color-mix(in_srgb,var(--chart-2)_50%,transparent)] [&_[data-alert-title]]:[color:var(--chart-2)] [&_[data-alert-icon]]:[color:var(--chart-2)]',
       },
     },
     defaultVariants: {
@@ -59,9 +59,9 @@ export const alertDialogIconVariants = cva(
       zType: {
         default: 'bg-muted',
         destructive: 'bg-destructive/10',
-        warning: 'bg-amber-100 dark:bg-amber-900/20',
-        info: 'bg-blue-100 dark:bg-blue-900/20',
-        success: 'bg-green-100 dark:bg-green-900/20',
+        warning: '[background:color-mix(in_srgb,var(--chart-3)_15%,transparent)]',
+        info: '[background:color-mix(in_srgb,var(--chart-1)_15%,transparent)]',
+        success: '[background:color-mix(in_srgb,var(--chart-2)_15%,transparent)]',
       },
     },
     defaultVariants: {

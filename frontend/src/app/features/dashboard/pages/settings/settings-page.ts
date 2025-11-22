@@ -1,20 +1,26 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+  viewChild,
+  AfterViewInit,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ZardFormModule } from '@ui/form';
-import { FormValidators } from '@lib/utils';
+import { ActivatedRoute } from '@angular/router';
 import { AccessService } from '@core/services/access';
-import { ProfileService } from '@features/user';
 import { PermissionService } from '@core/services/permission';
 import { HouseService } from '@features/house/services/house';
+import { HouseAccessService, ShareHouseBody } from '@features/house/services/house-access';
 import { HouseContextService } from '@features/house/services/house-context';
-import {
-  HouseAccessEntry,
-  HouseAccessService,
-  ShareHouseBody,
-} from '@features/house/services/house-access';
+import { ProfileService } from '@features/user';
+import { FormValidators } from '@lib/utils';
 import { ToastService } from '@shared/services';
+import { ZardFormModule } from '@ui/form';
 import { ZardTabComponent, ZardTabGroupComponent } from '@ui/tabs';
+import { SettingsAppearanceTabComponent } from './components/appearance-tab';
 import { SettingsGeneralTabComponent } from './components/general-tab';
 import { SettingsInventoryTabComponent } from './components/inventory-tab';
 import { SettingsPermissionsTabComponent } from './components/permissions-tab';
@@ -31,11 +37,12 @@ import { SettingsPermissionsTabComponent } from './components/permissions-tab';
     SettingsGeneralTabComponent,
     SettingsInventoryTabComponent,
     SettingsPermissionsTabComponent,
+    SettingsAppearanceTabComponent,
   ],
   templateUrl: './settings-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsPageComponent {
+export class SettingsPageComponent implements AfterViewInit {
   private readonly houseService = inject(HouseService);
   private readonly houseContext = inject(HouseContextService);
   private readonly houseAccess = inject(HouseAccessService);
@@ -44,6 +51,17 @@ export class SettingsPageComponent {
   private readonly toast = inject(ToastService);
   private readonly fb = inject(FormBuilder);
   private readonly profile = inject(ProfileService);
+  private readonly route = inject(ActivatedRoute);
+
+  readonly tabGroup = viewChild<ZardTabGroupComponent>(ZardTabGroupComponent);
+
+  // Map tab names to indices
+  private readonly tabMap: Record<string, number> = {
+    general: 0,
+    appearance: 1,
+    inventory: 2,
+    permissions: 3,
+  };
 
   readonly isLoading = signal(false);
   readonly isSaving = signal(false);
@@ -79,6 +97,20 @@ export class SettingsPageComponent {
     this.onPermissionChange(userId, nextPermission);
   readonly onRevokeFn = (userId: number) => this.onRevoke(userId);
   readonly onCancelInviteFn = (email: string) => this.onCancelInvite(email);
+
+  ngAfterViewInit() {
+    // Check for tab query parameter and navigate to that tab
+    this.route.queryParams.subscribe((params) => {
+      const tabName = params['tab'];
+      if (tabName && this.tabMap[tabName.toLowerCase()] !== undefined) {
+        const tabIndex = this.tabMap[tabName.toLowerCase()];
+        // Use setTimeout to ensure the tab group is fully initialized
+        setTimeout(() => {
+          this.tabGroup()?.selectTabByIndex(tabIndex);
+        }, 0);
+      }
+    });
+  }
 
   ngOnInit() {
     const sel$ = this.houseService.getSelectedHouse();

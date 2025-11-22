@@ -32,8 +32,14 @@ import { commandInputVariants } from './command.variants';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   template: `
-    <div class="flex items-center border-b px-3" cmdk-input-wrapper="">
-      <hia-icon [name]="commonIcons['search']" [size]="14" class="mr-2 shrink-0 opacity-50" />
+    <div class="relative flex items-center border-b px-4 py-3 group" cmdk-input-wrapper="">
+      <div class="flex items-center justify-center w-5 h-5 mr-3 shrink-0">
+        <hia-icon
+          [name]="commonIcons['search']"
+          [size]="16"
+          class="text-muted-foreground/60 group-focus-within:text-primary transition-colors duration-200"
+        />
+      </div>
       <input
         #searchInput
         [class]="classes()"
@@ -51,6 +57,16 @@ import { commandInputVariants } from './command.variants';
         [attr.aria-label]="'Search commands'"
         [attr.aria-describedby]="'command-instructions'"
       />
+      @if (searchTerm()) {
+      <button
+        type="button"
+        (click)="clearSearch()"
+        class="flex items-center justify-center w-5 h-5 ml-2 shrink-0 text-muted-foreground/60 hover:text-foreground transition-colors duration-200 rounded-sm hover:bg-accent"
+        aria-label="Clear search"
+      >
+        <hia-icon [name]="'lucideX'" [size]="14" />
+      </button>
+      }
     </div>
   `,
   providers: [
@@ -64,7 +80,7 @@ import { commandInputVariants } from './command.variants';
 export class ZardCommandInputComponent implements ControlValueAccessor, OnInit, OnDestroy {
   private readonly commandComponent = inject(ZardCommandComponent, { optional: true });
   readonly searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
-  
+
   readonly commonIcons = commonIcons;
 
   readonly placeholder = input<string>('Type a command or search...');
@@ -76,7 +92,13 @@ export class ZardCommandInputComponent implements ControlValueAccessor, OnInit, 
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
 
-  protected readonly classes = computed(() => mergeClasses(commandInputVariants({}), this.class()));
+  protected readonly classes = computed(() =>
+    mergeClasses(
+      commandInputVariants({}),
+      'text-base placeholder:text-muted-foreground/50',
+      this.class()
+    )
+  );
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private onChange = (_: string) => {
@@ -154,6 +176,15 @@ export class ZardCommandInputComponent implements ControlValueAccessor, OnInit, 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setDisabledState(_: boolean): void {
     // Implementation if needed for form control disabled state
+  }
+
+  /**
+   * Clear the search input
+   */
+  clearSearch(): void {
+    this.searchTerm.set('');
+    this.searchSubject.next('');
+    this.focus();
   }
 
   /**

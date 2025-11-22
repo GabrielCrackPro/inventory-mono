@@ -15,7 +15,7 @@ export const buttonVariants = cva(
         link: 'text-primary underline-offset-4 hover:underline',
         text: 'bg-transparent shadow-none hover:bg-transparent hover:text-primary dark:hover:bg-transparent dark:hover:text-primary',
         warning:
-          'bg-orange-500/60 dark:bg-orange-800 text-white shadow-xs hover:bg-orange/90 focus-visible:ring-orange/20 dark:focus-visible:ring-orange/40 dark:bg-orange/60',
+          '[background:var(--chart-3)] text-white shadow-xs hover:opacity-90 [--tw-ring-color:var(--chart-3)] focus-visible:ring-opacity-40',
       },
       zSize: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',

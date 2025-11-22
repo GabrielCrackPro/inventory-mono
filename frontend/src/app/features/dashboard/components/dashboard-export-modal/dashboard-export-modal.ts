@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ZardCheckboxComponent } from '@ui/checkbox/checkbox.component';
@@ -6,7 +7,7 @@ import { ZardRadioComponent } from '@ui/radio';
 @Component({
   selector: 'hia-dashboard-export-modal',
   standalone: true,
-  imports: [FormsModule, ZardCheckboxComponent, ZardRadioComponent],
+  imports: [CommonModule, FormsModule, ZardCheckboxComponent, ZardRadioComponent],
   templateUrl: './dashboard-export-modal.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -17,8 +17,8 @@ export const inputVariants = cva('w-full', {
     },
     zStatus: {
       error: 'border-destructive focus-visible:ring-destructive',
-      warning: 'border-yellow-500 focus-visible:ring-yellow-500',
-      success: 'border-green-500 focus-visible:ring-green-500',
+      warning: '[border-color:var(--chart-3)] [--tw-ring-color:var(--chart-3)]',
+      success: '[border-color:var(--chart-2)] [--tw-ring-color:var(--chart-2)]',
     },
     zBorderless: {
       true: 'flex-1 bg-transparent border-0 outline-none focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0',
