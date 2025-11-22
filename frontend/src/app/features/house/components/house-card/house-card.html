@@ -1,126 +1,148 @@
 @if (house()) {
 <button
   type="button"
-  class="group relative w-full p-6 rounded-xl border-2 transition-all duration-200 text-left focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:shadow-md"
+  class="group relative w-full p-4 rounded-xl border transition-all duration-200 text-left focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 hover:shadow-md"
   [ngClass]="{
-    'border-muted-foreground': isSelected(),
-    'bg-primary/5': isSelected(),
-    'border-border': !isSelected(),
-    'bg-card': !isSelected(),
-    'hover:bg-accent/30': !isSelected(),
-    'hover:border-accent': !isSelected(),
-    'shadow-md': isSelected(),
+    'border-primary/40 bg-primary/5 shadow-sm': isSelected(),
+    'border-border/50 bg-card hover:bg-accent/20 hover:border-border': !isSelected()
   }"
   (click)="switchHouse(house()?.id)"
 >
   <!-- Selection Indicator -->
   @if (isSelected()) {
   <div
-    class="absolute top-3 right-3 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center"
+    class="absolute top-3 right-3 w-6 h-6 rounded-lg bg-primary/15 flex items-center justify-center"
   >
-    <hia-icon [name]="commonIcons['success']" [size]="14" class="opacity-90" />
+    <hia-icon [name]="commonIcons['success']" [size]="14" class="text-primary" />
   </div>
   }
 
-  <div class="flex items-start gap-5">
+  <div class="flex items-center gap-4">
     <!-- House Icon -->
-    <div class="relative">
+    <div class="relative shrink-0">
       <div
-        class="w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-200 shadow-sm"
+        class="w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-200"
         [ngClass]="{
-          'bg-primary/10': isSelected(),
-          'bg-accent/30': !isSelected(),
-          'group-hover:bg-accent/50': !isSelected(),
+          'bg-primary/15': isSelected(),
+          'bg-accent/50 group-hover:bg-accent/70': !isSelected()
         }"
       >
-        <hia-icon [name]="commonIcons['house']" [size]="26" [class.text-primary]="isSelected()"
+        <hia-icon [name]="commonIcons['house']" [size]="24" [class.text-primary]="isSelected()"
         [class.text-foreground/80]="!isSelected()" class="transition-colors duration-200" />
       </div>
+
+      <!-- Active indicator -->
+      @if (isSelected()) {
+      <div
+        class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 border-2 border-background rounded-full"
+        title="Currently active"
+      ></div>
+      }
     </div>
 
     <!-- House Info -->
-    <div class="flex-1 min-w-0 space-y-1">
-      <h3 class="text-lg font-semibold text-foreground truncate">
-        {{ house()?.name }}
-      </h3>
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center gap-2 mb-2">
+        <h3 class="text-base font-semibold text-foreground truncate">
+          {{ house()?.name }}
+        </h3>
+
+        @if (isSelected()) {
+        <span
+          class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary/15 text-primary"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="8"
+            height="8"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <circle cx="12" cy="12" r="10" />
+          </svg>
+          Active
+        </span>
+        }
+      </div>
 
       <!-- Stats -->
-      <div class="flex items-center gap-6 pt-2">
+      <div class="flex items-center gap-4">
         <div class="flex items-center gap-2">
           <div
-            class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200"
+            class="w-7 h-7 rounded-lg flex items-center justify-center transition-colors duration-200"
             [ngClass]="{
               'bg-primary/10': isSelected(),
-              'bg-accent/30': !isSelected(),
+              'bg-secondary/50': !isSelected()
             }"
           >
             <hia-icon
               [name]="commonIcons['room']"
-              [size]="16"
+              [size]="14"
               [class.text-primary]="isSelected()"
               [class.text-muted-foreground]="!isSelected()"
-              class="transition-colors duration-200"
             />
           </div>
           <div>
-            <p class="text-sm font-medium text-foreground">{{ roomCount() }}</p>
-            <p class="text-xs text-muted-foreground">Rooms</p>
+            <p class="text-sm font-semibold text-foreground">{{ roomCount() }}</p>
+            <p class="text-[10px] text-muted-foreground">Rooms</p>
           </div>
         </div>
 
         <div class="flex items-center gap-2">
           <div
-            class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200"
+            class="w-7 h-7 rounded-lg flex items-center justify-center transition-colors duration-200"
             [ngClass]="{
               'bg-primary/10': isSelected(),
-              'bg-accent/30': !isSelected(),
+              'bg-secondary/50': !isSelected()
             }"
           >
             <hia-icon
               [name]="commonIcons['item']"
-              [size]="16"
+              [size]="14"
               [class.text-primary]="isSelected()"
               [class.text-muted-foreground]="!isSelected()"
-              class="transition-colors duration-200"
             />
           </div>
           <div>
-            <p class="text-sm font-medium text-foreground">{{ itemCount() }}</p>
-            <p class="text-xs text-muted-foreground">Items</p>
+            <p class="text-sm font-semibold text-foreground">{{ itemCount() }}</p>
+            <p class="text-[10px] text-muted-foreground">Items</p>
           </div>
-          <!-- Delete Button (owner only) -->
-          @if (isOwner() && !isSelected()) {
-            <div>
-              <z-button
-                zType="text"
-                zSize="sm"
-                [iconName]="commonIcons['delete']"
-                iconColor="var(--destructive)"
-                (click)="onDelete($event)"
-              />
-            </div>
-          }
         </div>
+
+        <!-- Delete Button (owner only) -->
+        @if (isOwner() && !isSelected()) {
+        <div class="ml-auto">
+          <z-button
+            zType="ghost"
+            zSize="sm"
+            [iconName]="commonIcons['delete']"
+            (click)="onDelete($event)"
+            class="opacity-0 group-hover:opacity-100 transition-opacity"
+          />
+        </div>
+        }
       </div>
     </div>
 
     <!-- Action Indicator -->
     @if (!isSelected()) {
     <div
-      class="flex items-center justify-center w-8 h-8 rounded-full bg-accent/30 group-hover:bg-accent transition-colors duration-200 mt-2"
+      class="flex items-center justify-center w-8 h-8 rounded-lg bg-accent/30 group-hover:bg-accent transition-colors duration-200 shrink-0"
     >
       <hia-icon
         [name]="commonIcons['right']"
-        [size]="16"
+        [size]="14"
         class="text-muted-foreground group-hover:text-foreground transition-colors duration-200"
       />
     </div>
     }
   </div>
 
-  <!-- Hover Effect -->
+  <!-- Subtle Hover Effect -->
+  @if (!isSelected()) {
   <div
     class="absolute inset-0 rounded-xl bg-linear-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
   ></div>
+  }
 </button>
 }

@@ -76,12 +76,12 @@ export class ItemDetailPageComponent implements OnInit {
   getVisibilityClass(): string {
     const v = String(this._item()?.visibility || 'private');
     if (v === 'public') {
-      return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
+      return 'bg-primary/10 text-primary border border-primary/20';
     }
     if (v === 'shared') {
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+      return 'bg-accent/50 text-accent-foreground border border-border/50';
     }
-    return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300';
+    return 'bg-muted text-muted-foreground border border-border';
   }
 
   readonly stockStatusConfig = computed(() => {
@@ -97,15 +97,13 @@ export class ItemDetailPageComponent implements OnInit {
         return {
           label: 'Low Stock',
           icon: 'lucideAlertTriangle',
-          class:
-            'text-orange-600 bg-orange-50 border-orange-200 dark:text-orange-400 dark:bg-orange-900/20 dark:border-orange-800/40',
+          class: 'text-foreground bg-secondary/60 border-border/40',
         };
       default:
         return {
           label: 'In Stock',
           icon: 'lucideCheck',
-          class:
-            'text-green-600 bg-green-50 border-green-200 dark:text-green-400 dark:bg-green-900/20 dark:border-green-800/40',
+          class: 'text-primary bg-primary/10 border-primary/20',
         };
     }
   });
@@ -135,7 +133,8 @@ export class ItemDetailPageComponent implements OnInit {
           if (!Number.isNaN(numericId)) {
             this._accessService.getItemAccess(numericId).subscribe({
               next: (acc) => this._access.set(acc),
-              error: () => this._access.set({ level: null, canRead: true, canEdit: false, canAdmin: false }),
+              error: () =>
+                this._access.set({ level: null, canRead: true, canEdit: false, canAdmin: false }),
             });
           }
         },

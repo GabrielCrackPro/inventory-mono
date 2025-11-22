@@ -1,12 +1,13 @@
 <div [formGroup]="form">
-  <z-card class="space-y-6" [@slideInUp]>
-    <div class="flex items-center gap-3 mb-6">
-      <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-        <hia-icon [name]="commonIcons['warehouse']" [size]="20" class="text-primary" />
+  <div class="max-w-3xl space-y-6" [@slideInUp]>
+    <!-- Section Header -->
+    <div class="flex items-center gap-3 pb-4 border-b border-border/40">
+      <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+        <hia-icon [name]="commonIcons['warehouse']" [size]="18" class="text-primary" />
       </div>
       <div>
-        <h3 class="font-semibold">Storage Information</h3>
-        <p class="text-sm text-muted-foreground">
+        <h3 class="text-base font-semibold text-foreground">Storage Information</h3>
+        <p class="text-xs text-muted-foreground">
           Where is this item stored and how much do you have?
         </p>
       </div>
@@ -14,14 +15,18 @@
 
     <!-- Form-level validation errors -->
     @if (hasFormErrors()) {
-    <div class="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+    <div class="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
       <div class="flex items-start gap-2">
-        <hia-icon [name]="commonIcons['warning']" [size]="16" class="text-destructive mt-0.5 shrink-0" />
+        <hia-icon
+          [name]="commonIcons['warning']"
+          [size]="16"
+          class="text-destructive mt-0.5 shrink-0"
+        />
         <div class="text-sm">
           <div class="font-medium text-destructive mb-1">Please fix the following issues:</div>
-          <ul class="text-destructive/80 space-y-1">
+          <ul class="text-destructive/80 space-y-0.5">
             @for (error of getFormErrors(); track error) {
-            <li>• {{ error }}</li>
+            <li class="text-xs">• {{ error }}</li>
             }
           </ul>
         </div>
@@ -29,10 +34,11 @@
     </div>
     }
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Form Fields -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- Room -->
-      <z-form-field>
-        <z-form-label zRequired="true">Room</z-form-label>
+      <z-form-field class="md:col-span-2">
+        <z-form-label zRequired="true" class="text-sm font-medium">Room</z-form-label>
         <z-form-control [errorMessage]="getFieldError('room') || ''">
           <z-combobox
             [options]="rooms()"
@@ -46,8 +52,8 @@
       </z-form-field>
 
       <!-- Specific Location -->
-      <z-form-field>
-        <z-form-label>Specific Location</z-form-label>
+      <z-form-field class="md:col-span-2">
+        <z-form-label class="text-sm font-medium">Specific Location</z-form-label>
         <z-form-control
           [errorMessage]="getFieldError('location') || ''"
           [helpText]="'Optional: Be specific to help you find items quickly'"
@@ -64,15 +70,22 @@
 
       <!-- Quantity -->
       <z-form-field>
-        <z-form-label zRequired="true">Quantity</z-form-label>
+        <z-form-label zRequired="true" class="text-sm font-medium">Quantity</z-form-label>
         <z-form-control [errorMessage]="getFieldError('quantity') || ''">
-          <input z-input type="number" formControlName="quantity" min="1" step="1" />
+          <input
+            z-input
+            type="number"
+            formControlName="quantity"
+            min="1"
+            step="1"
+            placeholder="0"
+          />
         </z-form-control>
       </z-form-field>
 
       <!-- Unit -->
       <z-form-field>
-        <z-form-label zRequired="true">Unit</z-form-label>
+        <z-form-label zRequired="true" class="text-sm font-medium">Unit</z-form-label>
         <z-form-control [errorMessage]="getFieldError('unit') || ''">
           <z-combobox
             [options]="units"
@@ -86,7 +99,7 @@
 
       <!-- Minimum Stock -->
       <z-form-field class="md:col-span-2">
-        <z-form-label>Minimum Stock Level</z-form-label>
+        <z-form-label class="text-sm font-medium">Minimum Stock Level</z-form-label>
         <z-form-control
           [errorMessage]="getFieldError('minStock') || ''"
           [helpText]="'Optional: You\'ll get notified when the quantity falls below this level'"
@@ -102,5 +115,5 @@
         </z-form-control>
       </z-form-field>
     </div>
-  </z-card>
+  </div>
 </div>

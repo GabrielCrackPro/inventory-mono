@@ -1,19 +1,21 @@
 <div [formGroup]="form">
-  <z-card class="space-y-6" [@slideInUp]>
-    <div class="flex items-center gap-3 mb-6">
-      <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-        <hia-icon [name]="commonIcons['info']" [size]="20" class="text-primary" />
+  <div class="max-w-3xl space-y-6" [@slideInUp]>
+    <!-- Section Header -->
+    <div class="flex items-center gap-3 pb-4 border-b border-border/40">
+      <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+        <hia-icon [name]="commonIcons['info']" [size]="18" class="text-primary" />
       </div>
       <div>
-        <h3 class="font-semibold">Basic Information</h3>
-        <p class="text-sm text-muted-foreground">Enter the basic details about your item</p>
+        <h3 class="text-base font-semibold text-foreground">Basic Information</h3>
+        <p class="text-xs text-muted-foreground">Enter the basic details about your item</p>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Form Fields -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- Item Name -->
-      <z-form-field>
-        <z-form-label zRequired="true">Item Name</z-form-label>
+      <z-form-field class="md:col-span-2">
+        <z-form-label zRequired="true" class="text-sm font-medium">Item Name</z-form-label>
         <z-form-control [errorMessage]="getFieldError('name') || ''">
           <input
             z-input
@@ -27,21 +29,36 @@
 
       <!-- Category -->
       <z-form-field>
-        <z-form-label>Category</z-form-label>
+        <z-form-label class="text-sm font-medium">Category</z-form-label>
         <z-form-control [errorMessage]="getFieldError('category') || ''">
           <z-combobox
             [options]="categories"
             formControlName="category"
             placeholder="Select a category"
-            searchPlaceholder="Search a category"
+            searchPlaceholder="Search categories"
             emptyText="No categories found"
+          />
+        </z-form-control>
+      </z-form-field>
+
+      <!-- Condition -->
+      <z-form-field>
+        <z-form-label class="text-sm font-medium">Condition</z-form-label>
+        <z-form-control>
+          <z-combobox
+            [options]="conditions"
+            [searchable]="false"
+            formControlName="condition"
+            placeholder="Select condition"
+            searchPlaceholder="Search conditions"
+            emptyText="No conditions found"
           />
         </z-form-control>
       </z-form-field>
 
       <!-- Brand -->
       <z-form-field>
-        <z-form-label>Brand</z-form-label>
+        <z-form-label class="text-sm font-medium">Brand</z-form-label>
         <z-form-control>
           <input
             z-input
@@ -54,7 +71,7 @@
 
       <!-- Model -->
       <z-form-field>
-        <z-form-label>Model</z-form-label>
+        <z-form-label class="text-sm font-medium">Model</z-form-label>
         <z-form-control>
           <input
             z-input
@@ -66,29 +83,15 @@
       </z-form-field>
 
       <!-- Serial Number -->
-      <z-form-field>
-        <z-form-label>Serial Number</z-form-label>
+      <z-form-field class="md:col-span-2">
+        <z-form-label class="text-sm font-medium">Serial Number</z-form-label>
         <z-form-control>
           <input
             z-input
             type="text"
             formControlName="serialNumber"
             placeholder="Enter serial number"
-          />
-        </z-form-control>
-      </z-form-field>
-
-      <!-- Condition -->
-      <z-form-field>
-        <z-form-label>Condition</z-form-label>
-        <z-form-control>
-          <z-combobox
-            [options]="conditions"
-            [searchable]="false"
-            formControlName="condition"
-            placeholder="Select a condition"
-            searchPlaceholder="Search a condition"
-            emptyText="No conditions found"
+            class="font-mono"
           />
         </z-form-control>
       </z-form-field>
@@ -96,7 +99,7 @@
 
     <!-- Description -->
     <z-form-field>
-      <z-form-label>Description</z-form-label>
+      <z-form-label class="text-sm font-medium">Description</z-form-label>
       <z-form-control>
         <textarea
           z-input
@@ -107,5 +110,5 @@
         ></textarea>
       </z-form-control>
     </z-form-field>
-  </z-card>
+  </div>
 </div>

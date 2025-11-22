@@ -1,32 +1,32 @@
 @if (loading()) {
 <!-- Loading State -->
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-4 py-8 max-w-7xl">
   <div class="animate-pulse space-y-6">
     <div class="flex items-center gap-4">
-      <div class="w-16 h-16 bg-muted rounded-2xl"></div>
+      <div class="w-12 h-12 bg-muted rounded-lg"></div>
       <div class="flex-1 space-y-2">
-        <div class="h-8 bg-muted rounded w-1/3"></div>
+        <div class="h-7 bg-muted rounded w-1/3"></div>
         <div class="h-4 bg-muted rounded w-1/2"></div>
       </div>
     </div>
-    <div class="grid gap-6 lg:grid-cols-3">
+    <div class="grid gap-4 lg:grid-cols-3">
       @for (i of [1,2,3]; track i) {
-      <div class="h-64 bg-muted rounded-2xl"></div>
+      <div class="h-48 bg-muted rounded-xl"></div>
       }
     </div>
   </div>
 </div>
 } @else if (error()) {
 <!-- Error State -->
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-4 py-8 max-w-7xl">
   <z-card class="text-center py-12">
     <div
-      class="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-4"
+      class="w-14 h-14 bg-destructive/10 rounded-xl flex items-center justify-center mx-auto mb-4"
     >
-      <hia-icon [name]="commonIcons['error']" [size]="24" class="text-destructive" />
+      <hia-icon [name]="commonIcons['error']" [size]="22" class="text-destructive" />
     </div>
-    <h2 class="text-xl font-semibold mb-2">Error Loading Item</h2>
-    <p class="text-muted-foreground mb-4">{{ error() }}</p>
+    <h2 class="text-lg font-semibold mb-2">Error Loading Item</h2>
+    <p class="text-sm text-muted-foreground mb-4">{{ error() }}</p>
     <z-button label="Go Back" iconName="lucideArrowLeft" [routerLink]="['/dashboard/items/list']" />
   </z-card>
 </div>
@@ -34,286 +34,392 @@
 <!-- Item Details -->
 <div class="min-h-screen bg-background">
   <!-- Header Section -->
-  <div class="container mx-auto px-4 py-6 space-y-4">
-    <!-- Top Row: Back button, Title, Action buttons -->
-    <div class="flex items-center gap-4">
-      <z-button
-        iconName="lucideArrowLeft"
-        zType="ghost"
-        [routerLink]="['/dashboard/items/list']"
-        class="shrink-0"
-      />
-      <div class="flex-1">
-        <h1 class="text-2xl font-bold text-foreground">{{ item()!.name }}</h1>
-        <p class="text-muted-foreground mt-1">View and manage item details</p>
+  <div class="border-b border-border/40 bg-card/30">
+    <div class="container mx-auto px-4 py-5 max-w-7xl">
+      <!-- Top Row: Back button, Title, Action buttons -->
+      <div class="flex items-start gap-4">
+        <z-button
+          iconName="lucideArrowLeft"
+          zType="ghost"
+          zSize="icon"
+          [routerLink]="['/dashboard/items/list']"
+          class="shrink-0 mt-1"
+        />
+        <div class="flex-1 min-w-0">
+          <h1 class="text-2xl font-bold text-foreground truncate">{{ item()!.name }}</h1>
+          <p class="text-sm text-muted-foreground mt-1">View and manage item details</p>
+
+          <!-- Badges Row -->
+          <div class="flex items-center gap-2 flex-wrap mt-3">
+            <!-- Stock Status -->
+            <span
+              [class]="
+                'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border ' +
+                stockStatusConfig().class
+              "
+            >
+              <hia-icon [name]="stockStatusConfig().icon" [size]="12" />
+              {{ stockStatusConfig().label }}
+            </span>
+
+            <!-- Quantity Badge -->
+            <span
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-secondary/60 text-secondary-foreground border border-border/30"
+            >
+              <hia-icon [name]="commonIcons['boxes']" [size]="12" />
+              {{ item()!.quantity }} {{ item()!.unit }}
+            </span>
+
+            <!-- Access Level -->
+            @if (access()) {
+            <span
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border"
+              [class]="
+                access()!.canAdmin
+                  ? 'bg-primary/10 text-primary border-primary/20'
+                  : access()!.canEdit
+                  ? 'bg-accent/50 text-accent-foreground border-border/50'
+                  : 'bg-muted text-muted-foreground border-border'
+              "
+            >
+              <hia-icon
+                [name]="
+                  access()!.canAdmin
+                    ? commonIcons['success']
+                    : access()!.canEdit
+                    ? commonIcons['edit']
+                    : commonIcons['info']
+                "
+                [size]="11"
+              />
+              {{ access()!.level || 'NO ACCESS' }}
+            </span>
+            }
+
+            <!-- Room -->
+            @if (item()!.room?.name) {
+            <span
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-accent/50 text-accent-foreground border border-border/50"
+            >
+              <hia-icon [name]="commonIcons['room']" [size]="11" />
+              {{ item()!.room?.name }}
+            </span>
+            }
+
+            <!-- Category -->
+            @if (item()!.category?.name) {
+            <span
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-secondary/60 text-secondary-foreground border border-border/40"
+            >
+              <hia-icon [name]="commonIcons['category']" [size]="11" />
+              {{ item()!.category?.name | titlecase }}
+            </span>
+            }
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-2 shrink-0">
+          <z-button
+            label="Share"
+            iconName="lucideShare2"
+            zType="outline"
+            zSize="sm"
+            (click)="onShare()"
+          />
+          @if (canEdit()) {
+          <z-button
+            label="Edit"
+            iconName="lucideEdit"
+            zType="outline"
+            zSize="sm"
+            (click)="onEdit()"
+          />
+          } @if (canDelete()) {
+          <z-button iconName="lucideTrash" zType="destructive" zSize="sm" (click)="onDelete()" />
+          }
+        </div>
       </div>
-      <!-- Action Buttons -->
-      <div class="flex gap-2">
-        <z-button label="Share" iconName="lucideShare2" zType="outline" (click)="onShare()" />
-        @if (canEdit()) {
-          <z-button label="Edit" iconName="lucideEdit" zType="outline" (click)="onEdit()" />
-        }
-        @if (canDelete()) {
-          <z-button label="Delete" iconName="lucideTrash" zType="destructive" (click)="onDelete()" />
-        }
-      </div>
-    </div>
-
-    <!-- Second Row: All badges in one row -->
-    <div class="flex items-center gap-3 flex-wrap">
-      <!-- Stock Status -->
-      <span
-        [class]="
-          'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium border ' +
-          stockStatusConfig().class
-        "
-      >
-        <hia-icon [name]="stockStatusConfig().icon" [size]="14" />
-        {{ stockStatusConfig().label }}
-      </span>
-
-      <!-- Quantity Badge -->
-      <span
-        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-secondary/80 text-secondary-foreground border border-border/30"
-      >
-        <hia-icon [name]="commonIcons['boxes']" [size]="14" />
-        {{ item()!.quantity }} {{ item()!.unit }}
-      </span>
-
-      <!-- Effective Access Chip -->
-      @if (access()) {
-      <span
-        class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border"
-        [class]="
-          access()!.canAdmin
-            ? 'bg-green-100 text-green-800 border-green-200/60 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800/40'
-            : access()!.canEdit
-            ? 'bg-blue-100 text-blue-800 border-blue-200/60 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800/40'
-            : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300'
-        "
-      >
-        <hia-icon [name]="access()!.canAdmin ? commonIcons['success'] : access()!.canEdit ? commonIcons['edit'] : commonIcons['info']" [size]="12" />
-        <span>{{ access()!.level || 'NO ACCESS' }}</span>
-      </span>
-      }
-
-      <!-- Room Chip -->
-      @if (item()!.room?.name) {
-      <span
-        class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200/60 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800/40 shadow-sm"
-      >
-        <hia-icon [name]="commonIcons['room']" [size]="12" />
-        <span>{{ item()!.room?.name }}</span>
-      </span>
-      }
-
-      <!-- Category Chip -->
-      @if (item()!.category?.name) {
-      <span
-        class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200/60 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800/40 shadow-sm"
-      >
-        <hia-icon [name]="commonIcons['category']" [size]="12" />
-        <span>{{ item()!.category?.name | titlecase }}</span>
-      </span>
-      }
     </div>
   </div>
 
   <!-- Content Section -->
-  <div class="container mx-auto px-4 py-8 space-y-8">
-    <!-- Main Content Grid -->
-    <div class="grid gap-6 lg:grid-cols-3">
-      <!-- General Information -->
-      <z-card zTitle="General Information" class="lg:col-span-2">
-        <div class="space-y-4">
-          @if (item()!.description) {
-          <div>
-            <h4 class="text-sm font-medium text-muted-foreground mb-1">Description</h4>
-            <p class="text-foreground">{{ item()!.description }}</p>
-          </div>
-          }
-
-          <div class="grid gap-4 sm:grid-cols-2">
-            @if (item()!.brand) {
+  <div class="container mx-auto px-4 py-6 max-w-7xl">
+    <div class="grid gap-4 lg:grid-cols-3">
+      <!-- Left Column - Main Info -->
+      <div class="lg:col-span-2 space-y-4">
+        <!-- General Information -->
+        <z-card zTitle="General Information">
+          <div class="space-y-4">
+            @if (item()!.description) {
             <div>
-              <h4 class="text-sm font-medium text-muted-foreground mb-1">Brand</h4>
-              <p class="text-foreground">{{ item()!.brand }}</p>
-            </div>
-            } @if (item()!.model) {
-            <div>
-              <h4 class="text-sm font-medium text-muted-foreground mb-1">Model</h4>
-              <p class="text-foreground">{{ item()!.model }}</p>
-            </div>
-            } @if (item()!.serialNumber) {
-            <div>
-              <h4 class="text-sm font-medium text-muted-foreground mb-1">Serial Number</h4>
-              <p class="text-foreground font-mono">{{ item()!.serialNumber }}</p>
+              <h4 class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                Description
+              </h4>
+              <p class="text-sm text-foreground leading-relaxed">{{ item()!.description }}</p>
             </div>
             }
 
+            <div class="grid gap-4 sm:grid-cols-2">
+              @if (item()!.brand) {
+              <div>
+                <h4
+                  class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5"
+                >
+                  Brand
+                </h4>
+                <p class="text-sm text-foreground">{{ item()!.brand }}</p>
+              </div>
+              } @if (item()!.model) {
+              <div>
+                <h4
+                  class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5"
+                >
+                  Model
+                </h4>
+                <p class="text-sm text-foreground">{{ item()!.model }}</p>
+              </div>
+              } @if (item()!.serialNumber) {
+              <div>
+                <h4
+                  class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5"
+                >
+                  Serial Number
+                </h4>
+                <p class="text-sm text-foreground font-mono">{{ item()!.serialNumber }}</p>
+              </div>
+              }
+              <div>
+                <h4
+                  class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5"
+                >
+                  Condition
+                </h4>
+                <span
+                  [class]="
+                    'inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border ' +
+                    (item()!.condition === 'NEW'
+                      ? 'bg-primary/10 text-primary border-primary/20'
+                      : item()!.condition === 'USED'
+                      ? 'bg-secondary/60 text-secondary-foreground border-border/40'
+                      : 'bg-destructive/10 text-destructive border-destructive/20')
+                  "
+                >
+                  {{ item()!.condition | titlecase }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </z-card>
+
+        <!-- Purchase Information -->
+        @if (item()!.purchaseDate || item()!.purchasePrice || item()!.supplier || item()!.warranty)
+        {
+        <z-card zTitle="Purchase Information">
+          <div class="grid gap-4 sm:grid-cols-2">
+            @if (item()!.purchaseDate) {
             <div>
-              <h4 class="text-sm font-medium text-muted-foreground mb-1">Condition</h4>
+              <h4
+                class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5"
+              >
+                Purchase Date
+              </h4>
+              <p class="text-sm text-foreground">{{ formatDate(item()!.purchaseDate!) }}</p>
+            </div>
+            } @if (item()!.purchasePrice) {
+            <div>
+              <h4
+                class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5"
+              >
+                Purchase Price
+              </h4>
+              <p class="text-sm text-foreground font-semibold">
+                {{ formatCurrency(item()!.purchasePrice!) }}
+              </p>
+            </div>
+            } @if (item()!.supplier) {
+            <div>
+              <h4
+                class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5"
+              >
+                Supplier
+              </h4>
+              <p class="text-sm text-foreground">{{ item()!.supplier }}</p>
+            </div>
+            } @if (item()!.warranty) {
+            <div>
+              <h4
+                class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5"
+              >
+                Warranty
+              </h4>
+              <p class="text-sm text-foreground">{{ item()!.warranty }}</p>
+            </div>
+            }
+          </div>
+        </z-card>
+        }
+
+        <!-- Notes -->
+        @if (item()!.notes) {
+        <z-card zTitle="Notes">
+          <p class="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+            {{ item()!.notes }}
+          </p>
+        </z-card>
+        }
+      </div>
+
+      <!-- Right Column - Sidebar -->
+      <div class="space-y-4">
+        <!-- Stock & Location -->
+        <z-card zTitle="Stock & Location">
+          <div class="space-y-4">
+            <div>
+              <h4 class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                Current Stock
+              </h4>
+              <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-bold text-foreground">{{ item()!.quantity }}</span>
+                <span class="text-sm text-muted-foreground">{{ item()!.unit }}</span>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-border/50">
+              <h4
+                class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5"
+              >
+                Minimum Stock
+              </h4>
+              <span class="text-sm text-foreground">{{ item()!.minStock }} {{ item()!.unit }}</span>
+            </div>
+
+            @if (item()!.location) {
+            <div class="pt-3 border-t border-border/50">
+              <h4
+                class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5"
+              >
+                Specific Location
+              </h4>
+              <p class="text-sm text-foreground">{{ item()!.location }}</p>
+            </div>
+            }
+          </div>
+        </z-card>
+
+        <!-- Tags -->
+        @if (item()!.tags.length) {
+        <z-card zTitle="Tags">
+          <div class="flex flex-wrap gap-2">
+            @for (tag of item()!.tags; track tag) {
+            <span
+              class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-muted/50 text-muted-foreground border border-border/40"
+            >
+              {{ tag }}
+            </span>
+            }
+          </div>
+        </z-card>
+        }
+
+        <!-- Sharing & Access -->
+        <z-card zTitle="Sharing & Access">
+          <div class="space-y-3">
+            <div>
+              <h4
+                class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5"
+              >
+                Visibility
+              </h4>
               <span
                 [class]="
                   'inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ' +
-                  (item()!.condition === 'NEW'
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                    : item()!.condition === 'USED'
-                    ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
-                    : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300')
+                  getVisibilityClass()
                 "
               >
-                {{ item()!.condition | titlecase }}
+                {{ getVisibilityLabel() }}
               </span>
             </div>
-          </div>
-        </div>
-      </z-card>
 
-      <!-- Stock & Location -->
-      <z-card zTitle="Stock & Location">
-        <div class="space-y-4">
-          <div>
-            <h4 class="text-sm font-medium text-muted-foreground mb-1">Current Stock</h4>
-            <div class="flex items-center gap-2">
-              <span class="text-2xl font-bold text-foreground">{{ item()!.quantity }}</span>
-              <span class="text-sm text-muted-foreground">{{ item()!.unit }}</span>
+            <div class="pt-3 border-t border-border/50">
+              <h4
+                class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5"
+              >
+                Shared
+              </h4>
+              <span
+                [class]="
+                  'inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border ' +
+                  (item()!.isShared
+                    ? 'bg-primary/10 text-primary border-primary/20'
+                    : 'bg-muted text-muted-foreground border-border')
+                "
+              >
+                {{ item()!.isShared ? 'Yes' : 'No' }}
+              </span>
+            </div>
+
+            @if (item()!.sharedWith.length) {
+            <div class="pt-3 border-t border-border/50">
+              <h4 class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                Shared With
+              </h4>
+              <div class="flex flex-wrap gap-1.5">
+                @for (email of item()!.sharedWith; track email) {
+                <span
+                  class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-accent/50 text-accent-foreground border border-border/50"
+                >
+                  {{ email }}
+                </span>
+                }
+              </div>
+            </div>
+            }
+          </div>
+        </z-card>
+
+        <!-- System Information -->
+        <z-card zTitle="System Information">
+          <div class="space-y-3 text-xs">
+            <div>
+              <h4
+                class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5"
+              >
+                Created
+              </h4>
+              <p class="text-sm text-foreground">{{ formatDate(item()!.createdAt) }}</p>
+            </div>
+
+            <div class="pt-3 border-t border-border/50">
+              <h4
+                class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5"
+              >
+                Last Updated
+              </h4>
+              <p class="text-sm text-foreground">{{ formatDate(item()!.updatedAt) }}</p>
+            </div>
+
+            <div class="pt-3 border-t border-border/50">
+              <h4
+                class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5"
+              >
+                Created By
+              </h4>
+              <p class="text-sm text-foreground">{{ item()!.createdBy }}</p>
+            </div>
+
+            <div class="pt-3 border-t border-border/50">
+              <h4
+                class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5"
+              >
+                Item ID
+              </h4>
+              <p class="text-sm text-foreground font-mono">{{ item()!.id }}</p>
             </div>
           </div>
-
-          <div>
-            <h4 class="text-sm font-medium text-muted-foreground mb-1">Minimum Stock</h4>
-            <span class="text-foreground">{{ item()!.minStock }} {{ item()!.unit }}</span>
-          </div>
-
-          @if (item()!.location) {
-          <div>
-            <h4 class="text-sm font-medium text-muted-foreground mb-1">Specific Location</h4>
-            <p class="text-foreground">{{ item()!.location }}</p>
-          </div>
-          }
-        </div>
-      </z-card>
+        </z-card>
+      </div>
     </div>
-
-    <!-- Purchase Information -->
-    @if (item()!.purchaseDate || item()!.purchasePrice || item()!.supplier || item()!.warranty) {
-    <z-card zTitle="Purchase Information">
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        @if (item()!.purchaseDate) {
-        <div>
-          <h4 class="text-sm font-medium text-muted-foreground mb-1">Purchase Date</h4>
-          <p class="text-foreground">{{ formatDate(item()!.purchaseDate!) }}</p>
-        </div>
-        } @if (item()!.purchasePrice) {
-        <div>
-          <h4 class="text-sm font-medium text-muted-foreground mb-1">Purchase Price</h4>
-          <p class="text-foreground font-semibold">{{ formatCurrency(item()!.purchasePrice!) }}</p>
-        </div>
-        } @if (item()!.supplier) {
-        <div>
-          <h4 class="text-sm font-medium text-muted-foreground mb-1">Supplier</h4>
-          <p class="text-foreground">{{ item()!.supplier }}</p>
-        </div>
-        } @if (item()!.warranty) {
-        <div>
-          <h4 class="text-sm font-medium text-muted-foreground mb-1">Warranty</h4>
-          <p class="text-foreground">{{ item()!.warranty }}</p>
-        </div>
-        }
-      </div>
-    </z-card>
-    }
-
-    <!-- Tags -->
-    @if (item()!.tags.length) {
-    <z-card zTitle="Tags">
-      <div class="flex flex-wrap gap-2">
-        @for (tag of item()!.tags; track tag) {
-        <span
-          class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-muted/60 text-muted-foreground border border-border/40"
-        >
-          {{ tag }}
-        </span>
-        }
-      </div>
-    </z-card>
-    }
-
-    <!-- Notes -->
-    @if (item()!.notes) {
-    <z-card zTitle="Notes">
-      <p class="text-foreground whitespace-pre-wrap">{{ item()!.notes }}</p>
-    </z-card>
-    }
-
-    <!-- Sharing & Access -->
-    <z-card zTitle="Sharing & Access">
-      <div class="grid gap-4 sm:grid-cols-2">
-        <div>
-          <h4 class="text-sm font-medium text-muted-foreground mb-1">Visibility</h4>
-          <span
-            [class]="'inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ' + getVisibilityClass()"
-          >
-            {{ getVisibilityLabel() }}
-          </span>
-        </div>
-
-        <div>
-          <h4 class="text-sm font-medium text-muted-foreground mb-1">Shared</h4>
-          <span
-            [class]="
-              'inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ' +
-              (item()!.isShared
-                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300')
-            "
-          >
-            {{ item()!.isShared ? 'Yes' : 'No' }}
-          </span>
-        </div>
-      </div>
-
-      @if (item()!.sharedWith.length) {
-      <div class="mt-4">
-        <h4 class="text-sm font-medium text-muted-foreground mb-2">Shared With</h4>
-        <div class="flex flex-wrap gap-2">
-          @for (email of item()!.sharedWith; track email) {
-          <span
-            class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/40"
-          >
-            {{ email }}
-          </span>
-          }
-        </div>
-      </div>
-      }
-    </z-card>
-
-    <!-- System Information -->
-    <z-card zTitle="System Information">
-      <div class="grid gap-4 sm:grid-cols-2">
-        <div>
-          <h4 class="text-sm font-medium text-muted-foreground mb-1">Created</h4>
-          <p class="text-foreground">{{ formatDate(item()!.createdAt) }}</p>
-        </div>
-
-        <div>
-          <h4 class="text-sm font-medium text-muted-foreground mb-1">Last Updated</h4>
-          <p class="text-foreground">{{ formatDate(item()!.updatedAt) }}</p>
-        </div>
-
-        <div>
-          <h4 class="text-sm font-medium text-muted-foreground mb-1">Created By</h4>
-          <p class="text-foreground">{{ item()!.createdBy }}</p>
-        </div>
-
-        <div>
-          <h4 class="text-sm font-medium text-muted-foreground mb-1">Item ID</h4>
-          <p class="text-foreground font-mono text-xs">{{ item()!.id }}</p>
-        </div>
-      </div>
-    </z-card>
   </div>
 </div>
 }

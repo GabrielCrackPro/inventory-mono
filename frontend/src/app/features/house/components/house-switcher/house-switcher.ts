@@ -7,6 +7,7 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { commonIcons } from '@core/config/icon.config';
 import { UserHouse } from '@features/house/models';
 import { HouseService } from '@features/house/services';
@@ -15,7 +16,7 @@ import { HouseContextService } from '@features/house/services/house-context';
 
 @Component({
   selector: 'hia-house-switcher',
-  imports: [IconComponent],
+  imports: [IconComponent, NgClass],
   templateUrl: './house-switcher.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

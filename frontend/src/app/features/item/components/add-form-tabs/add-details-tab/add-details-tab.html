@@ -1,19 +1,21 @@
 <div [formGroup]="form">
-  <z-card class="space-y-6" [@slideInUp]>
-    <div class="flex items-center gap-3 mb-6">
-      <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-        <hia-icon [name]="commonIcons['category']" [size]="20" class="text-primary" />
+  <div class="max-w-3xl space-y-6" [@slideInUp]>
+    <!-- Section Header -->
+    <div class="flex items-center gap-3 pb-4 border-b border-border/40">
+      <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+        <hia-icon [name]="commonIcons['category']" [size]="18" class="text-primary" />
       </div>
       <div>
-        <h3 class="font-semibold">Extra Information</h3>
-        <p class="text-sm text-muted-foreground">Add tags, notes, and other details</p>
+        <h3 class="text-base font-semibold text-foreground">Extra Information</h3>
+        <p class="text-xs text-muted-foreground">Add tags, notes, and other details</p>
       </div>
     </div>
 
-    <div class="space-y-6">
+    <!-- Form Fields -->
+    <div class="space-y-4">
       <!-- Tags -->
       <z-form-field>
-        <z-form-label>Tags</z-form-label>
+        <z-form-label class="text-sm font-medium">Tags</z-form-label>
         <z-form-control [helpText]="'Separate multiple tags with commas'">
           <input
             z-input
@@ -26,17 +28,17 @@
 
       <!-- Notes -->
       <z-form-field>
-        <z-form-label>Notes</z-form-label>
+        <z-form-label class="text-sm font-medium">Notes</z-form-label>
         <z-form-control>
           <textarea
             z-input
             formControlName="notes"
-            rows="4"
+            rows="5"
             placeholder="Any additional notes, instructions, or important information..."
             class="resize-none"
           ></textarea>
         </z-form-control>
       </z-form-field>
     </div>
-  </z-card>
+  </div>
 </div>

@@ -1,60 +1,97 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
-  <!-- Name -->
-  <z-form-field>
-    <z-form-label zRequired>House Name</z-form-label>
-    <z-form-control>
-      <input
-        z-input
-        type="text"
-        placeholder="e.g. Main Residence"
-        formControlName="name"
-        [zStatus]="validName ? null : 'error'"
-        autocomplete="off"
-      />
-    </z-form-control>
-    @if (!validName) {
-    <z-form-message zType="error">{{ errors.name }}</z-form-message>
-    }
-  </z-form-field>
-
-  <!-- Address -->
-  <z-form-field>
-    <z-form-label>Address</z-form-label>
-    <z-form-control>
-      <input
-        z-input
-        type="text"
-        placeholder="Street, City, etc."
-        formControlName="address"
-        [zStatus]="validAddress ? null : 'error'"
-        autocomplete="off"
-      />
-    </z-form-control>
-    @if (!validAddress) {
-    <z-form-message zType="error">{{ errors.address }}</z-form-message>
-    }
-  </z-form-field>
-
-  <!-- Actions -->
-  <div class="flex items-center justify-end gap-2 pt-2">
-    <z-button
-      type="button"
-      zType="outline"
-      zSize="sm"
-      label="Cancel"
-      iconName="lucideX"
-      (click)="onCancel()"
-      [disabled]="isLoading()"
-    />
-
-    <z-button
-      type="submit"
-      zSize="sm"
-      label="Create House"
-      iconName="lucideHousePlus"
-      iconPosition="right"
-      [zLoading]="isLoading()"
-      [disabled]="disabled"
-    />
+<div class="space-y-5">
+  <!-- Info Banner -->
+  <div class="p-3.5 rounded-lg bg-primary/5 border border-primary/20">
+    <div class="flex gap-3">
+      <div class="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="text-primary"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 16v-4" />
+          <path d="M12 8h.01" />
+        </svg>
+      </div>
+      <div class="flex-1">
+        <h4 class="text-sm font-semibold text-foreground mb-1">Create Your House</h4>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Houses help you organize your inventory by location. You can add rooms and items to each
+          house.
+        </p>
+      </div>
+    </div>
   </div>
-</form>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+    <!-- Name -->
+    <z-form-field>
+      <z-form-label zRequired class="text-sm font-medium">House Name</z-form-label>
+      <z-form-control>
+        <input
+          z-input
+          type="text"
+          placeholder="e.g. Main Residence, Beach House"
+          formControlName="name"
+          [zStatus]="validName ? null : 'error'"
+          autocomplete="off"
+        />
+      </z-form-control>
+      @if (!validName) {
+      <z-form-message zType="error">{{ errors.name }}</z-form-message>
+      } @else {
+      <p class="text-xs text-muted-foreground mt-1.5">Choose a memorable name for your house</p>
+      }
+    </z-form-field>
+
+    <!-- Address -->
+    <z-form-field>
+      <z-form-label class="text-sm font-medium">Address (Optional)</z-form-label>
+      <z-form-control>
+        <input
+          z-input
+          type="text"
+          placeholder="123 Main St, City, State"
+          formControlName="address"
+          [zStatus]="validAddress ? null : 'error'"
+          autocomplete="off"
+        />
+      </z-form-control>
+      @if (!validAddress) {
+      <z-form-message zType="error">{{ errors.address }}</z-form-message>
+      } @else {
+      <p class="text-xs text-muted-foreground mt-1.5">
+        Add an address to help identify this location
+      </p>
+      }
+    </z-form-field>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-border/60">
+      <z-button
+        type="button"
+        zType="outline"
+        label="Cancel"
+        iconName="lucideX"
+        (click)="onCancel()"
+        [disabled]="isLoading()"
+      />
+
+      <z-button
+        type="submit"
+        label="Create House"
+        iconName="lucideHousePlus"
+        iconPosition="right"
+        [zLoading]="isLoading()"
+        [disabled]="disabled"
+      />
+    </div>
+  </form>
+</div>

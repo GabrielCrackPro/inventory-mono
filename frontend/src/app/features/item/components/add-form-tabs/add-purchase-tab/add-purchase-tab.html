@@ -1,19 +1,21 @@
 <div [formGroup]="form">
-  <z-card class="space-y-6" [@slideInUp]>
-    <div class="flex items-center gap-3 mb-6">
-      <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-        <hia-icon [name]="commonIcons['add']" [size]="20" class="text-primary" />
+  <div class="max-w-3xl space-y-6" [@slideInUp]>
+    <!-- Section Header -->
+    <div class="flex items-center gap-3 pb-4 border-b border-border/40">
+      <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+        <hia-icon [name]="commonIcons['add']" [size]="18" class="text-primary" />
       </div>
       <div>
-        <h3 class="font-semibold">Purchase Details</h3>
-        <p class="text-sm text-muted-foreground">Track purchase information and warranty details</p>
+        <h3 class="text-base font-semibold text-foreground">Purchase Details</h3>
+        <p class="text-xs text-muted-foreground">Track purchase information and warranty details</p>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Form Fields -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- Purchase Date -->
       <z-form-field>
-        <z-form-label>Purchase Date</z-form-label>
+        <z-form-label class="text-sm font-medium">Purchase Date</z-form-label>
         <z-form-control
           [errorMessage]="getFieldError('purchaseDate') || ''"
           [helpText]="!getFieldError('purchaseDate') ? 'Select when you purchased this item' : ''"
@@ -30,7 +32,7 @@
 
       <!-- Purchase Price -->
       <z-form-field>
-        <z-form-label>Purchase Price</z-form-label>
+        <z-form-label class="text-sm font-medium">Purchase Price</z-form-label>
         <z-form-control>
           <div class="relative">
             <span
@@ -52,7 +54,7 @@
 
       <!-- Supplier -->
       <z-form-field>
-        <z-form-label>Supplier/Store</z-form-label>
+        <z-form-label class="text-sm font-medium">Supplier/Store</z-form-label>
         <z-form-control>
           <input
             z-input
@@ -65,7 +67,7 @@
 
       <!-- Warranty -->
       <z-form-field>
-        <z-form-label>Warranty Period</z-form-label>
+        <z-form-label class="text-sm font-medium">Warranty Period</z-form-label>
         <z-form-control>
           <input
             z-input
@@ -76,5 +78,5 @@
         </z-form-control>
       </z-form-field>
     </div>
-  </z-card>
+  </div>
 </div>
