@@ -51,7 +51,6 @@
             />
             <z-button
               type="button"
-              zType="outline"
               label="Upload Photo"
               iconName="lucideUpload"
               [disabled]="isUploadingPicture()"
@@ -61,7 +60,7 @@
           @if (profilePicturePreview()) {
           <z-button
             type="button"
-            zType="outline"
+            zType="destructive"
             label="Remove"
             iconName="lucideTrash2"
             (click)="removeProfilePicture()"

@@ -17,7 +17,7 @@ export type LayoutVariants = VariantProps<typeof layoutVariants>;
 
 // Header Variants
 export const headerVariants = cva(
-  'sticky top-0 z-50 flex items-center bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border shrink-0 transition-all duration-200',
+  'z-50 flex items-center bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80 border-b border-border shrink-0 transition-all duration-300 ease-out',
   {
     variants: {
       zPadding: {
@@ -33,8 +33,8 @@ export const headerVariants = cva(
         lg: 'shadow-lg',
       },
       zScrolled: {
-        true: 'shadow-md bg-background/98',
-        false: '',
+        true: 'shadow-lg border-border/80 bg-background/98 backdrop-blur-xl',
+        false: 'shadow-sm',
       },
     },
     defaultVariants: {

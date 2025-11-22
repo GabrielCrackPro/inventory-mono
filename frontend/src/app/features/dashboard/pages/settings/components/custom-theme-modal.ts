@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, viewChild, AfterViewInit } from '@angular/core';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -15,6 +15,7 @@ import { ThemeService, CustomThemeColors } from '@shared/services/theme';
 import { ToastService } from '@shared/services/toast';
 import { ZardTabComponent, ZardTabGroupComponent } from '@ui/tabs';
 import { ZardAlertComponent } from '@ui/alert';
+import { ZardColorPickerComponent } from '@ui/color-picker';
 
 @Component({
   selector: 'hia-custom-theme-modal',
@@ -28,6 +29,7 @@ import { ZardAlertComponent } from '@ui/alert';
     ZardTabGroupComponent,
     ZardTabComponent,
     ZardAlertComponent,
+    ZardColorPickerComponent,
   ],
   template: `
     <div class="space-y-6">
@@ -61,10 +63,13 @@ import { ZardAlertComponent } from '@ui/alert';
                 <z-form-label>Primary Color</z-form-label>
                 <z-form-control>
                   <div class="flex items-center gap-2">
-                    <div
-                      class="w-10 h-10 rounded-md border-2 border-border shrink-0"
-                      [style.background]="lightForm.get('primary')?.value || 'transparent'"
-                    ></div>
+                    <z-color-picker
+                      [value]="
+                        oklchToHex(lightForm.get('primary')?.value || defaultLightColors.primary)
+                      "
+                      (valueChange)="onColorPickCustom($event, 'light', 'primary')"
+                      [size]="40"
+                    />
                     <input
                       z-input
                       formControlName="primary"
@@ -87,12 +92,16 @@ import { ZardAlertComponent } from '@ui/alert';
                 <z-form-label>Primary Foreground</z-form-label>
                 <z-form-control>
                   <div class="flex items-center gap-2">
-                    <div
-                      class="w-10 h-10 rounded-md border-2 border-border shrink-0"
-                      [style.background]="
-                        lightForm.get('primaryForeground')?.value || 'transparent'
+                    <z-color-picker
+                      [value]="
+                        oklchToHex(
+                          lightForm.get('primaryForeground')?.value ||
+                            defaultLightColors.primaryForeground
+                        )
                       "
-                    ></div>
+                      (valueChange)="onColorPickCustom($event, 'light', 'primaryForeground')"
+                      [size]="40"
+                    />
                     <input
                       z-input
                       formControlName="primaryForeground"
@@ -115,10 +124,15 @@ import { ZardAlertComponent } from '@ui/alert';
                 <z-form-label>Secondary Color</z-form-label>
                 <z-form-control>
                   <div class="flex items-center gap-2">
-                    <div
-                      class="w-10 h-10 rounded-md border-2 border-border shrink-0"
-                      [style.background]="lightForm.get('secondary')?.value || 'transparent'"
-                    ></div>
+                    <z-color-picker
+                      [value]="
+                        oklchToHex(
+                          lightForm.get('secondary')?.value || defaultLightColors.secondary
+                        )
+                      "
+                      (valueChange)="onColorPickCustom($event, 'light', 'secondary')"
+                      [size]="40"
+                    />
                     <input
                       z-input
                       formControlName="secondary"
@@ -141,10 +155,13 @@ import { ZardAlertComponent } from '@ui/alert';
                 <z-form-label>Accent Color</z-form-label>
                 <z-form-control>
                   <div class="flex items-center gap-2">
-                    <div
-                      class="w-10 h-10 rounded-md border-2 border-border shrink-0"
-                      [style.background]="lightForm.get('accent')?.value || 'transparent'"
-                    ></div>
+                    <z-color-picker
+                      [value]="
+                        oklchToHex(lightForm.get('accent')?.value || defaultLightColors.accent)
+                      "
+                      (valueChange)="onColorPickCustom($event, 'light', 'accent')"
+                      [size]="40"
+                    />
                     <input
                       z-input
                       formControlName="accent"
@@ -167,10 +184,11 @@ import { ZardAlertComponent } from '@ui/alert';
                 <z-form-label>Ring Color</z-form-label>
                 <z-form-control>
                   <div class="flex items-center gap-2">
-                    <div
-                      class="w-10 h-10 rounded-md border-2 border-border shrink-0"
-                      [style.background]="lightForm.get('ring')?.value || 'transparent'"
-                    ></div>
+                    <z-color-picker
+                      [value]="oklchToHex(lightForm.get('ring')?.value || defaultLightColors.ring)"
+                      (valueChange)="onColorPickCustom($event, 'light', 'ring')"
+                      [size]="40"
+                    />
                     <input
                       z-input
                       formControlName="ring"
@@ -199,10 +217,13 @@ import { ZardAlertComponent } from '@ui/alert';
                 <z-form-label>Primary Color</z-form-label>
                 <z-form-control>
                   <div class="flex items-center gap-2">
-                    <div
-                      class="w-10 h-10 rounded-md border-2 border-border shrink-0"
-                      [style.background]="darkForm.get('primary')?.value || 'transparent'"
-                    ></div>
+                    <z-color-picker
+                      [value]="
+                        oklchToHex(darkForm.get('primary')?.value || defaultDarkColors.primary)
+                      "
+                      (valueChange)="onColorPickCustom($event, 'dark', 'primary')"
+                      [size]="40"
+                    />
                     <input
                       z-input
                       formControlName="primary"
@@ -225,10 +246,16 @@ import { ZardAlertComponent } from '@ui/alert';
                 <z-form-label>Primary Foreground</z-form-label>
                 <z-form-control>
                   <div class="flex items-center gap-2">
-                    <div
-                      class="w-10 h-10 rounded-md border-2 border-border shrink-0"
-                      [style.background]="darkForm.get('primaryForeground')?.value || 'transparent'"
-                    ></div>
+                    <z-color-picker
+                      [value]="
+                        oklchToHex(
+                          darkForm.get('primaryForeground')?.value ||
+                            defaultDarkColors.primaryForeground
+                        )
+                      "
+                      (valueChange)="onColorPickCustom($event, 'dark', 'primaryForeground')"
+                      [size]="40"
+                    />
                     <input
                       z-input
                       formControlName="primaryForeground"
@@ -251,10 +278,13 @@ import { ZardAlertComponent } from '@ui/alert';
                 <z-form-label>Secondary Color</z-form-label>
                 <z-form-control>
                   <div class="flex items-center gap-2">
-                    <div
-                      class="w-10 h-10 rounded-md border-2 border-border shrink-0"
-                      [style.background]="darkForm.get('secondary')?.value || 'transparent'"
-                    ></div>
+                    <z-color-picker
+                      [value]="
+                        oklchToHex(darkForm.get('secondary')?.value || defaultDarkColors.secondary)
+                      "
+                      (valueChange)="onColorPickCustom($event, 'dark', 'secondary')"
+                      [size]="40"
+                    />
                     <input
                       z-input
                       formControlName="secondary"
@@ -277,10 +307,13 @@ import { ZardAlertComponent } from '@ui/alert';
                 <z-form-label>Accent Color</z-form-label>
                 <z-form-control>
                   <div class="flex items-center gap-2">
-                    <div
-                      class="w-10 h-10 rounded-md border-2 border-border shrink-0"
-                      [style.background]="darkForm.get('accent')?.value || 'transparent'"
-                    ></div>
+                    <z-color-picker
+                      [value]="
+                        oklchToHex(darkForm.get('accent')?.value || defaultDarkColors.accent)
+                      "
+                      (valueChange)="onColorPickCustom($event, 'dark', 'accent')"
+                      [size]="40"
+                    />
                     <input
                       z-input
                       formControlName="accent"
@@ -303,10 +336,11 @@ import { ZardAlertComponent } from '@ui/alert';
                 <z-form-label>Ring Color</z-form-label>
                 <z-form-control>
                   <div class="flex items-center gap-2">
-                    <div
-                      class="w-10 h-10 rounded-md border-2 border-border shrink-0"
-                      [style.background]="darkForm.get('ring')?.value || 'transparent'"
-                    ></div>
+                    <z-color-picker
+                      [value]="oklchToHex(darkForm.get('ring')?.value || defaultDarkColors.ring)"
+                      (valueChange)="onColorPickCustom($event, 'dark', 'ring')"
+                      [size]="40"
+                    />
                     <input
                       z-input
                       formControlName="ring"
@@ -346,59 +380,37 @@ import { ZardAlertComponent } from '@ui/alert';
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3 text-xs">
-          <div class="p-3 rounded-lg bg-muted/30 border border-border/50">
-            <div class="font-medium text-foreground mb-1">Common Hues</div>
-            <div class="space-y-0.5 text-muted-foreground">
-              <div>Red: 0-30</div>
-              <div>Orange: 30-60</div>
-              <div>Yellow: 60-90</div>
-              <div>Green: 90-180</div>
-              <div>Blue: 180-270</div>
-              <div>Purple: 270-330</div>
-            </div>
-          </div>
-          <div class="p-3 rounded-lg bg-muted/30 border border-border/50">
-            <div class="font-medium text-foreground mb-1">Tips</div>
-            <div class="space-y-0.5 text-muted-foreground">
-              <div>• Higher L = lighter</div>
-              <div>• Higher C = more vibrant</div>
-              <div>• Keep C under 0.3 for UI</div>
-              <div>• Use similar L for harmony</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Footer -->
-      <div class="flex items-center justify-between gap-4 pt-4 border-t border-border">
-        <z-button
-          zType="ghost"
-          label="Reset All"
-          iconName="lucideRotateCcw"
-          (click)="resetAll()"
-          [disabled]="isSaving()"
-        />
-        <div class="flex gap-2">
-          <z-button zType="outline" label="Cancel" (click)="close()" [disabled]="isSaving()" />
+        <!-- Footer -->
+        <div class="flex items-center justify-between gap-4 pt-4 border-t border-border">
           <z-button
-            label="Save & Apply"
-            iconName="lucideCheck"
-            (click)="save()"
-            [disabled]="isSaving() || lightForm.invalid || darkForm.invalid"
-            [zLoading]="isSaving()"
+            zType="ghost"
+            label="Reset All"
+            iconName="lucideRotateCcw"
+            (click)="resetAll()"
+            [disabled]="isSaving()"
           />
+          <div class="flex gap-2">
+            <z-button zType="outline" label="Cancel" (click)="close()" [disabled]="isSaving()" />
+            <z-button
+              label="Save & Apply"
+              iconName="lucideCheck"
+              (click)="save()"
+              [disabled]="isSaving() || lightForm.invalid || darkForm.invalid"
+              [zLoading]="isSaving()"
+            />
+          </div>
         </div>
       </div>
     </div>
   `,
 })
-export class CustomThemeModalComponent {
+export class CustomThemeModalComponent implements AfterViewInit {
   private readonly dialogRef = inject(ZardDialogRef);
   private readonly fb = inject(FormBuilder);
   private readonly themeService = inject(ThemeService);
   private readonly toastService = inject(ToastService);
 
+  readonly tabGroup = viewChild(ZardTabGroupComponent);
   readonly isSaving = signal(false);
 
   readonly hasValidationErrors = computed(() => {
@@ -447,11 +459,25 @@ export class CustomThemeModalComponent {
   });
 
   constructor() {
-    // Load existing custom colors if available
+    // Load existing custom colors if available, otherwise load current theme colors
     const existingColors = this.themeService.getCustomColors();
     if (existingColors) {
       this.loadExistingColors(existingColors);
+    } else {
+      // Load current theme colors from the DOM
+      this.loadCurrentThemeColors();
     }
+  }
+
+  ngAfterViewInit(): void {
+    // Set initial tab based on current theme
+    const initialIndex = this.themeService.currentTheme() === 'dark' ? 1 : 0;
+    setTimeout(() => {
+      const tabGroupComponent = this.tabGroup();
+      if (tabGroupComponent) {
+        tabGroupComponent.selectTabByIndex(initialIndex);
+      }
+    });
   }
 
   private loadExistingColors(colors: CustomThemeColors): void {
@@ -474,6 +500,213 @@ export class CustomThemeModalComponent {
         ring: colors.dark['--ring'],
       });
     }
+  }
+
+  private loadCurrentThemeColors(): void {
+    // Get computed styles from the document root
+    const root = document.documentElement;
+    const computedStyle = getComputedStyle(root);
+
+    // Helper to get CSS variable value
+    const getCSSVar = (varName: string): string => {
+      const value = computedStyle.getPropertyValue(varName).trim();
+      return value || this.defaultLightColors.primary; // Fallback to default
+    };
+
+    // Load current light theme colors (temporarily switch to light to get values)
+    const currentTheme = this.themeService.currentTheme();
+
+    // Get light theme colors
+    if (currentTheme === 'dark') {
+      root.classList.remove('dark');
+    }
+
+    const lightComputedStyle = getComputedStyle(root);
+    const getLightVar = (varName: string): string => {
+      return lightComputedStyle.getPropertyValue(varName).trim();
+    };
+
+    const lightPrimary = getLightVar('--primary');
+    const lightPrimaryFg = getLightVar('--primary-foreground');
+    const lightSecondary = getLightVar('--secondary');
+    const lightAccent = getLightVar('--accent');
+    const lightRing = getLightVar('--ring');
+
+    // Get dark theme colors
+    if (!root.classList.contains('dark')) {
+      root.classList.add('dark');
+    }
+
+    const darkComputedStyle = getComputedStyle(root);
+    const getDarkVar = (varName: string): string => {
+      return darkComputedStyle.getPropertyValue(varName).trim();
+    };
+
+    const darkPrimary = getDarkVar('--primary');
+    const darkPrimaryFg = getDarkVar('--primary-foreground');
+    const darkSecondary = getDarkVar('--secondary');
+    const darkAccent = getDarkVar('--accent');
+    const darkRing = getDarkVar('--ring');
+
+    // Restore original theme
+    if (currentTheme === 'light') {
+      root.classList.remove('dark');
+    }
+
+    // Update forms with current colors if they're valid OKLCH
+    if (lightPrimary && this.isValidOklch(lightPrimary)) {
+      this.lightForm.patchValue({
+        primary: lightPrimary,
+        primaryForeground: lightPrimaryFg || this.defaultLightColors.primaryForeground,
+        secondary: lightSecondary || this.defaultLightColors.secondary,
+        accent: lightAccent || this.defaultLightColors.accent,
+        ring: lightRing || this.defaultLightColors.ring,
+      });
+    }
+
+    if (darkPrimary && this.isValidOklch(darkPrimary)) {
+      this.darkForm.patchValue({
+        primary: darkPrimary,
+        primaryForeground: darkPrimaryFg || this.defaultDarkColors.primaryForeground,
+        secondary: darkSecondary || this.defaultDarkColors.secondary,
+        accent: darkAccent || this.defaultDarkColors.accent,
+        ring: darkRing || this.defaultDarkColors.ring,
+      });
+    }
+  }
+
+  private isValidOklch(value: string): boolean {
+    const oklchPattern = /^oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)(\s*\/\s*[\d.]+)?\s*\)$/;
+    return oklchPattern.test(value.trim());
+  }
+
+  /**
+   * Convert hex color to OKLCH format
+   */
+  private hexToOklch(hex: string): string {
+    // Remove # if present
+    hex = hex.replace('#', '');
+
+    // Convert hex to RGB
+    const r = parseInt(hex.substring(0, 2), 16) / 255;
+    const g = parseInt(hex.substring(2, 4), 16) / 255;
+    const b = parseInt(hex.substring(4, 6), 16) / 255;
+
+    // Convert RGB to linear RGB
+    const toLinear = (c: number) => {
+      return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    };
+
+    const rLinear = toLinear(r);
+    const gLinear = toLinear(g);
+    const bLinear = toLinear(b);
+
+    // Convert linear RGB to XYZ (D65 illuminant)
+    const x = rLinear * 0.4124564 + gLinear * 0.3575761 + bLinear * 0.1804375;
+    const y = rLinear * 0.2126729 + gLinear * 0.7151522 + bLinear * 0.072175;
+    const z = rLinear * 0.0193339 + gLinear * 0.119192 + bLinear * 0.9503041;
+
+    // Convert XYZ to Lab
+    const xn = 0.95047;
+    const yn = 1.0;
+    const zn = 1.08883;
+
+    const fx = x / xn > 0.008856 ? Math.pow(x / xn, 1 / 3) : 7.787 * (x / xn) + 16 / 116;
+    const fy = y / yn > 0.008856 ? Math.pow(y / yn, 1 / 3) : 7.787 * (y / yn) + 16 / 116;
+    const fz = z / zn > 0.008856 ? Math.pow(z / zn, 1 / 3) : 7.787 * (z / zn) + 16 / 116;
+
+    const L = 116 * fy - 16;
+    const a = 500 * (fx - fy);
+    const bVal = 200 * (fy - fz);
+
+    // Convert Lab to LCH (which is similar to OKLCH)
+    const C = Math.sqrt(a * a + bVal * bVal);
+    let H = (Math.atan2(bVal, a) * 180) / Math.PI;
+    if (H < 0) H += 360;
+
+    // Normalize to OKLCH ranges
+    const l = (L / 100).toFixed(2);
+    const c = (C / 150).toFixed(2); // Approximate normalization
+    const h = H.toFixed(0);
+
+    return `oklch(${l} ${c} ${h})`;
+  }
+
+  /**
+   * Handle custom color picker change
+   */
+  onColorPickCustom(hexColor: string, mode: 'light' | 'dark', field: string): void {
+    const oklchColor = this.hexToOklch(hexColor);
+
+    if (mode === 'light') {
+      this.lightForm.patchValue({ [field]: oklchColor });
+      this.lightForm.get(field)?.markAsDirty();
+    } else {
+      this.darkForm.patchValue({ [field]: oklchColor });
+      this.darkForm.get(field)?.markAsDirty();
+    }
+  }
+
+  /**
+   * Convert OKLCH to approximate HEX for color picker display
+   */
+  oklchToHex(oklch: string): string {
+    // Parse OKLCH
+    const match = oklch.match(/oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)/);
+    if (!match) return '#000000';
+
+    const [, l, c, h] = match;
+    const L = parseFloat(l) * 100;
+    const C = parseFloat(c) * 150; // Approximate denormalization
+    const H = parseFloat(h);
+
+    // Convert LCH to Lab
+    const a = C * Math.cos((H * Math.PI) / 180);
+    const b = C * Math.sin((H * Math.PI) / 180);
+
+    // Convert Lab to XYZ
+    const fy = (L + 16) / 116;
+    const fx = a / 500 + fy;
+    const fz = fy - b / 200;
+
+    const xn = 0.95047;
+    const yn = 1.0;
+    const zn = 1.08883;
+
+    const fx3 = fx * fx * fx;
+    const fy3 = fy * fy * fy;
+    const fz3 = fz * fz * fz;
+
+    const x = xn * (fx3 > 0.008856 ? fx3 : (fx - 16 / 116) / 7.787);
+    const y = yn * (fy3 > 0.008856 ? fy3 : (fy - 16 / 116) / 7.787);
+    const z = zn * (fz3 > 0.008856 ? fz3 : (fz - 16 / 116) / 7.787);
+
+    // Convert XYZ to linear RGB
+    let r = x * 3.2404542 + y * -1.5371385 + z * -0.4985314;
+    let g = x * -0.969266 + y * 1.8760108 + z * 0.041556;
+    let bVal = x * 0.0556434 + y * -0.2040259 + z * 1.0572252;
+
+    // Convert linear RGB to sRGB
+    const toSRGB = (c: number) => {
+      return c <= 0.0031308 ? c * 12.92 : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
+    };
+
+    r = Math.max(0, Math.min(1, toSRGB(r)));
+    g = Math.max(0, Math.min(1, toSRGB(g)));
+    bVal = Math.max(0, Math.min(1, toSRGB(bVal)));
+
+    // Convert to hex
+    const rHex = Math.round(r * 255)
+      .toString(16)
+      .padStart(2, '0');
+    const gHex = Math.round(g * 255)
+      .toString(16)
+      .padStart(2, '0');
+    const bHex = Math.round(bVal * 255)
+      .toString(16)
+      .padStart(2, '0');
+
+    return `#${rHex}${gHex}${bHex}`;
   }
 
   private oklchValidator(control: AbstractControl): ValidationErrors | null {

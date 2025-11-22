@@ -34,6 +34,24 @@ import { HouseContextService } from '@features/house/services/house-context';
   ],
   templateUrl: './header.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  styles: `
+    :host(.header-pinned) z-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 9999;
+    }
+    
+    :host(.header-unpinned) z-header {
+      position: relative;
+      z-index: 50;
+    }
+  `,
+  host: {
+    '[class.header-pinned]': 'isHeaderPinned()',
+    '[class.header-unpinned]': '!isHeaderPinned()',
+  },
 })
 export class HeaderComponent implements OnInit {
   private readonly _authService = inject(AuthService);
@@ -48,9 +66,67 @@ export class HeaderComponent implements OnInit {
 
   protected readonly isHouseDialogOpen = signal(false);
   protected readonly userProfile = computed(() => this._profileService.getProfile());
+  protected readonly isHeaderPinned = signal(true);
 
   ngOnInit(): void {
     this._initializeHouseContext();
+    this._loadHeaderPinState();
+  }
+
+  /**
+   * Load header pin state from storage and database
+   */
+  private _loadHeaderPinState(): void {
+    // Try to load from user profile first
+    const profile = this.userProfile();
+    const profilePinned = profile?.preferences?.['headerPinned'] as boolean | undefined;
+
+    if (profilePinned !== undefined) {
+      this.isHeaderPinned.set(profilePinned);
+      // Sync to localStorage
+      this._storageService.setItem('headerPinned', profilePinned);
+    } else {
+      // Fallback to localStorage
+      const pinned = this._storageService.getItem<boolean>('headerPinned');
+      if (pinned !== null) {
+        this.isHeaderPinned.set(pinned);
+      }
+    }
+  }
+
+  /**
+   * Toggle header pin state
+   */
+  toggleHeaderPin(): void {
+    const newState = !this.isHeaderPinned();
+    this.isHeaderPinned.set(newState);
+    this._storageService.setItem('headerPinned', newState);
+
+    // Save to database
+    this._profileService.savePreferences({ headerPinned: newState }).subscribe({
+      next: () => {
+        console.log('Header pin state saved to database');
+      },
+      error: (error: any) => {
+        console.error('Failed to save header pin state:', error);
+      },
+    });
+
+    // Trigger storage event for same-window sync
+    window.dispatchEvent(
+      new StorageEvent('storage', {
+        key: 'headerPinned',
+        newValue: JSON.stringify(newState),
+        storageArea: localStorage,
+      })
+    );
+
+    this._toastService.info({
+      title: newState ? 'Header Pinned' : 'Header Unpinned',
+      message: newState
+        ? 'Header will stay visible when scrolling'
+        : 'Header will scroll with content',
+    });
   }
 
   /**

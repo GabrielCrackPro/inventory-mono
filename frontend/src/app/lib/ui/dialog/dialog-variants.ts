@@ -1,6 +1,6 @@
 import { cva, VariantProps } from 'class-variance-authority';
 
-export const dialogVariants = cva('fixed inset-0 z-50 flex items-center justify-center p-4', {
+export const dialogVariants = cva('fixed inset-0 z-[10000] flex items-center justify-center p-4', {
   variants: {
     size: {
       sm: '[&>div]:w-full [&>div]:max-w-[400px]',
@@ -19,7 +19,7 @@ export const dialogContainerVariants = cva(
 );
 
 export const dialogOverlayVariants = cva(
-  'fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-200'
+  'fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm transition-opacity duration-200'
 );
 
 export const dialogHeaderVariants = cva(

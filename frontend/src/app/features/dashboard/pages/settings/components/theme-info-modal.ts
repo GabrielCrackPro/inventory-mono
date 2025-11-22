@@ -81,36 +81,6 @@ interface ThemeVariable {
         }
       </div>
 
-      <!-- Additional Info -->
-      <div class="p-4 rounded-lg bg-muted/50 border border-border space-y-3">
-        <div class="flex items-start gap-3">
-          <hia-icon name="lucideLightbulb" [size]="20" class="text-primary shrink-0 mt-0.5" />
-          <div class="space-y-2 text-sm">
-            <p class="font-medium text-foreground">Using Theme Variables</p>
-            <div class="space-y-1 text-muted-foreground">
-              <p>
-                • In CSS:
-                <code class="text-xs bg-muted px-1.5 py-0.5 rounded"
-                  >background: var(--primary)</code
-                >
-              </p>
-              <p>
-                • In Tailwind:
-                <code class="text-xs bg-muted px-1.5 py-0.5 rounded">bg-primary</code> or
-                <code class="text-xs bg-muted px-1.5 py-0.5 rounded"
-                  >[background:var(--primary)]</code
-                >
-              </p>
-              <p>
-                • For opacity:
-                <code class="text-xs bg-muted px-1.5 py-0.5 rounded">bg-primary/50</code> or use
-                color-mix
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Footer -->
       <div class="flex justify-end gap-2 pt-4 border-t border-border">
         <z-button zType="outline" label="Close" (click)="close()" />

@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   inject,
+  OnInit,
   signal,
   ViewChild,
 } from '@angular/core';
@@ -10,6 +11,7 @@ import { NavigationEnd, Router, RouterLinkWithHref, RouterOutlet } from '@angula
 import { commonIcons, IconName } from '@core/config';
 import { StorageService } from '@core/services';
 import { HeaderComponent } from '@features/layout';
+import { ProfileService } from '@features/user';
 import { LogoComponent } from '@shared/components';
 import { LayoutModule, SidebarGroupComponent, SidebarGroupLabelComponent } from '@ui/layout';
 import { ZardMenuModule } from '@ui/menu';
@@ -39,17 +41,21 @@ interface MenuItem {
   templateUrl: './dashboard-layout.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardLayoutComponent {
+export class DashboardLayoutComponent implements OnInit {
   @ViewChild('sidebarNav', { static: true }) private readonly _navRef!: ElementRef<HTMLElement>;
 
   private readonly _storageService = inject(StorageService);
   private readonly _router = inject(Router);
+  private readonly _profileService = inject(ProfileService);
 
   private readonly _sidebarCollapsedKey = 'sidebar-collapsed';
 
   sidebarCollapsed = signal<boolean>(
     this._storageService.getItem(this._sidebarCollapsedKey) || false
   );
+
+  // Track header pin state
+  isHeaderPinned = signal<boolean>(true);
 
   hoverEffect = signal({
     visible: false,
@@ -79,6 +85,34 @@ export class DashboardLayoutComponent {
   onCollapsedChangeAndReposition(collapsed: boolean) {
     this.onCollapsedChange(collapsed);
     this._positionToActive();
+  }
+
+  ngOnInit(): void {
+    // Load header pin state from profile or localStorage
+    this._loadHeaderPinState();
+
+    // Listen for storage changes to sync header pin state
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'headerPinned' && e.newValue !== null) {
+        this.isHeaderPinned.set(JSON.parse(e.newValue));
+      }
+    });
+  }
+
+  private _loadHeaderPinState(): void {
+    // Try to load from user profile first
+    const profile = this._profileService?.getProfile();
+    const profilePinned = profile?.preferences?.['headerPinned'] as boolean | undefined;
+
+    if (profilePinned !== undefined) {
+      this.isHeaderPinned.set(profilePinned);
+    } else {
+      // Fallback to localStorage
+      const pinned = this._storageService.getItem<boolean>('headerPinned');
+      if (pinned !== null) {
+        this.isHeaderPinned.set(pinned);
+      }
+    }
   }
 
   ngAfterViewInit(): void {

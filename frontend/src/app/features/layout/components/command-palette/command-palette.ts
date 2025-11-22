@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { commonIcons } from '@core/config';
+import { ItemService } from '@features/item';
+import { HouseService } from '@features/house';
 import { ZardDialogRef } from '@ui/dialog';
 import {
   ZardCommandComponent,
@@ -32,10 +34,48 @@ import {
       <z-command-input [placeholder]="'Type a command or search...'" />
 
       <z-command-list class="max-h-[60vh] overflow-y-auto p-2 bg-transparent">
-        <!-- Navigation Group -->
+        <!-- Items Group -->
+        @if (searchableItems().length > 0) {
         <div class="command-group">
           <div
             class="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
+          >
+            Items
+          </div>
+          @for (item of searchableItems(); track item.id) {
+          <z-command-option
+            [zValue]="{ type: 'item', id: item.id }"
+            [zLabel]="item.label"
+            [zCommand]="item.description"
+            [zIcon]="item.icon"
+          />
+          }
+        </div>
+        }
+
+        <!-- Rooms Group -->
+        @if (searchableRooms().length > 0) {
+        <div class="command-group">
+          <div
+            class="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-3"
+          >
+            Rooms
+          </div>
+          @for (room of searchableRooms(); track room.id) {
+          <z-command-option
+            [zValue]="{ type: 'room', id: room.id }"
+            [zLabel]="room.label"
+            [zCommand]="room.description"
+            [zIcon]="room.icon"
+          />
+          }
+        </div>
+        }
+
+        <!-- Navigation Group -->
+        <div class="command-group">
+          <div
+            class="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-3"
           >
             Navigation
           </div>
@@ -139,13 +179,63 @@ import {
 export class CommandPaletteComponent {
   private readonly router = inject(Router);
   private readonly dialogRef = inject(ZardDialogRef<CommandPaletteComponent>);
+  private readonly itemService = inject(ItemService);
+  private readonly houseService = inject(HouseService);
 
   protected readonly commonIcons = commonIcons;
 
-  onSelectOption(option: ZardCommandOption): void {
-    const value = option.value as string;
+  // Data signals
+  private readonly items = signal<any[]>([]);
+  private readonly rooms = signal<any[]>([]);
 
-    // Navigate based on selection
+  // Computed search results
+  readonly searchableItems = computed(() =>
+    this.items().map((item) => ({
+      type: 'item' as const,
+      id: item.id,
+      label: item.name,
+      description: `${item.category || 'Uncategorized'} • ${item.room || 'No room'}`,
+      icon: item.icon || commonIcons['item'],
+      quantity: item.quantity,
+    }))
+  );
+
+  readonly searchableRooms = computed(() =>
+    this.rooms().map((room) => ({
+      type: 'room' as const,
+      id: room.id,
+      label: room.name,
+      description: room.description || 'Room',
+      icon: room.icon || commonIcons['room'],
+    }))
+  );
+
+  constructor() {
+    // Load items and rooms
+    this.itemService.getItems().subscribe((items) => {
+      this.items.set(items);
+    });
+
+    this.houseService.getActiveHouseRooms().subscribe((rooms) => {
+      this.rooms.set(Array.isArray(rooms) ? rooms : []);
+    });
+  }
+
+  onSelectOption(option: ZardCommandOption): void {
+    const value = option.value as string | { type: string; id: string };
+
+    // Handle object values (search results)
+    if (typeof value === 'object' && value !== null) {
+      if (value.type === 'item') {
+        this.router.navigate(['/dashboard/items/detail', value.id]);
+      } else if (value.type === 'room') {
+        this.router.navigate(['/dashboard/rooms', value.id]);
+      }
+      this.dialogRef.close(option);
+      return;
+    }
+
+    // Handle string values (static commands)
     switch (value) {
       case 'dashboard':
         this.router.navigate(['/dashboard']);

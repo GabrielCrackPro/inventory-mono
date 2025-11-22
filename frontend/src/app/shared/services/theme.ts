@@ -1,5 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { StorageService } from '@core/services';
+import { ProfileService } from '@features/user';
 
 export type ThemeMode = 'light' | 'dark';
 export type ColorScheme =
@@ -270,32 +271,53 @@ export class ThemeService {
   private readonly colorSchemeKey = 'hia-color-scheme';
   private readonly customColorsKey = 'hia-custom-colors';
   private readonly _storageService = inject(StorageService);
+  private readonly _profileService = inject(ProfileService);
 
   readonly currentTheme = signal<ThemeMode>('light');
   readonly currentColorScheme = signal<ColorScheme>('default');
   private customColors: CustomThemeColors | null = null;
 
   initTheme(): void {
-    const savedTheme = this._storageService.getItem(this.themeKey) as ThemeMode | null;
-    const savedColorScheme =
-      (this._storageService.getItem(this.colorSchemeKey) as ColorScheme) || 'default';
+    // Try to load from user profile first
+    const profile = this._profileService?.getProfile();
+    const profileTheme = profile?.preferences?.['theme'] as ThemeConfig | undefined;
 
-    // Load custom colors if they exist
-    const savedCustomColors = this._storageService.getItem(this.customColorsKey);
-    if (savedCustomColors && typeof savedCustomColors === 'string') {
-      try {
-        this.customColors = JSON.parse(savedCustomColors);
-      } catch {
-        this.customColors = null;
+    let theme: ThemeMode;
+    let colorScheme: ColorScheme;
+    let customColors: CustomThemeColors | null = null;
+
+    if (profileTheme) {
+      // Use theme from profile
+      theme = profileTheme.mode;
+      colorScheme = profileTheme.colorScheme;
+      customColors = profileTheme.customColors || null;
+    } else {
+      // Fallback to localStorage
+      const savedTheme = this._storageService.getItem(this.themeKey) as ThemeMode | null;
+      const savedColorScheme =
+        (this._storageService.getItem(this.colorSchemeKey) as ColorScheme) || 'default';
+
+      // Load custom colors if they exist
+      const savedCustomColors = this._storageService.getItem(this.customColorsKey);
+      if (savedCustomColors && typeof savedCustomColors === 'string') {
+        try {
+          customColors = JSON.parse(savedCustomColors);
+        } catch {
+          customColors = null;
+        }
       }
+
+      const isDark =
+        savedTheme === 'dark' ||
+        (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+      theme = isDark ? 'dark' : 'light';
+      colorScheme = savedColorScheme;
     }
 
-    const isDark =
-      savedTheme === 'dark' ||
-      (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
-
-    this.applyTheme(isDark ? 'dark' : 'light');
-    this.applyColorScheme(savedColorScheme);
+    this.customColors = customColors;
+    this.applyTheme(theme, false); // Don't save to DB on init
+    this.applyColorScheme(colorScheme, false); // Don't save to DB on init
   }
 
   setTheme(theme: ThemeMode): void {
@@ -311,7 +333,7 @@ export class ThemeService {
     this.applyTheme(newTheme);
   }
 
-  private applyTheme(theme: ThemeMode): void {
+  private applyTheme(theme: ThemeMode, saveToDb = true): void {
     const html = document.documentElement;
     const isDark = theme === 'dark';
 
@@ -322,10 +344,15 @@ export class ThemeService {
     this._storageService.setItem(this.themeKey, theme);
     this.currentTheme.set(theme);
 
+    // Save to database
+    if (saveToDb) {
+      this._saveThemeToDb();
+    }
+
     // Reapply color scheme for the new theme mode
     const currentScheme = this.currentColorScheme();
     if (currentScheme !== 'default') {
-      this.applyColorScheme(currentScheme);
+      this.applyColorScheme(currentScheme, saveToDb);
     }
   }
 
@@ -381,7 +408,7 @@ export class ThemeService {
     this.applyColorScheme('default');
   }
 
-  private applyColorScheme(scheme: ColorScheme): void {
+  private applyColorScheme(scheme: ColorScheme, saveToDb = true): void {
     const html = document.documentElement;
     const currentMode = this.currentTheme();
 
@@ -413,5 +440,29 @@ export class ThemeService {
     html.setAttribute('data-color-scheme', scheme);
     this._storageService.setItem(this.colorSchemeKey, scheme);
     this.currentColorScheme.set(scheme);
+
+    // Save to database
+    if (saveToDb) {
+      this._saveThemeToDb();
+    }
+  }
+
+  private _saveThemeToDb(): void {
+    if (!this._profileService) return;
+
+    const themeConfig: ThemeConfig = {
+      mode: this.currentTheme(),
+      colorScheme: this.currentColorScheme(),
+      customColors: this.customColors || undefined,
+    };
+
+    this._profileService.savePreferences({ theme: themeConfig }).subscribe({
+      next: () => {
+        console.log('Theme preferences saved to database');
+      },
+      error: (error: any) => {
+        console.error('Failed to save theme preferences:', error);
+      },
+    });
   }
 }

@@ -1,19 +1,22 @@
 import { cva, VariantProps } from 'class-variance-authority';
 
-export const alertDialogVariants = cva('fixed inset-0 z-50 flex items-center justify-center p-4', {
-  variants: {
-    zType: {
-      default: '',
-      destructive: '',
-      warning: '',
-      info: '',
-      success: '',
+export const alertDialogVariants = cva(
+  'fixed inset-0 z-[10000] flex items-center justify-center p-4',
+  {
+    variants: {
+      zType: {
+        default: '',
+        destructive: '',
+        warning: '',
+        info: '',
+        success: '',
+      },
     },
-  },
-  defaultVariants: {
-    zType: 'default',
-  },
-});
+    defaultVariants: {
+      zType: 'default',
+    },
+  }
+);
 
 export const alertDialogContainerVariants = cva(
   'relative w-full max-w-[calc(100%-2rem)] border bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80 shadow-2xl rounded-xl sm:max-w-lg transition-all duration-200',
@@ -37,7 +40,7 @@ export const alertDialogContainerVariants = cva(
 );
 
 export const alertDialogOverlayVariants = cva(
-  'fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-200'
+  'fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm transition-opacity duration-200'
 );
 
 export const alertDialogContentVariants = cva('flex flex-col gap-6 p-6');

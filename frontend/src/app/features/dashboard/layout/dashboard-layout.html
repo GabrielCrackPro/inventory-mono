@@ -1,9 +1,9 @@
 <div class="min-h-screen flex flex-col">
-  <!-- Sticky Header -->
-  <hia-header />
+  <!-- Header (can be pinned or unpinned) -->
+  <hia-header class="header-pinned" />
 
   <!-- Main Layout -->
-  <div class="flex-1 flex overflow-hidden">
+  <div class="flex-1 flex overflow-hidden" [class.pt-[72px]]="isHeaderPinned()">
     <z-sidebar
       [zWidth]="240"
       [zCollapsible]="true"
@@ -30,7 +30,7 @@
         #sidebarNav
         role="navigation"
         aria-label="Main navigation"
-        class="relative flex-1 px-2 py-4 space-y-1"
+        class="relative flex-1 px-2 py-4 space-y-1 overflow-y-auto"
         (mouseleave)="leaveHover()"
       >
         @if (!sidebarCollapsed() && hoverEffect().visible) {
@@ -81,12 +81,14 @@
       </nav>
     </z-sidebar>
 
-    <!-- Main Content -->
-    <main class="flex-1 overflow-auto bg-background">
-      <div class="mx-auto max-w-7xl p-6">
-        <hia-dashboard-alerts />
-        <router-outlet />
-      </div>
-    </main>
+    <!-- Main Content - Scroll container moved here -->
+    <div class="flex-1 flex flex-col overflow-y-auto bg-background">
+      <main class="flex-1">
+        <div class="mx-auto max-w-7xl p-6">
+          <hia-dashboard-alerts />
+          <router-outlet />
+        </div>
+      </main>
+    </div>
   </div>
 </div>
